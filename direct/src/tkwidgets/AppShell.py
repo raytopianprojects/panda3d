@@ -65,6 +65,7 @@ class AppShell(Pmw.MegaWidget, DirectObject):
     panelCount      = 0
 
     def __init__(self, parent = None, **kw):
+        self.toggleBalloonVar = None
         optiondefs = (
             ('title',          self.appname,        None),
             ('padx',           1,                   Pmw.INITOPT),
@@ -539,6 +540,7 @@ class TestAppShell(AppShell):
     def __init__(self, parent = None, **kw):
         # Call superclass initialization function
         AppShell.__init__(self)
+        self.label = None
         self.initialiseoptions(TestAppShell)
 
     def createButtons(self):

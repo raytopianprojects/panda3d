@@ -403,7 +403,7 @@ class dataHolder:
         if self.isActor(name):
             self.ActorDic[name].loadAnims(Dic)
             for anim in Dic:
-                self.ActorDic[name].bindAnim(anim)
+                self.ActorDic[name].bind_anim(anim)
             messenger.send('DataH_loadFinish'+name)
             return
         else:

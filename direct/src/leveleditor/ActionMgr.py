@@ -2,6 +2,7 @@ from pandac.PandaModules import *
 from direct.showbase.PythonUtil import Functor
 from . import ObjectGlobals as OG
 
+
 class ActionMgr:
     def __init__(self):
         self.undoList = []
@@ -37,6 +38,7 @@ class ActionMgr:
             self.undoList.append(action)
             action.redo()
 
+
 class ActionBase(Functor):
     """ Base class for user actions """
 
@@ -45,6 +47,7 @@ class ActionBase(Functor):
         if function is None:
             def nullFunc():
                 pass
+
             function = nullFunc
         Functor.__init__(self, function, *args, **kargs)
         self.result = None
@@ -72,6 +75,7 @@ class ActionBase(Functor):
 
     def undo(self):
         print("undo method is not defined for this action")
+
 
 class ActionAddNewObj(ActionBase):
     """ Action class for adding new object """
@@ -112,10 +116,12 @@ class ActionAddNewObj(ActionBase):
             else:
                 print("Can't undo this add")
 
+
 class ActionDeleteObj(ActionBase):
     """ Action class for deleting object """
 
     def __init__(self, editor, *args, **kargs):
+        self.selecteUIDs = []
         self.editor = editor
         function = base.direct.removeAllSelected
         ActionBase.__init__(self, function, *args, **kargs)
@@ -126,6 +132,7 @@ class ActionDeleteObj(ActionBase):
 
     def saveStatus(self):
         selectedNPs = base.direct.selected.getSelectedAsList()
+
         def saveObjStatus(np, isRecursive=True):
             obj = self.editor.objectMgr.findObjectByNodePath(np)
             if obj:
@@ -151,11 +158,12 @@ class ActionDeleteObj(ActionBase):
             saveObjStatus(np, False)
 
     def undo(self):
-        if len(self.hierarchy) == 0 or\
-           len(self.objInfos) == 0:
+        if len(self.hierarchy) == 0 or \
+                len(self.objInfos) == 0:
             print("Can't undo this deletion")
         else:
             print("Undo: deleteObject")
+
             def restoreObject(uid, parentNP):
                 obj = self.objInfos[uid]
                 objDef = obj[OG.OBJ_DEF]
@@ -163,9 +171,9 @@ class ActionDeleteObj(ActionBase):
                 objProp = obj[OG.OBJ_PROP]
                 objRGBA = obj[OG.OBJ_RGBA]
                 objNP = self.editor.objectMgr.addNewObject(objDef.name,
-                                                   uid,
-                                                   obj[OG.OBJ_MODEL],
-                                                   parentNP)
+                                                           uid,
+                                                           obj[OG.OBJ_MODEL],
+                                                           parentNP)
                 self.editor.objectMgr.updateObjectColor(objRGBA[0], objRGBA[1], objRGBA[2], objRGBA[3], objNP)
                 self.editor.objectMgr.updateObjectProperties(objNP, objProp)
                 objNP.setMat(self.objTransforms[uid])
@@ -189,9 +197,9 @@ class ActionDeleteObj(ActionBase):
                 if obj:
                     self.editor.select(obj[OG.OBJ_NP], fMultiSelect=1, fUndo=0)
 
-            self.selecteUIDs = []
             self.hierarchy = {}
             self.objInfos = {}
+
 
 class ActionDeleteObjById(ActionBase):
     """ Action class for deleting object """
@@ -231,11 +239,12 @@ class ActionDeleteObjById(ActionBase):
         saveObjStatus(self.uid, True)
 
     def undo(self):
-        if len(self.hierarchy) == 0 or\
-           len(self.objInfos) == 0:
+        if len(self.hierarchy) == 0 or \
+                len(self.objInfos) == 0:
             print("Can't undo this deletion")
         else:
             print("Undo: deleteObjectById")
+
             def restoreObject(uid, parentNP):
                 obj = self.objInfos[uid]
                 objDef = obj[OG.OBJ_DEF]
@@ -243,9 +252,9 @@ class ActionDeleteObjById(ActionBase):
                 objProp = obj[OG.OBJ_PROP]
                 objRGBA = obj[OG.OBJ_RGBA]
                 objNP = self.editor.objectMgr.addNewObject(objDef.name,
-                                                   uid,
-                                                   obj[OG.OBJ_MODEL],
-                                                   parentNP)
+                                                           uid,
+                                                           obj[OG.OBJ_MODEL],
+                                                           parentNP)
                 self.editor.objectMgr.updateObjectColor(objRGBA[0], objRGBA[1], objRGBA[2], objRGBA[3], objNP)
                 self.editor.objectMgr.updateObjectProperties(objNP, objProp)
                 objNP.setMat(self.objTransforms[uid])
@@ -266,20 +275,22 @@ class ActionDeleteObjById(ActionBase):
             self.hierarchy = {}
             self.objInfos = {}
 
+
 class ActionChangeHierarchy(ActionBase):
-     """ Action class for changing Scene Graph Hierarchy """
+    """ Action class for changing Scene Graph Hierarchy """
 
-     def __init__(self, editor, oldGrandParentId, oldParentId, newParentId, childName, *args, **kargs):
-         self.editor = editor
-         self.oldGrandParentId = oldGrandParentId
-         self.oldParentId = oldParentId
-         self.newParentId = newParentId
-         self.childName = childName
-         function = self.editor.ui.sceneGraphUI.parent
-         ActionBase.__init__(self, function, self.oldParentId, self.newParentId, self.childName, **kargs)
+    def __init__(self, editor, oldGrandParentId, oldParentId, newParentId, childName, *args, **kargs):
+        self.editor = editor
+        self.oldGrandParentId = oldGrandParentId
+        self.oldParentId = oldParentId
+        self.newParentId = newParentId
+        self.childName = childName
+        function = self.editor.ui.sceneGraphUI.parent
+        ActionBase.__init__(self, function, self.oldParentId, self.newParentId, self.childName, **kargs)
 
-     def undo(self):
-         self.editor.ui.sceneGraphUI.parent(self.oldParentId, self.oldGrandParentId, self.childName)
+    def undo(self):
+        self.editor.ui.sceneGraphUI.parent(self.oldParentId, self.oldGrandParentId, self.childName)
+
 
 class ActionSelectObj(ActionBase):
     """ Action class for adding new object """
@@ -307,6 +318,7 @@ class ActionSelectObj(ActionBase):
                 self.editor.select(obj[OG.OBJ_NP], fMultiSelect=1, fUndo=0)
         self.selectedUIDs = []
 
+
 class ActionTransformObj(ActionBase):
     """ Action class for object transformation """
 
@@ -315,14 +327,14 @@ class ActionTransformObj(ActionBase):
         function = self.editor.objectMgr.setObjectTransform
         ActionBase.__init__(self, function, *args, **kargs)
         self.uid = args[0]
-        #self.xformMat = Mat4(args[1])
+        # self.xformMat = Mat4(args[1])
         self.origMat = None
 
     def saveStatus(self):
         obj = self.editor.objectMgr.findObjectById(self.uid)
         if obj:
             self.origMat = Mat4(self.editor.objectMgr.objectsLastXform[obj[OG.OBJ_UID]])
-            #self.origMat = Mat4(obj[OG.OBJ_NP].getMat())
+            # self.origMat = Mat4(obj[OG.OBJ_NP].getMat())
 
     def _do__call__(self, *args, **kargs):
         self.result = ActionBase._do__call__(self, *args, **kargs)
@@ -342,6 +354,7 @@ class ActionTransformObj(ActionBase):
                 self.editor.objectMgr.objectsLastXform[self.uid] = Mat4(self.origMat)
             del self.origMat
             self.origMat = None
+
 
 class ActionDeselectAll(ActionBase):
     """ Action class for adding new object """
@@ -369,6 +382,7 @@ class ActionDeselectAll(ActionBase):
                 self.editor.select(obj[OG.OBJ_NP], fMultiSelect=1, fUndo=0)
         self.selectedUIDs = []
 
+
 class ActionUpdateObjectProp(ActionBase):
     """ Action class for updating object property """
 
@@ -386,7 +400,7 @@ class ActionUpdateObjectProp(ActionBase):
         self.obj[OG.OBJ_PROP][self.propName] = self.newVal
 
     def redo(self):
-        self.result = self._do__call__()#uid=self.uid, xformMat=self.xformMat)
+        self.result = self._do__call__()  # uid=self.uid, xformMat=self.xformMat)
         if self.editor and self.fSelectObject:
             base.direct.select(self.obj[OG.OBJ_NP], fUndo=0)
         return self.result

@@ -34,6 +34,38 @@ class AnimPanel(AppShell):
     index = 0
 
     def __init__(self, aList =  [], parent = None, session = None, **kw):
+        self.fToggleAll = None
+        self.actorFrame = None
+        self.toStartButton = None
+        self.toPreviousFrameButton = None
+        self.playButton = None
+        self.stopButton = None
+        self.toNextFrameButton = None
+        self.toEndButton = None
+        self.loopVar = None
+        self.loopButton = None
+        self.actorFrame = None
+        self.actorControlList = None
+        self.actorFrame = None
+        self.lastT = None
+        self.lastT = None
+        self.fToggleAll = None
+        self.fToggleAll = None
+        self.actorFrame = None
+        self.toStartButton = None
+        self.toPreviousFrameButton = None
+        self.playButton = None
+        self.stopButton = None
+        self.toNextFrameButton = None
+        self.toEndButton = None
+        self.loopVar = None
+        self.loopButton = None
+        self.actorFrame = None
+        self.actorControlList = None
+        self.actorFrame = None
+        self.lastT = None
+        self.lastT = None
+        self.fToggleAll = None
         INITOPT = Pmw.INITOPT
         if isinstance(aList, (list, tuple)):
             kw['actorList'] = aList
@@ -380,6 +412,9 @@ class AnimPanel(AppShell):
 class ActorControl(Pmw.MegaWidget):
     def __init__(self, parent = None, **kw):
 
+        self.duration = None
+        self.duration = None
+        self.maxFrame = None
         INITOPT = Pmw.INITOPT
         DEFAULT_FONT = (('MS', 'Sans', 'Serif'), 12, 'bold')
         DEFAULT_ANIMS = ('neutral', 'run', 'walk')

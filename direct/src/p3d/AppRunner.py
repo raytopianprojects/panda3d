@@ -86,6 +86,13 @@ class AppRunner(DirectObject):
         # We direct both our stdout and stderr objects onto Panda's
         # Notify stream.  This ensures that unadorned print statements
         # made within Python will get routed into the log properly.
+        self.tokens = None
+        self.argv = None
+        self.tokenDict = None
+        self.p3dInfo = None
+        self.p3dPackage = None
+        self.p3dConfig = None
+        self.p3dMultifile = None
         stream = StreamWriter(Notify.out(), False)
         sys.stdout = stream
         sys.stderr = stream

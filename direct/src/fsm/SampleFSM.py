@@ -135,7 +135,7 @@ class ToonEyes(FSM.FSM):
 ##   File "<stdin>", line 1, in ?
 ##   File "/home/drose/player/direct/src/fsm/FSM.py", line 168, in request
 ##     result = func(request, args)
-##   File "/home/drose/player/direct/src/fsm/FSM.py", line 210, in defaultFilter
+##   File "/home/drose/player/direct/src/fsm/FSM.py", line 210, in default_filter
 ##     self.notify.error("%s rejecting request %s from state %s." % (self.name, request, self.state))
 ##   File "/home/drose/player/direct/src/directnotify/Notifier.py", line 99, in error
 ##     raise exception(errorString)

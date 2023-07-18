@@ -72,7 +72,7 @@ if __name__ == "__main__":
                           text_pos = (.6, -.8),
                           # Set audio characteristics
                           clickSound = DirectGuiGlobals.getDefaultClickSound(),
-                          rolloverSound = DirectGuiGlobals.getDefaultRolloverSound()
+                          rolloverSound = DirectGuiGlobals.get_default_rollover_sound()
                           )
 
         # You can set component or component group options after a gui item

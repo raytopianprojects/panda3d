@@ -151,7 +151,7 @@ class MappingGUIDemo(ShowBase):
 
         self.setBackgroundColor(0, 0, 0)
         # make the font look nice at a big scale
-        DGG.getDefaultFont().setPixelsPerUnit(100)
+        DGG.get_default_font().setPixelsPerUnit(100)
 
         # Store our mapping, with some sensible defaults.  In a real game, you
         # will want to load these from a configuration file.
@@ -174,7 +174,7 @@ class MappingGUIDemo(ShowBase):
             maps.find("**/disabled"))
 
         # Change the default dialog skin.
-        DGG.setDefaultDialogGeom("models/dialog.png")
+        DGG.set_default_dialog_geom("models/dialog.png")
 
         # create a sample title
         self.textscale = 0.1

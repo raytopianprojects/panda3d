@@ -33,6 +33,11 @@ class ConnectionRepository(
 
     def __init__(self, connectMethod, config, hasOwnerView = False,
                  threadedNet = None):
+        self.dclassesByName = None
+        self.dclassesByNumber = None
+        self.hashVal = None
+        self.bootedIndex = None
+        self.bootedText = None
         assert self.notify.debugCall()
         if threadedNet is None:
             # Default value.

@@ -33,6 +33,13 @@ class collisionWindow(AppShell):
 
     def __init__(self, nodePath, parent = None, **kw):
 
+        self.collisionTypeEntry = None
+        self.inputZone = None
+        self.objNotebook = None
+        self.okButton = None
+        self.posX = None
+        self.posY = None
+        self.posZ = None
         self.nodePath = nodePath
         self.objType = 'collisionSphere' # set default type to Collision Sphere
 

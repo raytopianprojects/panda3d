@@ -499,7 +499,7 @@ s = scrollList = DirectScrolledList(
     parent = aspect2d,
     relief = None,
     # Use the default dialog box image as the background
-    image = DGG.getDefaultDialogGeom(),
+    image = DGG.get_default_dialog_geom(),
     # Scale it to fit around everyting
     image_scale = (0.7, 1, .8),
     # Give it a label

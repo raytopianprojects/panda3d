@@ -11,6 +11,32 @@ from panda3d.rocket import RocketRegion, RocketInputHandler
 
 class Console(object):
     def __init__(self, base, context, cols, rows, commandHandler):
+        self.consolePrompt = None
+        self.consolePrompt = None
+        self.editMode = None
+        self.editMode = None
+        self.input = None
+        self.input = None
+        self.document = None
+        self.document = None
+        self.textEl = None
+        self.textEl = None
+        self.consolePrompt = None
+        self.consolePrompt = None
+        self.input = None
+        self.input = None
+        self.lastLine = None
+        self.lastLine = None
+        self.blinkState = None
+        self.blinkState = None
+        self.blinkState = None
+        self.blinkState = None
+        self.lastLine = None
+        self.lastLine = None
+        self.input = None
+        self.input = None
+        self.blinkState = None
+        self.blinkState = None
         self.base = base
 
         self.context = context

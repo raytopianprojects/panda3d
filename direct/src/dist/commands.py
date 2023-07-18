@@ -255,6 +255,58 @@ class build_apps(setuptools.Command):
         '.egg': egg2bam,
     }
 
+    def __init__(self, dist: Distribution, **kw: Any):
+        super().__init__(dist, kw)
+        self.build_base = None
+        self.gui_apps = None
+        self.console_apps = None
+        self.macos_main_app = None
+        self.rename_paths = None
+        self.include_patterns = None
+        self.exclude_patterns = None
+        self.include_modules = None
+        self.exclude_modules = None
+        self.icons = None
+        self.platforms = None
+        self.plugins = None
+        self.embed_prc_data = None
+        self.extra_prc_files = None
+        self.extra_prc_data = None
+        self.default_prc_dir = None
+        self.log_filename = None
+        self.log_filename_strftime = None
+        self.log_append = None
+        self.prefer_discrete_gpu = None
+        self.requirements_path = None
+        self.strip_docstrings = None
+        self.use_optimized_wheels = None
+        self.optimized_wheel_index = None
+        self.pypi_extra_indexes = None
+        self.file_handlers = None
+        self.bam_model_extensions = None
+        self.exclude_dependencies = None
+        self.package_data_dirs = None
+        self._zip_files = None
+        self.gui_apps = None
+        self.console_apps = None
+        self.rename_paths = None
+        self.include_patterns = None
+        self.exclude_patterns = None
+        self.include_modules = None
+        self.exclude_modules = None
+        self.icons = None
+        self.platforms = None
+        self.plugins = None
+        self.extra_prc_files = None
+        self.default_prc_dir = None
+        self.macos_main_app = None
+        self.requirements_path = None
+        self.optimized_wheel_index = None
+        self.exclude_dependencies = None
+        self.file_handlers = None
+        self.package_data_dirs = None
+        self.icon_objects = None
+
     def initialize_options(self):
         self.build_base = os.path.join(os.getcwd(), 'build')
         self.gui_apps = {}
@@ -1527,6 +1579,13 @@ class bdist_apps(setuptools.Command):
         ('dist-dir=', 'd', 'directory to put final built distributions in'),
         ('skip-build', None, 'skip rebuilding everything (for testing/debugging)'),
     ]
+
+    def __init__(self, dist: Distribution, **kw: Any):
+        super().__init__(dist, kw)
+        self.installers = None
+        self.dist_dir = None
+        self.skip_build = None
+        self.installers = None
 
     def _build_apps_options(self):
         return [opt[0].replace('-', '_').replace('=', '') for opt in build_apps.user_options]

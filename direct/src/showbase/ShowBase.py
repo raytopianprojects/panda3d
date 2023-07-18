@@ -485,8 +485,8 @@ class ShowBase(DirectObject.DirectObject):
         # optionally restore the default gui sounds from 1.7.2 and earlier
         if ConfigVariableBool('orig-gui-sounds', False).getValue():
             from direct.gui import DirectGuiGlobals as DGG
-            DGG.setDefaultClickSound(self.loader.loadSfx("audio/sfx/GUI_click.wav"))
-            DGG.setDefaultRolloverSound(self.loader.loadSfx("audio/sfx/GUI_rollover.wav"))
+            DGG.set_default_click_sound(self.loader.loadSfx("audio/sfx/GUI_click.wav"))
+            DGG.set_default_rollover_sound(self.loader.loadSfx("audio/sfx/GUI_rollover.wav"))
 
         # Now hang a hook on the window-event from Panda.  This allows
         # us to detect when the user resizes, minimizes, or closes the

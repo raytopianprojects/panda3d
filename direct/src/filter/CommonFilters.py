@@ -108,6 +108,12 @@ class CommonFilters:
     filters.  The constructor requires a filter builder as a parameter. """
 
     def __init__(self, win, cam):
+        self.textures = None
+        self.finalQuad = None
+        self.bloom = None
+        self.blur = None
+        self.ssao = None
+        self.finalQuad = None
         self.manager = FilterManager(win, cam)
         self.configuration = {}
         self.task = None

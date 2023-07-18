@@ -83,7 +83,7 @@ class Fixture(NodePath, FSM):
     def defaultFilter(self, request, args):
         if request == self.getCurrentOrNextState():
             return None
-        return FSM.defaultFilter(self, request, args)
+        return FSM.default_filter(self, request, args)
 
     def exitOff(self):
         self.accept('recordingInProgress', self.setRecordingInProgress)

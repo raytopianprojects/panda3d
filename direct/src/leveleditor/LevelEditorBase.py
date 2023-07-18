@@ -87,7 +87,7 @@ class LevelEditorBase(DirectObject):
         self.statusReadout = OnscreenText(
             pos = (-1.2, 0.9), bg=Vec4(1,1,1,1),
             scale = 0.05, align = TextNode.ALeft,
-            mayChange = 1, font = TextNode.getDefaultFont())
+            mayChange = 1, font = TextNode.get_default_font())
         self.statusReadout.setText("")
         # Make sure readout is never lit or drawn in wireframe
         useDirectRenderStyle(self.statusReadout)

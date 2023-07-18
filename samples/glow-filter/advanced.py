@@ -15,11 +15,13 @@ from direct.actor.Actor import Actor
 import sys
 import os
 
+
 # Function to put instructions on the screen.
 def addInstructions(pos, msg):
     return OnscreenText(text=msg, style=1, fg=(1, 1, 1, 1),
                         parent=base.a2dTopLeft, align=TextNode.ALeft,
                         pos=(0.08, -pos - 0.04), scale=.05)
+
 
 # Function to put title on the screen.
 def addTitle(text):
@@ -116,7 +118,7 @@ class GlowDemo(ShowBase):
         # set up the pipeline: from glow scene to blur x to blur y to main
         # window.
         blurXBuffer = makeFilterBuffer(
-            glowBuffer,  "Blur X", -2, "shaders/XBlurShader.sha")
+            glowBuffer, "Blur X", -2, "shaders/XBlurShader.sha")
         blurYBuffer = makeFilterBuffer(
             blurXBuffer, "Blur Y", -1, "shaders/YBlurShader.sha")
         self.finalcard = blurYBuffer.getTextureCard()
@@ -147,11 +149,11 @@ class GlowDemo(ShowBase):
             self.finalcard.reparentTo(hidden)
         else:
             self.finalcard.reparentTo(render2d)
-        self.glowOn = not(self.glowOn)
+        self.glowOn = not (self.glowOn)
 
     def toggleDisplay(self):
-        self.isRunning = not(self.isRunning)
-        if not(self.isRunning):
+        self.isRunning = not (self.isRunning)
+        if not (self.isRunning):
             camera.setPos(0, -50, 0)
             self.tron.stop("running")
             self.tron.pose("running", 0)
@@ -161,6 +163,7 @@ class GlowDemo(ShowBase):
             self.interval.finish()
             self.tron.setHpr(0, 0, 0)
             self.tron.loop("running")
+
 
 demo = GlowDemo()
 demo.run()

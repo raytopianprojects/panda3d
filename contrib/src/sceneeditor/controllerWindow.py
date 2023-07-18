@@ -39,6 +39,11 @@ class controllerWindow(AppShell):
     keyboardSpeedDict = {}
 
     def __init__(self, listOfObj, controlType , dataList, parent = None, **kw):
+        self.cotrollerTypeEntry = None
+        self.inputZone = None
+        self.contentWidge = None
+        self.contentFrame = None
+        self.objNotebook = None
         if controlType == 'Keyboard':
             self.nodePath = dataList[0] # Default setting -> mainly used for Keyboard control now.
             self.nameOfNode = self.nodePath.getName()

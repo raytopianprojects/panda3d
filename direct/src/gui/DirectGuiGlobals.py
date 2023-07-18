@@ -7,13 +7,13 @@ __all__ = []
 
 from panda3d.core import *
 
-defaultFont = None
-defaultFontFunc = TextNode.getDefaultFont
-defaultClickSound = None
-defaultRolloverSound = None
-defaultDialogGeom = None
-defaultDialogRelief = PGFrameStyle.TBevelOut
-drawOrder = 100
+default_font = None
+default_font_func = TextNode.getDefaultFont
+default_click_sound = None
+default_rollover_sound = None
+default_dialog_geom = None
+default_dialog_relief = PGFrameStyle.TBevelOut
+draw_order = 100
 panel = None
 
 # USEFUL GUI CONSTANTS
@@ -37,11 +37,11 @@ RAISED = PGFrameStyle.TBevelOut
 SUNKEN = PGFrameStyle.TBevelIn
 GROOVE = PGFrameStyle.TGroove
 RIDGE = PGFrameStyle.TRidge
-TEXTUREBORDER = PGFrameStyle.TTextureBorder
+TEXTURE_BORDER = PGFrameStyle.TTextureBorder
 
 FrameStyleDict = {'flat': FLAT, 'raised': RAISED, 'sunken': SUNKEN,
                   'groove': GROOVE, 'ridge': RIDGE,
-                  'texture_border': TEXTUREBORDER,
+                  'texture_border': TEXTURE_BORDER,
                   }
 
 # Orientation of DirectSlider and DirectScrollBar
@@ -105,73 +105,59 @@ BUTTON_DEPRESSED_STATE = PGButton.SDepressed   # 1
 BUTTON_ROLLOVER_STATE  = PGButton.SRollover    # 2
 BUTTON_INACTIVE_STATE  = PGButton.SInactive    # 3
 
-def getDefaultRolloverSound():
-    return defaultRolloverSound
+def get_default_rollover_sound():
+    return default_rollover_sound
 
-def setDefaultRolloverSound(newSound):
-    global defaultRolloverSound
-    defaultRolloverSound = newSound
+def set_default_rollover_sound(newSound):
+    global default_rollover_sound
+    default_rollover_sound = newSound
 
 def getDefaultClickSound():
-    return defaultClickSound
+    return default_click_sound
 
-def setDefaultClickSound(newSound):
-    global defaultClickSound
-    defaultClickSound = newSound
+def set_default_click_sound(newSound):
+    global default_click_sound
+    default_click_sound = newSound
 
-def getDefaultFont():
-    global defaultFont
-    if defaultFont == None:
-        defaultFont = defaultFontFunc()
-    return defaultFont
+def get_default_font():
+    global default_font
+    if default_font is None:
+        default_font = default_font_func()
+    return default_font
 
-def setDefaultFont(newFont):
+def set_default_font(new_font):
     """Changes the default font for DirectGUI items.  To change the default
-    font across the board, see :meth:`.TextNode.setDefaultFont`. """
-    global defaultFont
-    defaultFont = newFont
+    font across the board, see :meth:`.TextNode.set_default_font`. """
+    global default_font
+    default_font = new_font
 
-def setDefaultFontFunc(newFontFunc):
-    global defaultFontFunc
-    defaultFontFunc = newFontFunc
+def set_default_font_func(new_font_func):
+    global default_font_func
+    default_font_func = new_font_func
 
-def getDefaultDialogGeom():
-    global defaultDialogGeom
-    return defaultDialogGeom
+def get_default_dialog_geom():
+    global default_dialog_geom
+    return default_dialog_geom
 
-def getDefaultDialogRelief():
-    global defaultDialogRelief
-    return defaultDialogRelief
+def get_default_dialog_relief():
+    global default_dialog_relief
+    return default_dialog_relief
 
-def setDefaultDialogGeom(newDialogGeom, relief=None):
-    global defaultDialogGeom, defaultDialogRelief
-    defaultDialogGeom = newDialogGeom
-    defaultDialogRelief = relief
+def set_default_dialog_geom(new_dialog_geom, relief=None):
+    global default_dialog_geom, default_dialog_relief
+    default_dialog_geom = new_dialog_geom
+    default_dialog_relief = relief
 
-def getDefaultDrawOrder():
-    return drawOrder
+def get_default_draw_order():
+    return draw_order
 
-def setDefaultDrawOrder(newDrawOrder):
-    global drawOrder
-    drawOrder = newDrawOrder
+def set_default_draw_order(new_draw_order):
+    global draw_order
+    draw_order = new_draw_order
 
-def getDefaultPanel():
+def get_default_panel():
     return panel
 
-def setDefaultPanel(newPanel):
+def set_default_panel(new_panel):
     global panel
-    panel = newPanel
-
-get_default_rollover_sound = getDefaultRolloverSound
-set_default_rollover_sound = setDefaultRolloverSound
-get_default_click_sound = getDefaultClickSound
-set_default_click_sound = setDefaultClickSound
-get_default_font = getDefaultFont
-set_default_font = setDefaultFont
-get_default_dialog_geom = getDefaultDialogGeom
-get_default_dialog_relief = getDefaultDialogRelief
-set_default_dialog_geom = setDefaultDialogGeom
-get_default_draw_order = getDefaultDrawOrder
-set_default_draw_order = setDefaultDrawOrder
-get_default_panel = getDefaultPanel
-set_default_panel = setDefaultPanel
+    panel = new_panel

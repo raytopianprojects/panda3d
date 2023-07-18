@@ -11,11 +11,13 @@ from direct.showbase.DirectObject import DirectObject
 from direct.actor import Actor
 from random import *
 
+
 # Function to put instructions on the screen.
 def addInstructions(pos, msg):
     return OnscreenText(text=msg, style=1, fg=(1, 1, 1, 1), scale=.05,
                         shadow=(0, 0, 0, 1), parent=base.a2dTopLeft,
                         pos=(0.08, -pos - 0.04), align=TextNode.ALeft)
+
 
 # Function to put title on the screen.
 def addTitle(text):
@@ -175,6 +177,7 @@ class World(DirectObject):
         return base.win.getGsg().getSupportsBasicShaders() and \
                base.win.getGsg().getSupportsDepthTexture() and \
                base.win.getGsg().getSupportsShadowFilter()
+
 
 if __name__ == '__main__':
     base = ShowBase()

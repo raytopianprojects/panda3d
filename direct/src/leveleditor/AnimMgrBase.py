@@ -13,6 +13,13 @@ class AnimMgrBase:
     """ AnimMgr will create, manage, update animations in the scene """
 
     def __init__(self, editor):
+        self.keyFrames = None
+        self.points = None
+        self.hprs = None
+        self.curveSequence = None
+        self.parallel = None
+        self.keyFrameInfoForSingleLerp = None
+        self.keyInfoForSingleLerp = None
         self.editor = editor
         self.graphEditorCounter = 0
 

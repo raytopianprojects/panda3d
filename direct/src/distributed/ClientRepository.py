@@ -27,6 +27,7 @@ class ClientRepository(ClientRepositoryBase):
     def __init__(self, dcFileNames = None, dcSuffix = '', connectMethod = None,
                  threadedNet = None):
         ClientRepositoryBase.__init__(self, dcFileNames = dcFileNames, dcSuffix = dcSuffix, connectMethod = connectMethod, threadedNet = threadedNet)
+        self.ourChannel = None
         self.setHandleDatagramsInternally(False)
 
         base.finalExitCallbacks.append(self.shutdown)

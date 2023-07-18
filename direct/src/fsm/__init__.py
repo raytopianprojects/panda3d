@@ -7,3 +7,5 @@ programming tasks.
 For more information on FSMs, consult the :ref:`finite-state-machines` section
 of the programming manual.
 """
+
+from FSM import FSM

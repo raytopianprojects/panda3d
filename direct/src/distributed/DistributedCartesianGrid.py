@@ -367,7 +367,7 @@ class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
             cw = self.cellWidth
             scale = cw / 10.0
             dx = cw * self.gridSize * .5
-            font = DirectGuiGlobals.getDefaultFont()
+            font = DirectGuiGlobals.get_default_font()
             color = self.gridColor
             for i in range(self.gridSize):
                 for j in range(self.gridSize):

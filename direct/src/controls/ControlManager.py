@@ -24,6 +24,7 @@ class ControlManager:
     wantWASD = ConfigVariableBool('want-WASD', False)
 
     def __init__(self, enable=True, passMessagesThrough = False):
+        self.ignoreUse = None
         assert self.notify.debug("init control manager %s" % (passMessagesThrough))
         assert self.notify.debugCall(id(self))
         self.passMessagesThrough = passMessagesThrough

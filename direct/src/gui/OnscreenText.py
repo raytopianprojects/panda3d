@@ -175,7 +175,7 @@ class OnscreenText(NodePath):
             textNode.setCardDecal(1)
 
         if font == None:
-            font = DGG.getDefaultFont()
+            font = DGG.get_default_font()
 
         textNode.setFont(font)
         textNode.setTextColor(fg[0], fg[1], fg[2], fg[3])

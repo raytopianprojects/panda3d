@@ -31,7 +31,7 @@ class DirectLabel(DirectFrame):
             ('pgFunc',          PGItem,    None),
             ('numStates',       1,         None),
             ('state',           self.inactiveInitState, None),
-            ('activeState',     0,         self.setActiveState),
+            ('activeState',     0,         self.set_active_state),
             )
         # Merge keyword options with default options
         self.defineoptions(kw, optiondefs)
@@ -42,6 +42,6 @@ class DirectLabel(DirectFrame):
         # Call option initialization functions
         self.initialiseoptions(DirectLabel)
 
-    def setActiveState(self):
-        """ setActiveState - change label to specifed state """
+    def set_active_state(self):
+        """ set_active_state - change label to specifed state """
         self.guiItem.setState(self['activeState'])

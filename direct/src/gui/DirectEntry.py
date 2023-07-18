@@ -78,7 +78,7 @@ class DirectEntry(DirectFrame):
             ('focusOutCommand', None,             None),
             ('focusOutExtraArgs', [],             None),
             # Sounds to be used for button events
-            ('rolloverSound',   DGG.getDefaultRolloverSound(), self.setRolloverSound),
+            ('rolloverSound', DGG.get_default_rollover_sound(), self.setRolloverSound),
             ('clickSound',      DGG.getDefaultClickSound(),    self.setClickSound),
             ('autoCapitalize',  0,                self.autoCapitalizeFunc),
             ('autoCapitalizeAllowPrefixes', DirectEntry.AllowCapNamePrefixes, None),
@@ -91,7 +91,7 @@ class DirectEntry(DirectFrame):
         DirectFrame.__init__(self, parent)
 
         if self['entryFont'] == None:
-            font = DGG.getDefaultFont()
+            font = DGG.get_default_font()
         else:
             font = self['entryFont']
 

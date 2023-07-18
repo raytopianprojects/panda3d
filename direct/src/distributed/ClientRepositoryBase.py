@@ -26,6 +26,7 @@ class ClientRepositoryBase(ConnectionRepository):
 
     def __init__(self, dcFileNames = None, dcSuffix = '',
                  connectMethod = None, threadedNet = None):
+        self.deferInterval = None
         if connectMethod is None:
             connectMethod = self.CM_HTTP
         ConnectionRepository.__init__(self, connectMethod, base.config, hasOwnerView = True, threadedNet = threadedNet)

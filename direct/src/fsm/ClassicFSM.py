@@ -63,6 +63,10 @@ class ClassicFSM(DirectObject):
         'onUndefTransition' flag determines behavior when undefined
         transition is requested; see flag definitions above
         """
+        self.__name = None
+        self.__states = None
+        self.__initialState = None
+        self.__finalState = None
         self.setName(name)
         self.setStates(states)
         self.setInitialState(initialStateName)
@@ -96,11 +100,11 @@ class ClassicFSM(DirectObject):
         """
         currentState = self.getCurrentState()
         if currentState:
-            str = ("ClassicFSM " + self.getName() + ' in state "' +
+            _str = ("ClassicFSM " + self.getName() + ' in state "' +
                    currentState.getName() + '"')
         else:
-            str = ("ClassicFSM " + self.getName() + ' not in any state')
-        return str
+            _str = ("ClassicFSM " + self.getName() + ' not in any state')
+        return _str
 
     def enterInitialState(self, argList=[]):
         assert not self.__internalStateInFlux

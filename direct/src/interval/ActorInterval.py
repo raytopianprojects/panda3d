@@ -12,13 +12,14 @@ from direct.directnotify.DirectNotifyGlobal import *
 from . import Interval
 import math
 
-class ActorInterval(Interval.Interval):
 
+class ActorInterval(Interval.Interval):
     # create ActorInterval DirectNotify category
     notify = directNotify.newCategory('ActorInterval')
 
     # Name counter
     animNum = 1
+
     # Class methods
 
     # Plays an animation on an Actor.  The subrange of the animation
@@ -53,7 +54,7 @@ class ActorInterval(Interval.Interval):
         self.actor = actor
         self.animName = animName
         self.controls = self.actor.getAnimControls(
-            self.animName, partName = partName, lodName = lodName)
+            self.animName, partName=partName, lodName=lodName)
         self.loopAnim = loop
         self.constrainedLoop = constrainedLoop
         self.forceUpdate = forceUpdate
@@ -96,7 +97,8 @@ class ActorInterval(Interval.Interval):
                 for i in range(1, len(self.controls)):
                     numFrames = self.controls[i].getNumFrames()
                     if numFrames != maxFrames and numFrames != 1 and not warned:
-                        self.notify.warning("Animations '%s' on %s have an inconsistent number of frames." % (animName, actor.getName()))
+                        self.notify.warning("Animations '%s' on %s have an inconsistent number of frames." % (
+                            animName, actor.getName()))
                         warned = 1
                     maxFrames = max(maxFrames, numFrames)
                 self.endFrame = maxFrames - 1
@@ -199,7 +201,8 @@ class ActorInterval(Interval.Interval):
     # and optional lod param
     def resetControls(self, partName, lodName=None):
         self.controls = self.actor.getAnimControls(
-            self.animName, partName = partName, lodName = lodName)
+            self.animName, partName=partName, lodName=lodName)
+
 
 class LerpAnimInterval(CLerpAnimEffectInterval):
     # Blends between two anims.  Start both anims first (or use
@@ -208,11 +211,11 @@ class LerpAnimInterval(CLerpAnimEffectInterval):
     lerpAnimNum = 1
 
     def __init__(self, actor, duration, startAnim, endAnim,
-                 startWeight = 0.0, endWeight = 1.0,
-                 blendType = 'noBlend', name = None,
+                 startWeight=0.0, endWeight=1.0,
+                 blendType='noBlend', name=None,
                  partName=None, lodName=None):
         # Generate unique name if necessary
-        if (name == None):
+        if name == None:
             name = 'LerpAnimInterval-%d' % LerpAnimInterval.lerpAnimNum
             LerpAnimInterval.lerpAnimNum += 1
 
@@ -222,18 +225,18 @@ class LerpAnimInterval(CLerpAnimEffectInterval):
         # Initialize superclass
         CLerpAnimEffectInterval.__init__(self, name, duration, blendType)
 
-        if startAnim != None:
+        if startAnim is not None:
             controls = actor.getAnimControls(
-                startAnim, partName = partName, lodName = lodName)
-            #controls = actor.getAnimControls(startAnim)
+                startAnim, partName=partName, lodName=lodName)
+            # controls = actor.getAnimControls(startAnim)
             for control in controls:
                 self.addControl(control, startAnim,
                                 1.0 - startWeight, 1.0 - endWeight)
 
-        if endAnim != None:
+        if endAnim is not None:
             controls = actor.getAnimControls(
-                endAnim, partName = partName, lodName = lodName)
-            #controls = actor.getAnimControls(endAnim)
+                endAnim, partName=partName, lodName=lodName)
+            # controls = actor.getAnimControls(endAnim)
             for control in controls:
                 self.addControl(control, endAnim,
                                 startWeight, endWeight)

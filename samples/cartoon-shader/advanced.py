@@ -29,6 +29,7 @@ def addInstructions(pos, msg):
                         parent=base.a2dTopLeft, align=TextNode.ALeft,
                         pos=(0.08, -pos - 0.04), scale=.05)
 
+
 # Function to put title on the screen.
 def addTitle(text):
     return OnscreenText(text=text, style=1, pos=(-0.1, 0.09), scale=.08,
@@ -155,6 +156,7 @@ class ToonMaker(ShowBase):
         self.cutoff = self.cutoff * 0.90000000
         print("cutoff: %f" % (self.cutoff))
         self.drawnScene.setShaderInput("cutoff", LVecBase4(self.cutoff))
+
 
 t = ToonMaker()
 t.run()
