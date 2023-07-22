@@ -24,13 +24,14 @@ class ClientRepository(ClientRepositoryBase):
 
     doNotDeallocateChannel = True
 
-    def __init__(self, dcFileNames = None, dcSuffix = '', connectMethod = None,
-                 threadedNet = None):
-        ClientRepositoryBase.__init__(self, dcFileNames = dcFileNames, dcSuffix = dcSuffix, connectMethod = connectMethod, threadedNet = threadedNet)
+    def __init__(self, dcFileNames=None, dcSuffix='', connectMethod=None,
+                 threadedNet=None):
+        ClientRepositoryBase.__init__(
+            self, dcFileNames=dcFileNames, dcSuffix=dcSuffix, connectMethod=connectMethod, threadedNet=threadedNet)
         self.ourChannel = None
         self.setHandleDatagramsInternally(False)
 
-        base.finalExitCallbacks.append(self.shutdown)
+        base.final_exit_callbacks.append(self.shutdown)
 
         # The doId allocator.  The CMU LAN server may choose to
         # send us a block of doIds.  If it chooses to do so, then we
@@ -49,7 +50,8 @@ class ClientRepository(ClientRepositoryBase):
     def handleSetDoIdrange(self, di):
         self.doIdBase = di.getUint32()
         self.doIdLast = self.doIdBase + di.getUint32()
-        self.doIdAllocator = UniqueIdAllocator(self.doIdBase, self.doIdLast - 1)
+        self.doIdAllocator = UniqueIdAllocator(
+            self.doIdBase, self.doIdLast - 1)
 
         self.ourChannel = self.doIdBase
 
@@ -58,8 +60,8 @@ class ClientRepository(ClientRepositoryBase):
     def createReady(self):
         # Now that we've got a doId range, we can safely generate new
         # distributed objects.
-        messenger.send('createReady', taskChain = 'default')
-        messenger.send(self.uniqueName('createReady'), taskChain = 'default')
+        messenger.send('createReady', taskChain='default')
+        messenger.send(self.uniqueName('createReady'), taskChain='default')
 
     def handleRequestGenerates(self, di):
         # When new clients join the zone of an object, they need to hear
@@ -115,15 +117,18 @@ class ClientRepository(ClientRepositoryBase):
             # repeat-generate, synthesized for the benefit of someone
             # else who just entered the zone.  Accept the new updates,
             # but don't make a formal generate.
-            assert(self.notify.debug("performing generate-update for %s %s" % (dclass.getName(), doId)))
+            assert (self.notify.debug(
+                "performing generate-update for %s %s" % (dclass.getName(), doId)))
             dclass.receiveUpdateBroadcastRequired(distObj, di)
             dclass.receiveUpdateOther(distObj, di)
             return
 
-        assert(self.notify.debug("performing generate for %s %s" % (dclass.getName(), doId)))
+        assert (self.notify.debug("performing generate for %s %s" %
+                (dclass.getName(), doId)))
         dclass.startGenerate()
         # Create a new distributed object, and put it in the dictionary
-        distObj = self.generateWithRequiredOtherFields(dclass, doId, di, 0, zoneId)
+        distObj = self.generateWithRequiredOtherFields(
+            dclass, doId, di, 0, zoneId)
         dclass.stopGenerate()
 
     def allocateDoId(self):
@@ -152,10 +157,9 @@ class ClientRepository(ClientRepositoryBase):
         object.parentId = parentId
         object.zoneId = zoneId
 
-    def createDistributedObject(self, className = None, distObj = None,
-                                zoneId = 0, optionalFields = None,
-                                doId = None, reserveDoId = False):
-
+    def createDistributedObject(self, className=None, distObj=None,
+                                zoneId=0, optionalFields=None,
+                                doId=None, reserveDoId=False):
         """ To create a DistributedObject, you must pass in either the
         name of the object's class, or an already-created instance of
         the class (or both).  If you pass in just a class name (to the
@@ -189,7 +193,8 @@ class ClientRepository(ClientRepositoryBase):
 
         if not className:
             if not distObj:
-                self.notify.error("Must specify either a className or a distObj.")
+                self.notify.error(
+                    "Must specify either a className or a distObj.")
             className = distObj.__class__.__name__
 
         if doId is None:
@@ -199,7 +204,8 @@ class ClientRepository(ClientRepositoryBase):
 
         dclass = self.dclassesByName.get(className)
         if not dclass:
-            self.notify.error("Unknown distributed class: %s" % (distObj.__class__))
+            self.notify.error("Unknown distributed class: %s" %
+                              (distObj.__class__))
         classDef = dclass.getClassDef()
         if classDef == None:
             self.notify.error("Could not create an undefined %s object." % (
@@ -208,7 +214,8 @@ class ClientRepository(ClientRepositoryBase):
         if not distObj:
             distObj = classDef(self)
         if not isinstance(distObj, classDef):
-            self.notify.error("Object %s is not an instance of %s" % (distObj.__class__.__name__, classDef.__name__))
+            self.notify.error("Object %s is not an instance of %s" % (
+                distObj.__class__.__name__, classDef.__name__))
 
         distObj.dclass = dclass
         distObj.doId = doId
@@ -404,7 +411,6 @@ class ClientRepository(ClientRepositoryBase):
         self.send(dg)
 
     def sendUpdateToChannel(self, distObj, channelId, fieldName, args):
-
         """ Sends a targeted update of a single field to a particular
         client.  The top 32 bits of channelId is ignored; the lower 32
         bits should be the client Id of the recipient (i.e. the

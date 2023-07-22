@@ -18,8 +18,10 @@ if sys.version_info >= (3, 0):
 
 # Define some internally used structures.
 RVASize = namedtuple('RVASize', ('addr', 'size'))
-impdirtab = namedtuple('impdirtab', ('lookup', 'timdat', 'forward', 'name', 'impaddr'))
-expdirtab = namedtuple('expdirtab', ('flags', 'timdat', 'majver', 'minver', 'name', 'ordinal_base', 'nentries', 'nnames', 'entries', 'names', 'ordinals'))
+impdirtab = namedtuple('impdirtab', ('lookup', 'timdat',
+                       'forward', 'name', 'impaddr'))
+expdirtab = namedtuple('expdirtab', ('flags', 'timdat', 'majver', 'minver',
+                       'name', 'ordinal_base', 'nentries', 'nnames', 'entries', 'names', 'ordinals'))
 
 
 def _unpack_zstring(mem, offs=0):
@@ -32,6 +34,7 @@ def _unpack_zstring(mem, offs=0):
         c = mem[offs]
     return str
 
+
 def _unpack_wstring(mem, offs=0):
     "Read a UCS-2 string from memory."
     name_len, = unpack('<H', mem[offs:offs+2])
@@ -40,6 +43,7 @@ def _unpack_wstring(mem, offs=0):
         offs += 2
         name += unichr(*unpack('<H', mem[offs:offs+2]))
     return name
+
 
 def _padded(n, boundary):
     align = n % boundary
@@ -58,9 +62,9 @@ class Section(object):
             self._header.unpack(fp.read(40))
 
         self.name = name.rstrip(b'\x00')
-        self.vaddr = vaddr # Base virtual address to map to.
+        self.vaddr = vaddr  # Base virtual address to map to.
         self.vsize = vsize
-        self.offset = scnptr # Offset of the section in the file.
+        self.offset = scnptr  # Offset of the section in the file.
         self.size = size
         self.flags = flags
 
@@ -130,7 +134,8 @@ class IconGroupResource(object):
     code_page = 0
     type = 14
     _entry = Struct('<BBBxHHIH')
-    Icon = namedtuple('Icon', ('width', 'height', 'planes', 'bpp', 'size', 'id'))
+    Icon = namedtuple('Icon', ('width', 'height',
+                      'planes', 'bpp', 'size', 'id'))
 
     def __init__(self):
         self.icons = []
@@ -149,7 +154,8 @@ class IconGroupResource(object):
                 width = 0
             if height >= 256:
                 height = 0
-            data += self._entry.pack(width, height, colors, planes, bpp, size, id)
+            data += self._entry.pack(width, height,
+                                     colors, planes, bpp, size, id)
         return data
 
     def unpack_from(self, data, offs=0):
@@ -179,23 +185,24 @@ class VersionInfoResource(object):
         self.product_version = (0, 0, 0, 0)
         self.file_flags_mask = 0x3f
         self.file_flags = 0
-        self.file_os = 0x40004 # Windows NT
-        self.file_type = 1 # Application
+        self.file_os = 0x40004  # Windows NT
+        self.file_type = 1  # Application
         self.file_subtype = 0
         self.file_date = (0, 0)
 
     def get_data(self):
         # The first part of the header is pretty much fixed - we'll go
         # back later to write the struct size.
-        data = bytearray(b'\x00\x004\x00\x00\x00V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00\x00\x00')
+        data = bytearray(
+            b'\x00\x004\x00\x00\x00V\x00S\x00_\x00V\x00E\x00R\x00S\x00I\x00O\x00N\x00_\x00I\x00N\x00F\x00O\x00\x00\x00\x00\x00')
         data += pack('<13I', self.signature, self.struct_version,
-                             self.file_version[1] | (self.file_version[0] << 16),
-                             self.file_version[3] | (self.file_version[2] << 16),
-                             self.product_version[1] | (self.product_version[0] << 16),
-                             self.product_version[3] | (self.product_version[2] << 16),
-                             self.file_flags_mask, self.file_flags,
-                             self.file_os, self.file_type, self.file_subtype,
-                             self.file_date[0], self.file_date[1])
+                     self.file_version[1] | (self.file_version[0] << 16),
+                     self.file_version[3] | (self.file_version[2] << 16),
+                     self.product_version[1] | (self.product_version[0] << 16),
+                     self.product_version[3] | (self.product_version[2] << 16),
+                     self.file_flags_mask, self.file_flags,
+                     self.file_os, self.file_type, self.file_subtype,
+                     self.file_date[0], self.file_date[1])
 
         self._pack_info(data, 'StringFileInfo', self.string_info)
         self._pack_info(data, 'VarFileInfo', self.var_info)
@@ -225,7 +232,7 @@ class VersionInfoResource(object):
         assert len(data) & 3 == 0
 
         if isinstance(value, dict):
-            for key2, value2 in sorted(value.items(), key=lambda x:x[0]):
+            for key2, value2 in sorted(value.items(), key=lambda x: x[0]):
                 self._pack_info(data, key2, value2)
         elif isinstance(value, bytes) or isinstance(value, unicode):
             for c in value:
@@ -257,12 +264,12 @@ class VersionInfoResource(object):
             self.struct_version = dwords[1]
         if len(dwords) > 3:
             self.file_version = \
-               (int(dwords[2] >> 16), int(dwords[2] & 0xffff),
-                int(dwords[3] >> 16), int(dwords[3] & 0xffff))
+                (int(dwords[2] >> 16), int(dwords[2] & 0xffff),
+                 int(dwords[3] >> 16), int(dwords[3] & 0xffff))
         if len(dwords) > 5:
             self.product_version = \
-               (int(dwords[4] >> 16), int(dwords[4] & 0xffff),
-                int(dwords[5] >> 16), int(dwords[5] & 0xffff))
+                (int(dwords[4] >> 16), int(dwords[4] & 0xffff),
+                 int(dwords[5] >> 16), int(dwords[5] & 0xffff))
         if len(dwords) > 7:
             self.file_flags_mask = dwords[6]
             self.file_flags = dwords[7]
@@ -345,7 +352,7 @@ class ResourceTable(object):
         self._name_leaves = []
         self._id_leaves = []
         self._ident = ident
-        self._strings_size = 0 # Amount of space occupied by table keys.
+        self._strings_size = 0  # Amount of space occupied by table keys.
         self._descs_size = 0
 
     def __getitem__(self, key):
@@ -457,7 +464,8 @@ class ResourceTable(object):
                 entry = ResourceTable(self._ident + (name,))
                 entry.unpack_from(mem, addr, data & 0x7fffffff)
             else:
-                entry = self._unpack_data_entry(mem, addr + data, ident=self._ident+(name,))
+                entry = self._unpack_data_entry(
+                    mem, addr + data, ident=self._ident+(name,))
                 self._descs_size += 16
             self._name_leaves.append((name, entry))
             self._strings_size += _padded(len(name) * 2 + 2, 4)
@@ -471,7 +479,8 @@ class ResourceTable(object):
                 entry = ResourceTable(self._ident + (id,))
                 entry.unpack_from(mem, addr, data & 0x7fffffff)
             else:
-                entry = self._unpack_data_entry(mem, addr + data, ident=self._ident+(id,))
+                entry = self._unpack_data_entry(
+                    mem, addr + data, ident=self._ident+(id,))
                 self._descs_size += 16
             self._id_leaves.append((id, entry))
             start += 8
@@ -479,7 +488,7 @@ class ResourceTable(object):
     def _unpack_data_entry(self, mem, addr, ident):
         rva, size, code_page = unpack('<III', mem[addr:addr+12])
         type, name, lang = ident
-        #print("%s/%s/%s: %s [%s]" % (type, name, lang, size, code_page))
+        # print("%s/%s/%s: %s [%s]" % (type, name, lang, size, code_page))
 
         data = mem[rva:rva+size]
 
@@ -542,9 +551,9 @@ class PEFile(object):
         fp.seek(16, 1)
         self.image_size, self.header_size = unpack('<II', fp.read(8))
 
-        if magic == 0x010b: # 32-bit.
+        if magic == 0x010b:  # 32-bit.
             fp.seek(28, 1)
-        elif magic == 0x20B: # 64-bit.
+        elif magic == 0x20B:  # 64-bit.
             fp.seek(44, 1)
         else:
             raise ValueError("unknown type 0x%x" % (magic))
@@ -682,7 +691,7 @@ class PEFile(object):
         group = IconGroupResource()
         self.resources[group.type][ordinal][1033] = group
 
-        images = sorted(icon.images.items(), key=lambda x:-x[0])
+        images = sorted(icon.images.items(), key=lambda x: -x[0])
         id = 1
 
         # Write 8-bpp image headers for sizes under 256x256.
@@ -833,11 +842,14 @@ class PEFile(object):
 
             for name, leaf in table._name_leaves:
                 if isinstance(leaf, ResourceTable):
-                    pack_into('<II', data, tbl_offs, str_offs | 0x80000000, leaf._offset | 0x80000000)
+                    pack_into('<II', data, tbl_offs, str_offs |
+                              0x80000000, leaf._offset | 0x80000000)
                 else:
-                    pack_into('<II', data, tbl_offs, str_offs | 0x80000000, desc_offs)
+                    pack_into('<II', data, tbl_offs,
+                              str_offs | 0x80000000, desc_offs)
                     resdata = leaf.get_data()
-                    pack_into('<IIII', data, desc_offs, data_addr, len(resdata), leaf.code_page, 0)
+                    pack_into('<IIII', data, desc_offs, data_addr,
+                              len(resdata), leaf.code_page, 0)
                     data += resdata
                     desc_offs += 16
                     data_addr += len(resdata)
@@ -857,11 +869,13 @@ class PEFile(object):
 
             for id, leaf in table._id_leaves:
                 if isinstance(leaf, ResourceTable):
-                    pack_into('<II', data, tbl_offs, id, leaf._offset | 0x80000000)
+                    pack_into('<II', data, tbl_offs, id,
+                              leaf._offset | 0x80000000)
                 else:
                     pack_into('<II', data, tbl_offs, id, desc_offs)
                     resdata = leaf.get_data()
-                    pack_into('<IIII', data, desc_offs, data_addr, len(resdata), leaf.code_page, 0)
+                    pack_into('<IIII', data, desc_offs, data_addr,
+                              len(resdata), leaf.code_page, 0)
                     data += resdata
                     desc_offs += 16
                     data_addr += len(resdata)
@@ -871,7 +885,7 @@ class PEFile(object):
                         data_addr += 4 - align
                 tbl_offs += 8
 
-        flags = 0x40000040 # readable, contains initialized data
+        flags = 0x40000040  # readable, contains initialized data
         section = self.add_section('.rsrc', flags, data)
         self.res_rva = RVASize(section.vaddr, section.vsize)
 
@@ -897,7 +911,8 @@ class PEFile(object):
 
         # Write calculated init and uninitialised sizes to the opthdr.
         fp.seek(16, 1)
-        fp.write(pack('<III', self.code_size, self.initialized_size, self.uninitialized_size))
+        fp.write(pack('<III', self.code_size,
+                 self.initialized_size, self.uninitialized_size))
 
         # Same for the image and header size.
         fp.seek(40, 1)

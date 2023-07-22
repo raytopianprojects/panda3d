@@ -11,6 +11,7 @@ __all__ = ['deCygwinify', 'getPaths']
 import os
 import sys
 
+
 def deCygwinify(path):
     if os.name in ['nt'] and path[0] == '/':
         # On Windows, we may need to convert from a Cygwin-style path
@@ -30,6 +31,7 @@ def deCygwinify(path):
                 path = os.path.normpath(pandaRoot + path)
 
     return path
+
 
 def getPaths():
     """
@@ -67,18 +69,19 @@ def getPaths():
         for package in packages:
             tree = os.getenv(package)
             if not tree:
-                print("  CTPROJS contains %s, but $%s is not defined." % (package, package))
+                print("  CTPROJS contains %s, but $%s is not defined." %
+                      (package, package))
                 sys.exit(1)
 
             tree = deCygwinify(tree)
 
             parent, base = os.path.split(tree)
             if base != package.lower():
-                print("  Warning: $%s refers to a directory named %s (instead of %s)" % (package, base, package.lower()))
+                print("  Warning: $%s refers to a directory named %s (instead of %s)" % (
+                    package, base, package.lower()))
 
             if parent not in parents:
                 parents.append(parent)
-
 
             # We also put tree/built/lib on sys.path by hand, because we
             # will need to load up the generated C++ modules that got
@@ -88,7 +91,6 @@ def getPaths():
             if os.path.isdir(libdir):
                 if libdir not in sys.path:
                     sys.path.append(libdir)
-
 
         # Now the result goes onto sys.path.
         for parent in parents:

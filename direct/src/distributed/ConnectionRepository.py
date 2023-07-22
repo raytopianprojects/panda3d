@@ -11,6 +11,7 @@ import gc
 
 __all__ = ["ConnectionRepository", "GCTrigger"]
 
+
 class ConnectionRepository(
         DoInterestManager, DoCollectionManager, CConnectionRepository):
     """
@@ -22,17 +23,17 @@ class ConnectionRepository(
     taskPriority = -30
     taskChain = None
 
-    CM_HTTP=0
-    CM_NET=1
-    CM_NATIVE=2
+    CM_HTTP = 0
+    CM_NET = 1
+    CM_NATIVE = 2
 
     gcNotify = directNotify.newCategory("GarbageCollect")
 
     GarbageCollectTaskName = "allowGarbageCollect"
     GarbageThresholdTaskName = "adjustGarbageCollectThreshold"
 
-    def __init__(self, connectMethod, config, hasOwnerView = False,
-                 threadedNet = None):
+    def __init__(self, connectMethod, config, hasOwnerView=False,
+                 threadedNet=None):
         self.dclassesByName = None
         self.dclassesByNumber = None
         self.hashVal = None
@@ -202,24 +203,24 @@ class ConnectionRepository(
                         if function is not None:
                             function(*value)
                         else:
-                            self.notify.error("\n\n\nNot able to find %s.%s"%(
+                            self.notify.error("\n\n\nNot able to find %s.%s" % (
                                 distObj.__class__.__name__, field.getName()))
 
         # Look up the dclass
         dclass = self.dclassesByName.get(dcname+self.dcSuffix)
         if dclass is None:
-            #print "\n\n\nNeed to define", dcname+self.dcSuffix
+            # print "\n\n\nNeed to define", dcname+self.dcSuffix
             self.notify.warning("Need to define %s" % (dcname+self.dcSuffix))
             dclass = self.dclassesByName.get(dcname+'AI')
         if dclass is None:
             dclass = self.dclassesByName.get(dcname)
         # Create a new distributed object, and put it in the dictionary
-        #distObj = self.generateWithRequiredFields(dclass, doId, di)
+        # distObj = self.generateWithRequiredFields(dclass, doId, di)
 
         # Construct a new one
         classDef = dclass.getClassDef()
         if classDef == None:
-            self.notify.error("Could not create an undefined %s object."%(
+            self.notify.error("Could not create an undefined %s object." % (
                 dclass.getName()))
         distObj = classDef(self)
         distObj.dclass = dclass
@@ -236,9 +237,9 @@ class ConnectionRepository(
         distObj.parentId = 0
         distObj.zoneId = 0
         # updateRequiredFields calls announceGenerate
-        return  distObj
+        return distObj
 
-    def readDCFile(self, dcFileNames = None):
+    def readDCFile(self, dcFileNames=None):
         """
         Reads in the dc files listed in dcFileNames, or if
         dcFileNames is None, reads in all of the dc files listed in
@@ -268,9 +269,10 @@ class ConnectionRepository(
                 vfs.resolveFilename(pathname, searchPath)
                 readResult = dcFile.read(pathname)
                 if not readResult:
-                    self.notify.error("Could not read dc file: %s" % (pathname))
+                    self.notify.error(
+                        "Could not read dc file: %s" % (pathname))
 
-        #if not dcFile.allObjectsValid():
+        # if not dcFile.allObjectsValid():
         #    names = []
         #    for i in range(dcFile.getNumTypedefs()):
         #        td = dcFile.getTypedef(i)
@@ -288,10 +290,10 @@ class ConnectionRepository(
             # Maybe the module name is represented as "moduleName/AI".
             suffix = moduleName.split('/')
             moduleName = suffix[0]
-            suffix=suffix[1:]
+            suffix = suffix[1:]
             if self.dcSuffix in suffix:
                 moduleName += self.dcSuffix
-            elif self.dcSuffix == 'UD' and 'AI' in suffix: #HACK:
+            elif self.dcSuffix == 'UD' and 'AI' in suffix:  # HACK:
                 moduleName += 'AI'
 
             importSymbols = []
@@ -301,10 +303,10 @@ class ConnectionRepository(
                 # Maybe the symbol name is represented as "symbolName/AI".
                 suffix = symbolName.split('/')
                 symbolName = suffix[0]
-                suffix=suffix[1:]
+                suffix = suffix[1:]
                 if self.dcSuffix in suffix:
                     symbolName += self.dcSuffix
-                elif self.dcSuffix == 'UD' and 'AI' in suffix: #HACK:
+                elif self.dcSuffix == 'UD' and 'AI' in suffix:  # HACK:
                     symbolName += 'AI'
 
                 importSymbols.append(symbolName)
@@ -323,7 +325,7 @@ class ConnectionRepository(
             # Does the class have a definition defined in the newly
             # imported namespace?
             classDef = dcImports.get(className)
-            if classDef is None and self.dcSuffix == 'UD': #HACK:
+            if classDef is None and self.dcSuffix == 'UD':  # HACK:
                 className = dclass.getName() + 'AI'
                 classDef = dcImports.get(className)
 
@@ -336,12 +338,14 @@ class ConnectionRepository(
             else:
                 if inspect.ismodule(classDef):
                     if not hasattr(classDef, className):
-                        self.notify.warning("Module %s does not define class %s." % (className, className))
+                        self.notify.warning(
+                            "Module %s does not define class %s." % (className, className))
                         continue
                     classDef = getattr(classDef, className)
 
                 if not inspect.isclass(classDef):
-                    self.notify.error("Symbol %s is not a class name." % (className))
+                    self.notify.error(
+                        "Symbol %s is not a class name." % (className))
                 else:
                     dclass.setClassDef(classDef)
 
@@ -362,7 +366,7 @@ class ConnectionRepository(
                 # Maybe the module name is represented as "moduleName/AI".
                 suffix = moduleName.split('/')
                 moduleName = suffix[0]
-                suffix=suffix[1:]
+                suffix = suffix[1:]
                 if ownerDcSuffix in suffix:
                     moduleName = moduleName + ownerDcSuffix
 
@@ -373,7 +377,7 @@ class ConnectionRepository(
                     # Check for the OV suffix
                     suffix = symbolName.split('/')
                     symbolName = suffix[0]
-                    suffix=suffix[1:]
+                    suffix = suffix[1:]
                     if ownerDcSuffix in suffix:
                         symbolName += ownerDcSuffix
                     importSymbols.append(symbolName)
@@ -393,11 +397,13 @@ class ConnectionRepository(
                     # imported namespace?
                     classDef = dcImports.get(className)
                     if classDef is None:
-                        self.notify.error("No class definition for %s." % className)
+                        self.notify.error(
+                            "No class definition for %s." % className)
                     else:
                         if inspect.ismodule(classDef):
                             if not hasattr(classDef, className):
-                                self.notify.error("Module %s does not define class %s." % (className, className))
+                                self.notify.error(
+                                    "Module %s does not define class %s." % (className, className))
                             classDef = getattr(classDef, className)
                         dclass.setOwnerClassDef(classDef)
                         self.dclassesByName[className] = dclass
@@ -424,7 +430,8 @@ class ConnectionRepository(
                 if hasattr(module, symbolName):
                     dcImports[symbolName] = getattr(module, symbolName)
                 else:
-                    raise Exception('Symbol %s not defined in module %s.' % (symbolName, moduleName))
+                    raise Exception('Symbol %s not defined in module %s.' % (
+                        symbolName, moduleName))
         else:
             # "import moduleName"
 
@@ -438,8 +445,8 @@ class ConnectionRepository(
         return self._serverAddress
 
     def connect(self, serverList,
-                successCallback = None, successArgs = [],
-                failureCallback = None, failureArgs = []):
+                successCallback=None, successArgs=[],
+                failureCallback=None, failureArgs=[]):
         """
         Attempts to establish a connection to the server.  May return
         before the connection is established.  The two callbacks
@@ -450,21 +457,21 @@ class ConnectionRepository(
         known.
         """
 
-        ## if self.recorder and self.recorder.isPlaying():
+        # if self.recorder and self.recorder.isPlaying():
 
-        ##     # If we have a recorder and it's already in playback mode,
-        ##     # don't actually attempt to connect to a gameserver since
-        ##     # we don't need to.  Just let it play back the data.
-        ##     self.notify.info("Not connecting to gameserver; using playback data instead.")
+        # If we have a recorder and it's already in playback mode,
+        # don't actually attempt to connect to a gameserver since
+        # we don't need to.  Just let it play back the data.
+        # self.notify.info("Not connecting to gameserver; using playback data instead.")
 
-        ##     self.connectHttp = 1
-        ##     self.tcpConn = SocketStreamRecorder()
-        ##     self.recorder.addRecorder('gameserver', self.tcpConn)
+        # self.connectHttp = 1
+        # self.tcpConn = SocketStreamRecorder()
+        # self.recorder.addRecorder('gameserver', self.tcpConn)
 
-        ##     self.startReaderPollTask()
-        ##     if successCallback:
-        ##         successCallback(*successArgs)
-        ##     return
+        # self.startReaderPollTask()
+        # if successCallback:
+        # successCallback(*successArgs)
+        # return
 
         hasProxy = 0
         if self.checkHttp():
@@ -472,11 +479,12 @@ class ConnectionRepository(
             hasProxy = (proxies != 'DIRECT')
 
         if hasProxy:
-            self.notify.info("Connecting to gameserver via proxy list: %s" % (proxies))
+            self.notify.info(
+                "Connecting to gameserver via proxy list: %s" % (proxies))
         else:
             self.notify.info("Connecting to gameserver directly (no proxy).")
 
-        #Redefine the connection to http or net in the default case
+        # Redefine the connection to http or net in the default case
 
         self.bootedIndex = None
         self.bootedText = None
@@ -491,10 +499,10 @@ class ConnectionRepository(
 
             ch = self.http.makeChannel(0)
             self.httpConnectCallback(
-                    ch, serverList, 0,
-                    successCallback, successArgs,
-                    failureCallback, failureArgs)
-        elif self.connectMethod == self.CM_NET or (not hasattr(self,"connectNative")):
+                ch, serverList, 0,
+                successCallback, successArgs,
+                failureCallback, failureArgs)
+        elif self.connectMethod == self.CM_NET or (not hasattr(self, "connectNative")):
             # Try each of the servers in turn.
             for url in serverList:
                 self.notify.info("Connecting to %s via NET interface." % (url))
@@ -509,7 +517,8 @@ class ConnectionRepository(
                 failureCallback(0, '', *failureArgs)
         elif self.connectMethod == self.CM_NATIVE:
             for url in serverList:
-                self.notify.info("Connecting to %s via Native interface." % (url))
+                self.notify.info(
+                    "Connecting to %s via Native interface." % (url))
                 if self.connectNative(url):
                     self.startReaderPollTask()
                     if successCallback:
@@ -542,24 +551,25 @@ class ConnectionRepository(
         if ch.isConnectionReady():
             self.setConnectionHttp(ch)
             self._serverAddress = serverList[serverIndex-1]
-            self.notify.info("Successfully connected to %s." % (self._serverAddress))
+            self.notify.info("Successfully connected to %s." %
+                             (self._serverAddress))
 
-            ## if self.recorder:
-            ##     # If we have a recorder, we wrap the connect inside a
-            ##     # SocketStreamRecorder, which will trap incoming data
-            ##     # when the recorder is set to record mode.  (It will
-            ##     # also play back data when the recorder is in playback
-            ##     # mode, but in that case we never get this far in the
-            ##     # code, since we just create an empty
-            ##     # SocketStreamRecorder without actually connecting to
-            ##     # the gameserver.)
-            ##     stream = SocketStreamRecorder(self.tcpConn, 1)
-            ##     self.recorder.addRecorder('gameserver', stream)
+            # if self.recorder:
+            # If we have a recorder, we wrap the connect inside a
+            # SocketStreamRecorder, which will trap incoming data
+            # when the recorder is set to record mode.  (It will
+            # also play back data when the recorder is in playback
+            # mode, but in that case we never get this far in the
+            # code, since we just create an empty
+            # SocketStreamRecorder without actually connecting to
+            # the gameserver.)
+            # stream = SocketStreamRecorder(self.tcpConn, 1)
+            # self.recorder.addRecorder('gameserver', stream)
 
-            ##     # In this case, we pass ownership of the original
-            ##     # connection to the SocketStreamRecorder object.
-            ##     self.tcpConn.userManagesMemory = 0
-            ##     self.tcpConn = stream
+            # In this case, we pass ownership of the original
+            # connection to the SocketStreamRecorder object.
+            # self.tcpConn.userManagesMemory = 0
+            # self.tcpConn = stream
 
             self.startReaderPollTask()
             if successCallback:
@@ -572,11 +582,11 @@ class ConnectionRepository(
             ch.preserveStatus()
 
             ch.beginConnectTo(DocumentSpec(url))
-            ch.spawnTask(name = 'connect-to-server',
-                         callback = self.httpConnectCallback,
-                         extraArgs = [ch, serverList, serverIndex + 1,
-                                      successCallback, successArgs,
-                                      failureCallback, failureArgs])
+            ch.spawnTask(name='connect-to-server',
+                         callback=self.httpConnectCallback,
+                         extraArgs=[ch, serverList, serverIndex + 1,
+                                    successCallback, successArgs,
+                                    failureCallback, failureArgs])
         else:
             # No more servers to try; we have to give up now.
             if failureCallback:
@@ -604,7 +614,7 @@ class ConnectionRepository(
                     self.handleReaderOverflow)
         self.readerPollTaskObj = taskMgr.add(
             self.readerPollUntilEmpty, self.uniqueName("readerPollTask"),
-            priority = self.taskPriority, taskChain = self.taskChain)
+            priority=self.taskPriority, taskChain=self.taskChain)
 
     def stopReaderPollTask(self):
         if self.readerPollTaskObj:
@@ -626,7 +636,8 @@ class ConnectionRepository(
         # Unable to receive a datagram: did we lose the connection?
         if not self.isConnected():
             self.stopReaderPollTask()
-            messenger.send(self.uniqueName('lostConnection'), taskChain = 'default')
+            messenger.send(self.uniqueName(
+                'lostConnection'), taskChain='default')
         return 0
 
     def handleReaderOverflow(self):
@@ -648,9 +659,9 @@ class ConnectionRepository(
         # Zero-length datagrams might freak out the server.  No point
         # in sending them, anyway.
         if datagram.getLength() > 0:
-##             if self.notify.getDebug():
-##                 print "ConnectionRepository sending datagram:"
-##                 datagram.dumpHex(ostream)
+            # if self.notify.getDebug():
+            # print "ConnectionRepository sending datagram:"
+            # datagram.dumpHex(ostream)
 
             self.sendDatagram(datagram)
 
@@ -669,6 +680,7 @@ class ConnectionRepository(
 
     def uniqueName(self, idString):
         return ("%s-%s" % (idString, self.uniqueId))
+
 
 class GCTrigger:
     # used to trigger garbage collection

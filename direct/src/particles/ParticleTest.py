@@ -23,7 +23,7 @@ if __name__ == "__main__":
     # Particle effect
     pe = ParticleEffect.ParticleEffect('particle-fx')
     pe.reparentTo(render)
-    #pe.setPos(0.0, 5.0, 4.0)
+    # pe.setPos(0.0, 5.0, 4.0)
     pe.addForceGroup(fg)
     pe.addParticles(p)
 

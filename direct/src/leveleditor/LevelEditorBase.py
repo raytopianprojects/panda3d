@@ -14,14 +14,16 @@ from .FileMgr import *
 from .ActionMgr import *
 from .MayaConverter import *
 
+
 class LevelEditorBase(DirectObject):
     """ Base Class for Panda3D LevelEditor """
+
     def __init__(self):
-        #loadPrcFileData('startup', 'window-type none')
+        # loadPrcFileData('startup', 'window-type none')
         self.currentFile = None
         self.fNeedToSave = False
         self.actionEvents = []
-        #self.objectMgr = ObjectMgr(self)
+        # self.objectMgr = ObjectMgr(self)
         self.curveEditor = CurveEditor(self)
         self.fileMgr = FileMgr(self)
         self.actionMgr = ActionMgr()
@@ -74,7 +76,7 @@ class LevelEditorBase(DirectObject):
             ('DIRECT-mouse3', self.handleMouse3),
             ('DIRECT-mouse3Up', self.handleMouse3Up),
             ('DIRECT-toggleWidgetVis', self.toggleWidget),
-            ])
+        ])
 
         # Add all the action events
         for event in self.actionEvents:
@@ -85,15 +87,16 @@ class LevelEditorBase(DirectObject):
 
         # editor state text display such as edit mode
         self.statusReadout = OnscreenText(
-            pos = (-1.2, 0.9), bg=Vec4(1,1,1,1),
-            scale = 0.05, align = TextNode.ALeft,
-            mayChange = 1, font = TextNode.get_default_font())
+            pos=(-1.2, 0.9), bg=Vec4(1, 1, 1, 1),
+            scale=0.05, align=TextNode.ALeft,
+            mayChange=1, font=TextNode.get_default_font())
         self.statusReadout.setText("")
         # Make sure readout is never lit or drawn in wireframe
         useDirectRenderStyle(self.statusReadout)
         self.statusReadout.reparentTo(hidden)
         self.statusLines = []
-        taskMgr.doMethodLater(5, self.updateStatusReadoutTimeouts, 'updateStatus')
+        taskMgr.doMethodLater(
+            5, self.updateStatusReadoutTimeouts, 'updateStatus')
 
         self.loadSettings()
         self.reset()
@@ -101,8 +104,8 @@ class LevelEditorBase(DirectObject):
     def setTitleWithFilename(self, filename=""):
         title = self.ui.appname
         if filename != "":
-           filenameshort = os.path.basename(filename)
-           title = title + " (%s)"%filenameshort
+            filenameshort = os.path.basename(filename)
+            title = title + " (%s)" % filenameshort
         self.ui.SetLabel(title)
 
     def removeNodePathHook(self, nodePath):
@@ -114,7 +117,7 @@ class LevelEditorBase(DirectObject):
         if base.direct.selected.last is not None and nodePath == base.direct.selected.last:
             # if base.direct.selected.last is refering to this
             # removed obj, clear the reference
-            if (hasattr(__builtins__,'last')):
+            if (hasattr(__builtins__, 'last')):
                 __builtins__.last = None
             else:
                 __builtins__['last'] = None
@@ -122,7 +125,8 @@ class LevelEditorBase(DirectObject):
 
     def toggleWidget(self):
         if self.objectMgr.currNodePath:
-            obj = self.objectMgr.findObjectByNodePath(self.objectMgr.currNodePath)
+            obj = self.objectMgr.findObjectByNodePath(
+                self.objectMgr.currNodePath)
             if obj and not obj[OG.OBJ_DEF].movable:
                 return
         base.direct.toggleWidgetVis()
@@ -131,13 +135,11 @@ class LevelEditorBase(DirectObject):
         if base.direct.fAlt or modifiers == 4:
             self.fMoveCamera = True
             return
-        if self.mode == self.CREATE_CURVE_MODE :
+        if self.mode == self.CREATE_CURVE_MODE:
             self.curveEditor.createCurve()
-
 
     def handleMouse1Up(self):
         self.fMoveCamera = False
-
 
     def handleMouse2(self, modifiers):
         if base.direct.fAlt or modifiers == 4:
@@ -172,25 +174,26 @@ class LevelEditorBase(DirectObject):
         for uid in oldUIDs:
             self.ui.sceneGraphUI.delete(uid)
 
-##         reply = wx.MessageBox("Do you want to delete selected?", "Delete?",
-##                               wx.YES_NO | wx.ICON_QUESTION)
-##         if reply == wx.YES:
-##             base.direct.removeAllSelected()
-##         else:
-##             # need to reset COA
-##             dnp = base.direct.selected.last
-##             # Update camera controls coa to this point
-##             # Coa2Camera = Coa2Dnp * Dnp2Camera
-##             mCoa2Camera = dnp.mCoa2Dnp * dnp.getMat(base.direct.camera)
-##             row = mCoa2Camera.getRow(3)
-##             coa = Vec3(row[0], row[1], row[2])
-##             base.direct.cameraControl.updateCoa(coa)
+# reply = wx.MessageBox("Do you want to delete selected?", "Delete?",
+# wx.YES_NO | wx.ICON_QUESTION)
+# if reply == wx.YES:
+# base.direct.removeAllSelected()
+# else:
+# need to reset COA
+# dnp = base.direct.selected.last
+# Update camera controls coa to this point
+# Coa2Camera = Coa2Dnp * Dnp2Camera
+# mCoa2Camera = dnp.mCoa2Dnp * dnp.getMat(base.direct.camera)
+# row = mCoa2Camera.getRow(3)
+# coa = Vec3(row[0], row[1], row[2])
+# base.direct.cameraControl.updateCoa(coa)
 
     def cleanUpManipulating(self, selectedNPs):
         for np in selectedNPs:
             obj = self.objectMgr.findObjectByNodePath(np)
             if obj:
-                action = ActionTransformObj(self, obj[OG.OBJ_UID], Mat4(np.getMat()))
+                action = ActionTransformObj(
+                    self, obj[OG.OBJ_UID], Mat4(np.getMat()))
                 self.actionMgr.push(action)
                 action()
 
@@ -206,29 +209,31 @@ class LevelEditorBase(DirectObject):
             self.actionMgr.push(action)
             action()
         else:
-            base.direct.selectCB(nodePath, fMultiSelect, fSelectTag, fResetAncestry, fLEPane, fUndo)
+            base.direct.selectCB(nodePath, fMultiSelect,
+                                 fSelectTag, fResetAncestry, fLEPane, fUndo)
 
-    def selectedNodePathHook(self, nodePath, fMultiSelect = 0, fSelectTag = 1, fLEPane = 0):
+    def selectedNodePathHook(self, nodePath, fMultiSelect=0, fSelectTag=1, fLEPane=0):
         # handle unpickable nodepath
         if nodePath.getName() in base.direct.iRay.unpickable:
             base.direct.deselect(nodePath)
             return
 
         if fMultiSelect == 0 and fLEPane == 0:
-           oldSelectedNPs = base.direct.selected.getSelectedAsList()
-           for oldNP in oldSelectedNPs:
-              obj = self.objectMgr.findObjectByNodePath(oldNP)
-              if obj:
-                 self.ui.sceneGraphUI.deSelect(obj[OG.OBJ_UID])
+            oldSelectedNPs = base.direct.selected.getSelectedAsList()
+            for oldNP in oldSelectedNPs:
+                obj = self.objectMgr.findObjectByNodePath(oldNP)
+                if obj:
+                    self.ui.sceneGraphUI.deSelect(obj[OG.OBJ_UID])
         self.objectMgr.selectObject(nodePath, fLEPane)
         self.ui.buildContextMenu(nodePath)
 
         if self.mode == self.EDIT_CURVE_MODE:
             taskMgr.add(self.curveEditor.editCurve, "modify")
-            self.curveEditor.accept("DIRECT-enter", self.curveEditor.onBaseMode)
+            self.curveEditor.accept(
+                "DIRECT-enter", self.curveEditor.onBaseMode)
 
     def deselectAll(self, np=None):
-        if len(base.direct.selected.getSelectedAsList()) ==0:
+        if len(base.direct.selected.getSelectedAsList()) == 0:
             return
         action = ActionDeselectAll(self)
         self.actionMgr.push(action)
@@ -240,7 +245,7 @@ class LevelEditorBase(DirectObject):
     def reset(self):
         if self.fNeedToSave:
             reply = wx.MessageBox("Do you want to save current scene?", "Save?",
-                               wx.YES_NO | wx.ICON_QUESTION)
+                                  wx.YES_NO | wx.ICON_QUESTION)
             if reply == wx.YES:
                 result = self.ui.onSave()
                 if result == False:
@@ -264,10 +269,11 @@ class LevelEditorBase(DirectObject):
         self.setTitleWithFilename()
 
     def resetOrthoCam(self, view):
-        base.direct.drList[base.camList.index(NodePath(view.camNode))].orthoFactor = 0.1
+        base.direct.drList[base.cam_list.index(
+            NodePath(view.cam_node))].orthoFactor = 0.1
         x = view.ClientSize.GetWidth() * 0.1
         y = view.ClientSize.GetHeight() * 0.1
-        view.camLens.setFilmSize(x, y)
+        view.cam_lens.setFilmSize(x, y)
 
     def save(self):
         self.ui.SetCursor(wx.StockCursor(wx.CURSOR_WAIT))
@@ -294,9 +300,9 @@ class LevelEditorBase(DirectObject):
 
         try:
             f = open(self.settingsFile, 'w')
-            f.write('gridSize\n%f\n'%self.ui.perspView.grid.gridSize)
-            f.write('gridSpacing\n%f\n'%self.ui.perspView.grid.gridSpacing)
-            f.write('hotKey\n%s\n'%base.direct.hotKeyMap)
+            f.write('gridSize\n%f\n' % self.ui.perspView.grid.gridSize)
+            f.write('gridSpacing\n%f\n' % self.ui.perspView.grid.gridSpacing)
+            f.write('hotKey\n%s\n' % base.direct.hotKeyMap)
             f.close()
         except:
             pass
@@ -346,18 +352,22 @@ class LevelEditorBase(DirectObject):
 
     def convertMaya(self, modelname, callBack, obj=None, isAnim=False):
         if obj and isAnim:
-            mayaConverter = MayaConverter(self.ui, self, modelname, callBack, obj, isAnim)
+            mayaConverter = MayaConverter(
+                self.ui, self, modelname, callBack, obj, isAnim)
         else:
             reply = wx.MessageBox("Is it an animation file?", "Animation?",
-                              wx.YES_NO | wx.ICON_QUESTION)
+                                  wx.YES_NO | wx.ICON_QUESTION)
             if reply == wx.YES:
-                mayaConverter = MayaConverter(self.ui, self, modelname, callBack, None, True)
+                mayaConverter = MayaConverter(
+                    self.ui, self, modelname, callBack, None, True)
             else:
-                mayaConverter = MayaConverter(self.ui, self, modelname, callBack, None, False)
+                mayaConverter = MayaConverter(
+                    self.ui, self, modelname, callBack, None, False)
         mayaConverter.Show()
 
     def convertFromMaya(self, modelname, callBack):
-        mayaConverter = MayaConverter(self.ui, self, modelname, callBack, None, False)
+        mayaConverter = MayaConverter(
+            self.ui, self, modelname, callBack, None, False)
         mayaConverter.Show()
 
     def exportToMaya(self, mayaFileName):
@@ -368,12 +378,14 @@ class LevelEditorBase(DirectObject):
         bamFileName = mayaFileName + ".bam"
 
         if base.direct.selected.last:
-            obj = self.objectMgr.findObjectByNodePath(base.direct.selected.last)
+            obj = self.objectMgr.findObjectByNodePath(
+                base.direct.selected.last)
             if obj:
                 exportRootNP = obj[OG.OBJ_NP]
 
         exportRootNP.writeBamFile(bamFileName)
-        mayaConverter = MayaConverter(self.ui, self, mayaFileName, None, None, False, FROM_BAM_TO_MAYA)
+        mayaConverter = MayaConverter(
+            self.ui, self, mayaFileName, None, None, False, FROM_BAM_TO_MAYA)
         mayaConverter.Show()
 
     def updateStatusReadout(self, status, color=None):
@@ -386,7 +398,7 @@ class LevelEditorBase(DirectObject):
                     break
             if (alreadyExists == False):
                 time = globalClock.getRealTime() + 15
-                self.statusLines.append([time,status,color])
+                self.statusLines.append([time, status, color])
 
         # update display of new status lines
         self.statusReadout.reparentTo(aspect2d)
@@ -401,10 +413,10 @@ class LevelEditorBase(DirectObject):
                 lastColor[0], lastColor[1], lastColor[2], lastColor[3])
             self.statusReadout.textNode.setCardAsMargin(0.1, 0.1, 0.1, 0.1)
         else:
-            self.statusReadout.textNode.setCardColor(1,1,1,1)
+            self.statusReadout.textNode.setCardColor(1, 1, 1, 1)
             self.statusReadout.textNode.setCardAsMargin(0.1, 0.1, 0.1, 0.1)
 
-    def updateStatusReadoutTimeouts(self,task=None):
+    def updateStatusReadoutTimeouts(self, task=None):
         removalList = []
         for currLine in self.statusLines:
             if (globalClock.getRealTime() >= currLine[0]):
@@ -414,16 +426,17 @@ class LevelEditorBase(DirectObject):
         self.updateStatusReadout(None)
         # perform doMethodLater again after delay
         # This crashes when CTRL-C'ing, so this is a cheap hack.
-        #return 2
+        # return 2
         from direct.task import Task
         return Task.again
 
     def propMeetsReq(self, typeName, parentNP):
         if self.ui.parentToSelectedMenuItem.IsChecked():
-           if base.direct.selected.last:
-              parent = base.le.objectMgr.findObjectByNodePath(base.direct.selected.last)
-              if parent:
-                 parentNP[0] = parent[OG.OBJ_NP]
+            if base.direct.selected.last:
+                parent = base.le.objectMgr.findObjectByNodePath(
+                    base.direct.selected.last)
+                if parent:
+                    parentNP[0] = parent[OG.OBJ_NP]
         else:
-           parentNP[0] = None
+            parentNP[0] = None
         return True

@@ -5,6 +5,7 @@ __all__ = ['EventGroup']
 from direct.showbase import DirectObject
 from direct.showbase.PythonUtil import SerialNumGen, Functor
 
+
 class EventGroup(DirectObject.DirectObject):
     """This class allows you to group together multiple events and treat
     them as a single event. The EventGroup will not send out its event until
@@ -51,7 +52,7 @@ class EventGroup(DirectObject.DirectObject):
     def destroy(self):
         if hasattr(self, '_name'):
             # keep this around
-            #del self._doneEvent
+            # del self._doneEvent
             del self._name
             del self._subEvents
             del self._completedEvents

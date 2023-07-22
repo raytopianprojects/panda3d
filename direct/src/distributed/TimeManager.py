@@ -5,6 +5,7 @@ from direct.distributed import DistributedObject
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.ClockDelta import globalClockDelta
 
+
 class TimeManager(DistributedObject.DistributedObject):
     """
     This DistributedObject lives on the AI and on the client side, and
@@ -30,7 +31,8 @@ class TimeManager(DistributedObject.DistributedObject):
 
     # The maximum number of seconds of uncertainty to tolerate in
     # the clock delta without trying again.
-    maxUncertainty = ConfigVariableDouble('time-manager-max-uncertainty', 1).getValue()
+    maxUncertainty = ConfigVariableDouble(
+        'time-manager-max-uncertainty', 1).getValue()
 
     # The maximum number of attempts to try to get a low-latency
     # time measurement before giving up and accepting whatever we
@@ -43,7 +45,8 @@ class TimeManager(DistributedObject.DistributedObject):
     if extraSkew != 0:
         notify.info("Simulating clock skew of %0.3f s" % extraSkew)
 
-    reportFrameRateInterval = ConfigVariableDouble('report-frame-rate-interval', 300.0).getValue()
+    reportFrameRateInterval = ConfigVariableDouble(
+        'report-frame-rate-interval', 300.0).getValue()
 
     def __init__(self, cr):
         DistributedObject.DistributedObject.__init__(self, cr)
@@ -144,7 +147,6 @@ class TimeManager(DistributedObject.DistributedObject):
 
         return 1
 
-
     def serverTime(self, context, timestamp):
         """serverTime(self, int8 context, int32 timestamp)
 
@@ -160,19 +162,22 @@ class TimeManager(DistributedObject.DistributedObject):
         end = globalClock.getRealTime()
 
         if context != self.thisContext:
-            self.notify.info("Ignoring TimeManager response for old context %d" % (context))
+            self.notify.info(
+                "Ignoring TimeManager response for old context %d" % (context))
             return
 
         elapsed = end - self.start
         self.attemptCount += 1
-        self.notify.info("Clock sync roundtrip took %0.3f ms" % (elapsed * 1000.0))
+        self.notify.info("Clock sync roundtrip took %0.3f ms" %
+                         (elapsed * 1000.0))
 
         average = (self.start + end) / 2.0 - self.extraSkew
         uncertainty = (end - self.start) / 2.0 + abs(self.extraSkew)
 
         globalClockDelta.resynchronize(average, timestamp, uncertainty)
 
-        self.notify.info("Local clock uncertainty +/- %.3f s" % (globalClockDelta.getUncertainty()))
+        self.notify.info("Local clock uncertainty +/- %.3f s" %
+                         (globalClockDelta.getUncertainty()))
 
         if globalClockDelta.getUncertainty() > self.maxUncertainty:
             if self.attemptCount < self.maxAttempts:
@@ -182,6 +187,5 @@ class TimeManager(DistributedObject.DistributedObject):
                 return
             self.notify.info("Giving up on uncertainty requirement.")
 
-        messenger.send("gotTimeSync", taskChain = 'default')
-        messenger.send(self.cr.uniqueName("gotTimeSync"), taskChain = 'default')
-
+        messenger.send("gotTimeSync", taskChain='default')
+        messenger.send(self.cr.uniqueName("gotTimeSync"), taskChain='default')

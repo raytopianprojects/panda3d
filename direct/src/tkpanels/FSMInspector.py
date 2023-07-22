@@ -106,7 +106,10 @@ __all__ = ['FSMInspector', 'StateInspector']
 
 from direct.tkwidgets.AppShell import *
 from direct.showbase.TkGlobal import *
-import Pmw, math, operator, sys
+import Pmw
+import math
+import operator
+import sys
 
 if sys.version_info >= (3, 0):
     from tkinter.simpledialog import askstring
@@ -120,17 +123,17 @@ DELTA = (5.0 / 360.) * 2.0 * math.pi
 class FSMInspector(AppShell):
     # Override class variables
     appname = 'ClassicFSM Inspector'
-    frameWidth  = 400
+    frameWidth = 400
     frameHeight = 450
     usecommandarea = 0
-    usestatusarea  = 0
+    usestatusarea = 0
 
     def __init__(self, fsm, **kw):
         INITOPT = Pmw.INITOPT
         optiondefs = (
             ('title', fsm.getName(), None),
             ('gridSize', '0.25i', self._setGridSize),
-            )
+        )
         self.defineoptions(kw, optiondefs)
 
         self.fsm = fsm
@@ -156,56 +159,56 @@ class FSMInspector(AppShell):
         # ClassicFSM Menu
         menuBar.addmenu('ClassicFSM', 'ClassicFSM Operations')
         menuBar.addmenuitem('ClassicFSM', 'command',
-                                  'Input grid spacing',
-                                  label = 'Grid spacing...',
-                                  command = self.popupGridDialog)
+                            'Input grid spacing',
+                            label='Grid spacing...',
+                            command=self.popupGridDialog)
         # Create the checkbutton variable
         self._fGridSnap = IntVar()
         self._fGridSnap.set(1)
         menuBar.addmenuitem('ClassicFSM', 'checkbutton',
-                                  'Enable/disable grid',
-                                  label = 'Snap to grid',
-                                  variable = self._fGridSnap,
-                                  command = self.toggleGridSnap)
+                            'Enable/disable grid',
+                            label='Snap to grid',
+                            variable=self._fGridSnap,
+                            command=self.toggleGridSnap)
         menuBar.addmenuitem('ClassicFSM', 'command',
-                                  'Print out ClassicFSM layout',
-                                  label = 'Print ClassicFSM layout',
-                                  command = self.printLayout)
+                            'Print out ClassicFSM layout',
+                            label='Print ClassicFSM layout',
+                            command=self.printLayout)
 
         # States Menu
         menuBar.addmenu('States', 'State Inspector Operations')
         menuBar.addcascademenu('States', 'Font Size',
-                                     'Set state label size', tearoff = 1)
+                               'Set state label size', tearoff=1)
         for size in (8, 10, 12, 14, 18, 24):
             menuBar.addmenuitem('Font Size', 'command',
-                'Set font to: ' + repr(size) + ' Pts', label = repr(size) + ' Pts',
-                command = lambda s = self, sz = size: s.setFontSize(sz))
+                                'Set font to: ' + repr(size) + ' Pts', label=repr(size) + ' Pts',
+                                command=lambda s=self, sz=size: s.setFontSize(sz))
         menuBar.addcascademenu('States', 'Marker Size',
-                                     'Set state marker size', tearoff = 1)
+                               'Set state marker size', tearoff=1)
         for size in ('Small', 'Medium', 'Large'):
             sizeDict = {'Small': '0.25i', 'Medium': '0.375i', 'Large': '0.5i'}
             menuBar.addmenuitem('Marker Size', 'command',
-                size + ' markers', label = size + ' Markers',
-                command = lambda s = self, sz = size, d = sizeDict:
-                    s.setMarkerSize(d[sz]))
+                                size + ' markers', label=size + ' Markers',
+                                command=lambda s=self, sz=size, d=sizeDict:
+                                s.setMarkerSize(d[sz]))
 
         # The Scrolled Canvas
         self._scrolledCanvas = self.createcomponent('scrolledCanvas',
-                (), None,
-                Pmw.ScrolledCanvas, (interior,),
-                hull_width = 400, hull_height = 400,
-                usehullsize = 1)
+                                                    (), None,
+                                                    Pmw.ScrolledCanvas, (interior,),
+                                                    hull_width=400, hull_height=400,
+                                                    usehullsize=1)
         self._canvas = self._scrolledCanvas.component('canvas')
         self._canvas['scrollregion'] = ('-2i', '-2i', '2i', '2i')
         self._scrolledCanvas.resizescrollregion()
-        self._scrolledCanvas.pack(padx = 5, pady = 5, expand=1, fill = BOTH)
+        self._scrolledCanvas.pack(padx=5, pady=5, expand=1, fill=BOTH)
 
         # Update lines
         self._canvas.bind('<B1-Motion>', self.drawConnections)
         self._canvas.bind('<ButtonPress-2>', self.mouse2Down)
         self._canvas.bind('<B2-Motion>', self.mouse2Motion)
         self._canvas.bind('<Configure>',
-                          lambda e, sc = self._scrolledCanvas:
+                          lambda e, sc=self._scrolledCanvas:
                           sc.resizescrollregion())
 
         self.createStateInspectors()
@@ -219,14 +222,14 @@ class FSMInspector(AppShell):
         return self._canvas
 
     def setFontSize(self, size):
-        self._canvas.itemconfigure('labels', font = ('MS Sans Serif', size))
+        self._canvas.itemconfigure('labels', font=('MS Sans Serif', size))
 
     def setMarkerSize(self, size):
         for key in self.stateInspectorDict:
             self.stateInspectorDict[key].setRadius(size)
         self.drawConnections()
 
-    def drawConnections(self, event = None):
+    def drawConnections(self, event=None):
         # Get rid of existing arrows
         self._canvas.delete('arrow')
         for key in self.stateInspectorDict:
@@ -238,8 +241,8 @@ class FSMInspector(AppShell):
 
     def connectStates(self, fromState, toState):
         endpts = self.computeEndpoints(fromState, toState)
-        line = self._canvas.create_line(endpts, tags = ('arrow',),
-                                        arrow = 'last')
+        line = self._canvas.create_line(endpts, tags=('arrow',),
+                                        arrow='last')
 
     def computeEndpoints(self, fromState, toState):
         # Compute angle between two points
@@ -251,13 +254,13 @@ class FSMInspector(AppShell):
         newFromPt = map(operator.__add__,
                         fromCenter,
                         self.computePoint(fromState.radius,
-                                           angle + DELTA))
+                                          angle + DELTA))
 
         # Compute offset toState point
         newToPt = map(operator.__sub__,
                       toCenter,
                       self.computePoint(toState.radius,
-                                         angle - DELTA))
+                                        angle - DELTA))
         return list(newFromPt) + list(newToPt)
 
     def computePoint(self, radius, angle):
@@ -370,7 +373,8 @@ class FSMInspector(AppShell):
             print("                %s," % si.state.getEnterFunc().__name__)
             print("                %s," % si.state.getExitFunc().__name__)
             print("                %s," % si.state.getTransitions())
-            print("                inspectorPos = [%.1f, %.1f])," % (center[0], center[1]))
+            print("                inspectorPos = [%.1f, %.1f])," % (
+                center[0], center[1]))
         for key in keys[-1:]:
             si = dict[key]
             center = si.center()
@@ -378,15 +382,16 @@ class FSMInspector(AppShell):
             print("                %s," % si.state.getEnterFunc().__name__)
             print("                %s," % si.state.getExitFunc().__name__)
             print("                %s," % si.state.getTransitions())
-            print("                inspectorPos = [%.1f, %.1f])]," % (center[0], center[1]))
+            print("                inspectorPos = [%.1f, %.1f])]," % (
+                center[0], center[1]))
         print("        '%s'," % self.fsm.getInitialState().getName())
         print("        '%s')" % self.fsm.getFinalState().getName())
 
     def toggleBalloon(self):
         if self.toggleBalloonVar.get():
-            self.balloon.configure(state = 'balloon')
+            self.balloon.configure(state='balloon')
         else:
-            self.balloon.configure(state = 'none')
+            self.balloon.configure(state='none')
 
     def onDestroy(self, event):
         """ Called on ClassicFSM Panel shutdown """
@@ -394,6 +399,7 @@ class FSMInspector(AppShell):
         for si in self.stateInspectorDict.values():
             self.ignore(self.name + '_' + si.getName() + '_entered')
             self.ignore(self.name + '_' + si.getName() + '_exited')
+
 
 class StateInspector(Pmw.MegaArchetype):
     def __init__(self, inspector, state, **kw):
@@ -410,11 +416,11 @@ class StateInspector(Pmw.MegaArchetype):
         self.scrolledCanvas = inspector.component('scrolledCanvas')
         self._canvas = self.scrolledCanvas.component('canvas')
 
-        #define the megawidget options
+        # define the megawidget options
         optiondefs = (
             ('radius', '0.375i', self._setRadius),
             ('gridSize', '0.25i', self._setGridSize),
-            )
+        )
         self.defineoptions(kw, optiondefs)
 
         # Initialize the parent class
@@ -428,29 +434,28 @@ class StateInspector(Pmw.MegaArchetype):
                                                (self.y - half),
                                                (self.x + half),
                                                (self.y + half),
-                                              fill = 'CornflowerBlue',
-                                              tags = (self.tag,'markers'))
-        self.text = self._canvas.create_text(0, 0, text = state.getName(),
-                                           justify = CENTER,
-                                           tags = (self.tag,'labels'))
+                                               fill='CornflowerBlue',
+                                               tags=(self.tag, 'markers'))
+        self.text = self._canvas.create_text(0, 0, text=state.getName(),
+                                             justify=CENTER,
+                                             tags=(self.tag, 'labels'))
         # Is this state contain a sub machine?
         if state.hasChildren():
             # reduce half by sqrt of 2.0
             half = half * 0.707106
             self.rect = self._canvas.create_rectangle((- half), (- half),
-                                                     half, half,
-                                                     tags = (self.tag,))
-
+                                                      half, half,
+                                                      tags=(self.tag,))
 
         # The Popup State Menu
-        self._popupMenu = Menu(self._canvas, tearoff = 0)
-        self._popupMenu.add_command(label = 'Request transition to ' +
+        self._popupMenu = Menu(self._canvas, tearoff=0)
+        self._popupMenu.add_command(label='Request transition to ' +
                                     state.getName(),
-                                    command = self.transitionTo)
+                                    command=self.transitionTo)
         if state.hasChildren():
-            self._popupMenu.add_command(label = 'Inspect ' + state.getName() +
+            self._popupMenu.add_command(label='Inspect ' + state.getName() +
                                         ' submachine',
-                                        command = self.inspectSubMachine)
+                                        command=self.inspectSubMachine)
 
         self.scrolledCanvas.resizescrollregion()
 
@@ -476,7 +481,7 @@ class StateInspector(Pmw.MegaArchetype):
         if self.state.hasChildren():
             half = self.radius * 0.707106
             self._canvas.coords(self.rect,
-                            c[0] - half, c[1] - half, c[0] + half, c[1] + half)
+                                c[0] - half, c[1] - half, c[0] + half, c[1] + half)
 
     def _setGridSize(self):
         self.setGridSize(self['gridSize'])
@@ -488,10 +493,10 @@ class StateInspector(Pmw.MegaArchetype):
         else:
             self.fGridSnap = 1
 
-    def setText(self, text = None):
-        self._canvas.itemconfigure(self.text, text = text)
+    def setText(self, text=None):
+        self._canvas.itemconfigure(self.text, text=text)
 
-    def setPos(self, x, y, snapToGrid = 0):
+    def setPos(self, x, y, snapToGrid=0):
         if self.fGridSnap:
             self.x = round(x / self.gridSize) * self.gridSize
             self.y = round(y / self.gridSize) * self.gridSize
@@ -511,10 +516,10 @@ class StateInspector(Pmw.MegaArchetype):
 
     # Event Handlers
     def mouseEnter(self, event):
-        self._canvas.itemconfig(self.marker, width = 2)
+        self._canvas.itemconfig(self.marker, width=2)
 
     def mouseLeave(self, event):
-        self._canvas.itemconfig(self.marker, width = 1)
+        self._canvas.itemconfig(self.marker, width=1)
 
     def mouseDown(self, event):
         self._canvas.lift(self.tag)
@@ -525,7 +530,8 @@ class StateInspector(Pmw.MegaArchetype):
     def mouseMotion(self, event):
         dx = self._canvas.canvasx(event.x) - self.lastx
         dy = self._canvas.canvasy(event.y) - self.lasty
-        newx, newy = map(operator.__add__, (self.startx, self.starty), (dx, dy))
+        newx, newy = map(operator.__add__,
+                         (self.startx, self.starty), (dx, dy))
         self.setPos(newx, newy)
 
     def mouseRelease(self, event):
@@ -544,7 +550,7 @@ class StateInspector(Pmw.MegaArchetype):
             FSMInspector(childFSM)
 
     def enteredState(self):
-        self._canvas.itemconfigure(self.marker, fill = 'Red')
+        self._canvas.itemconfigure(self.marker, fill='Red')
 
     def exitedState(self):
-        self._canvas.itemconfigure(self.marker, fill = 'CornflowerBlue')
+        self._canvas.itemconfigure(self.marker, fill='CornflowerBlue')

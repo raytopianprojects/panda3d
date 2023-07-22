@@ -73,7 +73,8 @@ B3RELEASE = PGButton.getReleasePrefix() + MouseButton.three().getName() + '-'
 # For DirectEntry widgets
 OVERFLOW = PGEntry.getOverflowPrefix()
 ACCEPT = PGEntry.getAcceptPrefix() + KeyboardButton.enter().getName() + '-'
-ACCEPTFAILED = PGEntry.getAcceptFailedPrefix() + KeyboardButton.enter().getName() + '-'
+ACCEPTFAILED = PGEntry.getAcceptFailedPrefix(
+) + KeyboardButton.enter().getName() + '-'
 TYPE = PGEntry.getTypePrefix()
 ERASE = PGEntry.getErasePrefix()
 CURSORMOVE = PGEntry.getCursormovePrefix()
@@ -95,29 +96,34 @@ MIDGROUND_SORT_INDEX = 0
 FOREGROUND_SORT_INDEX = 100
 
 # Symbolic constants for the indexes into an optionInfo list.
-_OPT_DEFAULT         = 0
-_OPT_VALUE           = 1
-_OPT_FUNCTION        = 2
+_OPT_DEFAULT = 0
+_OPT_VALUE = 1
+_OPT_FUNCTION = 2
 
 # DirectButton States:
-BUTTON_READY_STATE     = PGButton.SReady       # 0
+BUTTON_READY_STATE = PGButton.SReady       # 0
 BUTTON_DEPRESSED_STATE = PGButton.SDepressed   # 1
-BUTTON_ROLLOVER_STATE  = PGButton.SRollover    # 2
-BUTTON_INACTIVE_STATE  = PGButton.SInactive    # 3
+BUTTON_ROLLOVER_STATE = PGButton.SRollover    # 2
+BUTTON_INACTIVE_STATE = PGButton.SInactive    # 3
+
 
 def get_default_rollover_sound():
     return default_rollover_sound
+
 
 def set_default_rollover_sound(newSound):
     global default_rollover_sound
     default_rollover_sound = newSound
 
+
 def getDefaultClickSound():
     return default_click_sound
+
 
 def set_default_click_sound(newSound):
     global default_click_sound
     default_click_sound = newSound
+
 
 def get_default_font():
     global default_font
@@ -125,38 +131,47 @@ def get_default_font():
         default_font = default_font_func()
     return default_font
 
+
 def set_default_font(new_font):
     """Changes the default font for DirectGUI items.  To change the default
     font across the board, see :meth:`.TextNode.set_default_font`. """
     global default_font
     default_font = new_font
 
+
 def set_default_font_func(new_font_func):
     global default_font_func
     default_font_func = new_font_func
+
 
 def get_default_dialog_geom():
     global default_dialog_geom
     return default_dialog_geom
 
+
 def get_default_dialog_relief():
     global default_dialog_relief
     return default_dialog_relief
+
 
 def set_default_dialog_geom(new_dialog_geom, relief=None):
     global default_dialog_geom, default_dialog_relief
     default_dialog_geom = new_dialog_geom
     default_dialog_relief = relief
 
+
 def get_default_draw_order():
     return draw_order
+
 
 def set_default_draw_order(new_draw_order):
     global draw_order
     draw_order = new_draw_order
 
+
 def get_default_panel():
     return panel
+
 
 def set_default_panel(new_panel):
     global panel

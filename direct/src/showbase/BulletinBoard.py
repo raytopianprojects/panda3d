@@ -4,6 +4,7 @@ __all__ = ['BulletinBoard']
 
 from direct.directnotify import DirectNotifyGlobal
 
+
 class BulletinBoard:
     """This class implements a global location for key/value pairs to be
     stored. Intended to prevent coders from putting global variables directly
@@ -51,7 +52,7 @@ class BulletinBoard:
                 self.remove(postName)
 
     def __repr__(self):
-        str  = 'Bulletin Board Contents\n'
+        str = 'Bulletin Board Contents\n'
         str += '======================='
         keys = list(self._dict.keys())
         keys.sort()

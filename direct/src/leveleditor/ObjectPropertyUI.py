@@ -13,7 +13,7 @@ from pandac.PandaModules import *
 from . import ObjectGlobals as OG
 from . import AnimGlobals as AG
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 Key = PyEmbeddedImage(
     "iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAIAAACQKrqGAAAAA3NCSVQICAjb4U/gAAABIElE"
     "QVQokZWSMW7CQBBFZ2Z3sQ02Ni4sOS6QiLgO5yBXIMcJ1KENje8QLESH7F3FVFQIIS3eTWGJ"
@@ -22,7 +22,8 @@ Key = PyEmbeddedImage(
     "wPd9YkxrzY0x4/FYKlXX9eVymc1mjIiIgiD43G4BwFprmgYRubU2DMPnySTw/ev1+pSmRISI"
     "SZJ8bDan06ksSyLiQmDXCfr9fp7nb8vldDp9mc9d1/1R27XaClscxzkcDlEUhcOhvt06U1uE"
     "EMaYtpbOXlu01vf5Hz/wDRuDdIDl5WtQAAAAAElFTkSuQmCC")
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
 
 class AnimFileDrop(wx.FileDropTarget):
     def __init__(self, editor):
@@ -30,7 +31,8 @@ class AnimFileDrop(wx.FileDropTarget):
         self.editor = editor
 
     def OnDropFiles(self, x, y, filenames):
-        obj = self.editor.objectMgr.findObjectByNodePath(base.direct.selected.last)
+        obj = self.editor.objectMgr.findObjectByNodePath(
+            base.direct.selected.last)
         if obj is None:
             return
 
@@ -45,22 +47,25 @@ class AnimFileDrop(wx.FileDropTarget):
             animName = Filename.fromOsSpecific(filename).getFullpath()
             if name.endswith('.mb') or\
                name.endswith('.ma'):
-                self.editor.convertMaya(animName, self.editor.ui.protoPaletteUI.addNewItem, obj, isAnim=True)
+                self.editor.convertMaya(
+                    animName, self.editor.ui.protoPaletteUI.addNewItem, obj, isAnim=True)
                 return
 
             if animName not in objDef.anims:
                 objDef.anims.append(animName)
 
-            objNP.loadAnims({name:animName})
+            objNP.loadAnims({name: animName})
             objNP.loop(name)
             obj[OG.OBJ_ANIM] = animName
             self.editor.ui.objectPropertyUI.updateProps(obj)
+
 
 class ObjectPropUI(wx.Panel):
     """
     Base class for ObjectPropUIs,
     It consists of label area and ui area.
     """
+
     def __init__(self, parent, label):
         wx.Panel.__init__(self, parent)
         self.parent = parent
@@ -69,7 +74,8 @@ class ObjectPropUI(wx.Panel):
         self.labelSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.labelSizer.Add(self.label)
         bmpKey = Key.GetBitmap()
-        self.setKeyButton = wx.BitmapButton(self.labelPane, -1, bmpKey, size = (15,15),style = wx.BU_AUTODRAW)
+        self.setKeyButton = wx.BitmapButton(
+            self.labelPane, -1, bmpKey, size=(15, 15), style=wx.BU_AUTODRAW)
         self.labelSizer.Add(self.setKeyButton)
         self.labelPane.SetSizer(self.labelSizer)
         self.uiPane = wx.Panel(self)
@@ -80,10 +86,11 @@ class ObjectPropUI(wx.Panel):
 
         self.setKeyButton.Bind(wx.EVT_BUTTON, self.onKey)
 
-    def onKey(self,evt):
+    def onKey(self, evt):
         self.parent = wx.GetTopLevelParent(self)
         if self.parent.editor.mode == self.parent.editor.ANIM_MODE:
-            obj= self.parent.editor.objectMgr.findObjectByNodePath(base.direct.selected.last)
+            obj = self.parent.editor.objectMgr.findObjectByNodePath(
+                base.direct.selected.last)
 
             objUID = obj[OG.OBJ_UID]
             propertyName = self.label.GetLabelText()
@@ -92,22 +99,27 @@ class ObjectPropUI(wx.Panel):
             frame = self.parent.editor.ui.animUI.curFrame
 
             if (objUID, propertyName) in self.parent.editor.animMgr.keyFramesInfo:
-                for i in range(len(self.parent.editor.animMgr.keyFramesInfo[(objUID,propertyName)])):
-                    if self.parent.editor.animMgr.keyFramesInfo[(objUID,propertyName)][i][AG.FRAME] == frame:
-                        del self.parent.editor.animMgr.keyFramesInfo[(objUID,propertyName)][i]
-                self.parent.editor.animMgr.keyFramesInfo[(objUID,propertyName)].append([frame, value, [], []])
-                #sort keyFrameInfo list by the order of frame number
-                sortKeyList = self.parent.editor.animMgr.keyFramesInfo[(objUID,propertyName)]
+                for i in range(len(self.parent.editor.animMgr.keyFramesInfo[(objUID, propertyName)])):
+                    if self.parent.editor.animMgr.keyFramesInfo[(objUID, propertyName)][i][AG.FRAME] == frame:
+                        del self.parent.editor.animMgr.keyFramesInfo[(
+                            objUID, propertyName)][i]
+                self.parent.editor.animMgr.keyFramesInfo[(objUID, propertyName)].append([
+                    frame, value, [], []])
+                # sort keyFrameInfo list by the order of frame number
+                sortKeyList = self.parent.editor.animMgr.keyFramesInfo[(
+                    objUID, propertyName)]
                 for i in range(0, len(sortKeyList)-1):
                     for j in range(i+1, len(sortKeyList)):
-                        if sortKeyList[i][AG.FRAME]>sortKeyList[j][AG.FRAME]:
+                        if sortKeyList[i][AG.FRAME] > sortKeyList[j][AG.FRAME]:
                             temp = sortKeyList[i]
                             sortKeyList[i] = sortKeyList[j]
                             sortKeyList[j] = temp
 
-                self.parent.editor.animMgr.generateSlope(self.parent.editor.animMgr.keyFramesInfo[(objUID,propertyName)])
+                self.parent.editor.animMgr.generateSlope(
+                    self.parent.editor.animMgr.keyFramesInfo[(objUID, propertyName)])
             else:
-                self.parent.editor.animMgr.keyFramesInfo[(objUID,propertyName)] = [[frame, value, [], []]]
+                self.parent.editor.animMgr.keyFramesInfo[(objUID, propertyName)] = [
+                    [frame, value, [], []]]
 
             exist = False
             for keyFrame in self.parent.editor.animMgr.keyFrames:
@@ -131,14 +143,16 @@ class ObjectPropUI(wx.Panel):
     def getValue(self):
         return self.ui.GetValue()
 
-    def bindFunc(self, inFunc, outFunc, valFunc = None):
+    def bindFunc(self, inFunc, outFunc, valFunc=None):
         self.ui.Bind(wx.EVT_ENTER_WINDOW, inFunc)
         self.ui.Bind(wx.EVT_LEAVE_WINDOW, outFunc)
         if valFunc:
             self.ui.Bind(self.eventType, valFunc)
 
+
 class ObjectPropUIEntry(ObjectPropUI):
     """ UI for string value properties """
+
     def __init__(self, parent, label):
         ObjectPropUI.__init__(self, parent, label)
         self.ui = wx.TextCtrl(self.uiPane, -1)
@@ -148,17 +162,19 @@ class ObjectPropUIEntry(ObjectPropUI):
     def setValue(self, value):
         self.ui.SetValue(str(value))
 
+
 class ObjectPropUISlider(ObjectPropUI):
     """ UI for float value properties """
+
     def __init__(self, parent, label, value, minValue, maxValue):
         ObjectPropUI.__init__(self, parent, label)
         self.ui = WxSlider(self.uiPane, -1, value, minValue, maxValue,
-                           pos = (0,0), size=(140, -1),
+                           pos=(0, 0), size=(140, -1),
                            style=wx.SL_HORIZONTAL | wx.SL_LABELS)
         self.ui.Enable()
         self.Layout()
 
-    def bindFunc(self, inFunc, outFunc, valFunc = None):
+    def bindFunc(self, inFunc, outFunc, valFunc=None):
         self.ui.Bind(wx.EVT_ENTER_WINDOW, inFunc)
         self.ui.Bind(wx.EVT_LEAVE_WINDOW, outFunc)
         self.ui.textValue.Bind(wx.EVT_ENTER_WINDOW, inFunc)
@@ -170,9 +186,11 @@ class ObjectPropUISlider(ObjectPropUI):
 
 class ObjectPropUISpinner(ObjectPropUI):
     """ UI for int value properties """
+
     def __init__(self, parent, label, value, minValue, maxValue):
         ObjectPropUI.__init__(self, parent, label)
-        self.ui = wx.SpinCtrl(self.uiPane, -1, "", min=minValue, max=maxValue, initial=value)
+        self.ui = wx.SpinCtrl(self.uiPane, -1, "",
+                              min=minValue, max=maxValue, initial=value)
         self.eventType = wx.EVT_SPIN
         self.Layout()
 
@@ -189,7 +207,8 @@ class ObjectPropUICheck(ObjectPropUI):
 class ObjectPropUIRadio(ObjectPropUI):
     def __init__(self, parent, label, value, valueList):
         ObjectPropUI.__init__(self, parent, label)
-        self.ui = wx.RadioBox(self.uiPane, -1, "", choices=valueList, majorDimension=1, style=wx.RA_SPECIFY_COLS)
+        self.ui = wx.RadioBox(self.uiPane, -1, "", choices=valueList,
+                              majorDimension=1, style=wx.RA_SPECIFY_COLS)
         self.setValue(value)
         self.eventType = wx.EVT_RADIOBOX
         self.Layout()
@@ -206,8 +225,9 @@ class ObjectPropUICombo(ObjectPropUI):
         ObjectPropUI.__init__(self, parent, label)
         self.ui = wx.Choice(self.uiPane, -1, choices=valueList)
         if callBack is not None:
-            button = wx.Button(self.labelPane, -1, 'Update', size = (100, 18))
-            button.Bind(wx.EVT_BUTTON, lambda p0=None, p1=obj, p2=self: callBack(p0, p1, p2))
+            button = wx.Button(self.labelPane, -1, 'Update', size=(100, 18))
+            button.Bind(wx.EVT_BUTTON, lambda p0=None,
+                        p1=obj, p2=self: callBack(p0, p1, p2))
             self.labelSizer.Add(button)
         self.setValue(value)
         self.eventType = wx.EVT_CHOICE
@@ -221,6 +241,7 @@ class ObjectPropUICombo(ObjectPropUI):
 
     def setItems(self, valueList):
         self.ui.SetItems(valueList)
+
 
 class ObjectPropUITime(wx.Panel):
     def __init__(self, parent, label, value):
@@ -239,8 +260,10 @@ class ObjectPropUITime(wx.Panel):
 
         hSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.uiAmPm = wx.Choice(self.uiPane, -1, choices=['AM', 'PM'])
-        self.uiHour = wx.Choice(self.uiPane, -1, choices=[str(x) for x in range(1, 13)])
-        self.uiMin = wx.Choice(self.uiPane, -1, choices=[str(x) for x in range(0, 60, 15)])
+        self.uiHour = wx.Choice(
+            self.uiPane, -1, choices=[str(x) for x in range(1, 13)])
+        self.uiMin = wx.Choice(
+            self.uiPane, -1, choices=[str(x) for x in range(0, 60, 15)])
 
         hSizer.Add(self.uiAmPm)
         hSizer.Add(self.uiHour)
@@ -280,7 +303,7 @@ class ObjectPropUITime(wx.Panel):
         value = float(hourVal) + minVal / 60.0
         return value
 
-    def bindFunc(self, inFunc, outFunc, valFunc = None):
+    def bindFunc(self, inFunc, outFunc, valFunc=None):
         self.uiAmPm.Bind(wx.EVT_ENTER_WINDOW, inFunc)
         self.uiAmPm.Bind(wx.EVT_LEAVE_WINDOW, outFunc)
         self.uiHour.Bind(wx.EVT_ENTER_WINDOW, inFunc)
@@ -292,9 +315,10 @@ class ObjectPropUITime(wx.Panel):
             self.uiHour.Bind(self.eventType, valFunc)
             self.uiMin.Bind(self.eventType, valFunc)
 
+
 class ColorPicker(CubeColourDialog):
-    def __init__(self, parent, colourData=None, style=CCD_SHOW_ALPHA, alpha = 255, updateCB=None, exitCB=None):
-        self.updateCB=updateCB
+    def __init__(self, parent, colourData=None, style=CCD_SHOW_ALPHA, alpha=255, updateCB=None, exitCB=None):
+        self.updateCB = updateCB
         CubeColourDialog.__init__(self, parent, colourData, style)
         self.okButton.Hide()
         self.cancelButton.Hide()
@@ -308,7 +332,9 @@ class ColorPicker(CubeColourDialog):
         self.oldColourPanel.RefreshColour(self._oldColour)
         self.newColourPanel.RefreshColour(self._colour)
         if self.updateCB:
-            self.updateCB(self._colour.r, self._colour.g, self._colour.b, self._colour.alpha)
+            self.updateCB(self._colour.r, self._colour.g,
+                          self._colour.b, self._colour.alpha)
+
 
 class ObjectPropertyUI(ScrolledPanel):
     def __init__(self, parent, editor):
@@ -320,7 +346,8 @@ class ObjectPropertyUI(ScrolledPanel):
 
         parentSizer = wx.BoxSizer(wx.VERTICAL)
         parentSizer.Add(self, 1, wx.EXPAND, 0)
-        parent.SetSizer(parentSizer); parent.Layout()
+        parent.SetSizer(parentSizer)
+        parent.Layout()
 
         self.SetDropTarget(AnimFileDrop(self.editor))
 
@@ -332,7 +359,7 @@ class ObjectPropertyUI(ScrolledPanel):
             self.propPane.Destroy()
             self.SetSizer(None)
         self.Layout()
-        self.SetupScrolling(self, scroll_y = True, rate_y = 20)
+        self.SetupScrolling(self, scroll_y=True, rate_y=20)
 
     def colorPickerExitCB(self, evt=None):
         self.lastColorPickerPos = self.colorPicker.GetPosition()
@@ -364,16 +391,17 @@ class ObjectPropertyUI(ScrolledPanel):
                 self.colorPicker.redSpin.SetValue(r * 255)
                 self.colorPicker.AssignColourValue('r', r * 255, 255, 0)
             elif evtObj == self.propCG.ui or\
-                 evtObj == self.propCG.ui.textValue:
+                    evtObj == self.propCG.ui.textValue:
                 self.colorPicker.greenSpin.SetValue(g * 255)
                 self.colorPicker.AssignColourValue('g', g * 255, 255, 0)
             elif evtObj == self.propCB.ui or\
-                 evtObj == self.propCB.ui.textValue:
+                    evtObj == self.propCB.ui.textValue:
                 self.colorPicker.blueSpin.SetValue(b * 255)
                 self.colorPicker.AssignColourValue('b', b * 255, 255, 0)
             else:
                 self.colorPicker._colour.alpha = a * 255
-                self.colorPicker.alphaSpin.SetValue(self.colorPicker._colour.alpha)
+                self.colorPicker.alphaSpin.SetValue(
+                    self.colorPicker._colour.alpha)
                 self.colorPicker.DrawAlpha()
 
         self.editor.objectMgr.updateObjectColor(r, g, b, a)
@@ -383,7 +411,8 @@ class ObjectPropertyUI(ScrolledPanel):
             self.lastColorPickerPos = self.colorPicker.GetPosition()
             self.colorPicker.Destroy()
 
-        self.colorPicker = ColorPicker(self, colourData, alpha=alpha, updateCB=self.colorPickerUpdateCB, exitCB=self.colorPickerExitCB)
+        self.colorPicker = ColorPicker(
+            self, colourData, alpha=alpha, updateCB=self.colorPickerUpdateCB, exitCB=self.colorPickerExitCB)
         self.colorPicker.GetColourData().SetChooseFull(True)
         self.colorPicker.Show()
         if self.lastColorPickerPos:
@@ -418,7 +447,7 @@ class ObjectPropertyUI(ScrolledPanel):
         self.propSZ = ObjectPropUIEntry(self.transformPane, 'SZ')
 
         transformProps = [self.propX, self.propY, self.propZ, self.propH, self.propP, self.propR,
-                       self.propSX, self.propSY, self.propSZ]
+                          self.propSX, self.propSY, self.propSZ]
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.AddMany(transformProps)
@@ -448,10 +477,13 @@ class ObjectPropertyUI(ScrolledPanel):
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.AddMany(colorProps)
-        button = wx.Button(self.lookPane, -1, 'Color Picker', (0,0), (140, 20))
+        button = wx.Button(self.lookPane, -1,
+                           'Color Picker', (0, 0), (140, 20))
         _colourData = wx.ColourData()
-        _colourData.SetColour(wx.Colour(objRGBA[0] * 255, objRGBA[1] * 255, objRGBA[2] * 255))
-        button.Bind(wx.EVT_BUTTON, lambda p0=None, p1=_colourData, p2=objRGBA[3] * 255: self.openColorPicker(p0, p1, p2))
+        _colourData.SetColour(
+            wx.Colour(objRGBA[0] * 255, objRGBA[1] * 255, objRGBA[2] * 255))
+        button.Bind(wx.EVT_BUTTON, lambda p0=None, p1=_colourData,
+                    p2=objRGBA[3] * 255: self.openColorPicker(p0, p1, p2))
 
         sizer.Add(button)
 
@@ -469,7 +501,8 @@ class ObjectPropertyUI(ScrolledPanel):
                 modelList = ''
             else:
                 modelList = objDef.models
-            propUI = ObjectPropUICombo(self.lookPane, 'model', defaultModel, modelList, obj, callBack=objDef.updateModelFunction)
+            propUI = ObjectPropUICombo(
+                self.lookPane, 'model', defaultModel, modelList, obj, callBack=objDef.updateModelFunction)
             sizer.Add(propUI)
 
             propUI.bindFunc(self.editor.objectMgr.onEnterObjectPropUI,
@@ -481,7 +514,8 @@ class ObjectPropertyUI(ScrolledPanel):
             if animList is None:
                 animList = objDef.anims
 
-            propUI = ObjectPropUICombo(self.lookPane, 'anim', obj[OG.OBJ_ANIM], animList)
+            propUI = ObjectPropUICombo(
+                self.lookPane, 'anim', obj[OG.OBJ_ANIM], animList)
             sizer.Add(propUI)
 
             propUI.bindFunc(self.editor.objectMgr.onEnterObjectPropUI,
@@ -531,7 +565,8 @@ class ObjectPropertyUI(ScrolledPanel):
                 if propDataType != OG.PROP_FLOAT:
                     value = float(value)
 
-                propUI = ObjectPropUISlider(self.propsPane, key, value, propRange[OG.RANGE_MIN], propRange[OG.RANGE_MAX])
+                propUI = ObjectPropUISlider(
+                    self.propsPane, key, value, propRange[OG.RANGE_MIN], propRange[OG.RANGE_MAX])
                 sizer.Add(propUI)
 
             elif propType == OG.PROP_UI_SPIN:
@@ -542,7 +577,8 @@ class ObjectPropertyUI(ScrolledPanel):
                 if value is None:
                     continue
 
-                propUI = ObjectPropUISpinner(self.propsPane, key, value, propRange[OG.RANGE_MIN], propRange[OG.RANGE_MAX])
+                propUI = ObjectPropUISpinner(
+                    self.propsPane, key, value, propRange[OG.RANGE_MIN], propRange[OG.RANGE_MAX])
                 sizer.Add(propUI)
 
             elif propType == OG.PROP_UI_CHECK:
@@ -566,7 +602,8 @@ class ObjectPropertyUI(ScrolledPanel):
 
                     value = str(value)
 
-                propUI = ObjectPropUIRadio(self.propsPane, key, value, propRange)
+                propUI = ObjectPropUIRadio(
+                    self.propsPane, key, value, propRange)
                 sizer.Add(propUI)
 
             elif propType == OG.PROP_UI_COMBO:
@@ -583,7 +620,8 @@ class ObjectPropertyUI(ScrolledPanel):
 
                     value = str(value)
 
-                propUI = ObjectPropUICombo(self.propsPane, key, value, propRange)
+                propUI = ObjectPropUICombo(
+                    self.propsPane, key, value, propRange)
                 sizer.Add(propUI)
 
             elif propType == OG.PROP_UI_COMBO_DYNAMIC:
@@ -597,13 +635,15 @@ class ObjectPropertyUI(ScrolledPanel):
                     dynamicRangeKey = obj[OG.OBJ_PROP].get(propDynamicKey)
 
                 if dynamicRangeKey is None:
-                    self.editor.objectMgr.updateObjectPropValue(obj, key, propDef[OG.PROP_DEFAULT], fUndo=False)
+                    self.editor.objectMgr.updateObjectPropValue(
+                        obj, key, propDef[OG.PROP_DEFAULT], fUndo=False)
                     continue
 
                 propRange = propDef[OG.PROP_RANGE].get(dynamicRangeKey)
 
                 if propRange is None:
-                    self.editor.objectMgr.updateObjectPropValue(obj, key, propDef[OG.PROP_DEFAULT], fUndo=False)
+                    self.editor.objectMgr.updateObjectPropValue(
+                        obj, key, propDef[OG.PROP_DEFAULT], fUndo=False)
                     continue
 
                 if value is None:
@@ -617,9 +657,11 @@ class ObjectPropertyUI(ScrolledPanel):
 
                 if value not in propRange:
                     value = propRange[0]
-                    self.editor.objectMgr.updateObjectPropValue(obj, key, value, fUndo=False)
+                    self.editor.objectMgr.updateObjectPropValue(
+                        obj, key, value, fUndo=False)
 
-                propUI = ObjectPropUICombo(self.propsPane, key, value, propRange)
+                propUI = ObjectPropUICombo(
+                    self.propsPane, key, value, propRange)
                 sizer.Add(propUI)
 
             elif propType == OG.PROP_UI_TIME:
@@ -638,14 +680,12 @@ class ObjectPropertyUI(ScrolledPanel):
                             self.editor.objectMgr.onLeaveObjectPropUI,
                             lambda p0=None, p1=obj, p2=key: self.editor.objectMgr.updateObjectProperty(p0, p1, p2))
 
-
-        self.propsPane.SetSizer(sizer);
+        self.propsPane.SetSizer(sizer)
         self.Layout()
-        self.SetupScrolling(self, scroll_y = True, rate_y = 20)
+        self.SetupScrolling(self, scroll_y=True, rate_y=20)
         if self.lastPropTab == 'Transform':
             self.nb.SetSelection(0)
         elif self.lastPropTab == 'Look':
             self.nb.SetSelection(1)
         elif self.lastPropTab == 'Properties':
             self.nb.SetSelection(2)
-

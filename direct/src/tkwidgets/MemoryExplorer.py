@@ -3,18 +3,20 @@ from direct.showbase.TkGlobal import *
 from .Tree import *
 import Pmw
 
-#--------------------------------------------------------------------------
-#--------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 DEFAULT_BT_WIDTH = 50.0
 
-#--------------------------------------------------------------------------
-#--------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+
+
 class MemoryExplorer(Pmw.MegaWidget, DirectObject):
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Init
-    #--------------------------------------------------------------------------
-    def __init__(self, parent = None, nodePath = None, **kw):
+    # --------------------------------------------------------------------------
+    def __init__(self, parent=None, nodePath=None, **kw):
         if nodePath is None:
             nodePath = render
 
@@ -40,33 +42,34 @@ class MemoryExplorer(Pmw.MegaWidget, DirectObject):
 
     def createScrolledFrame(self):
         self.frame = Pmw.ScrolledFrame(self.interior(),
-                                       labelpos = 'n',
-                                       label_text = 'ScrolledFrame',
-                                       usehullsize = 1,
-                                       hull_width = 200,
-                                       hull_height = 220,)
+                                       labelpos='n',
+                                       label_text='ScrolledFrame',
+                                       usehullsize=1,
+                                       hull_width=200,
+                                       hull_height=220,)
 
-        self.frame.pack(padx = 3, pady = 3, fill = BOTH, expand = 1)
+        self.frame.pack(padx=3, pady=3, fill=BOTH, expand=1)
 
     def createScale(self):
         self.scaleCtrl = Scale(self.interior(),
-                               label = "Graph Scale",
-                               from_= 0.0,
-                               to = 20.0,
-                               resolution = 0.1,
-                               orient = HORIZONTAL,
-                               command = self.onScaleUpdate)
+                               label="Graph Scale",
+                               from_=0.0,
+                               to=20.0,
+                               resolution=0.1,
+                               orient=HORIZONTAL,
+                               command=self.onScaleUpdate)
 
-        self.scaleCtrl.pack(side = LEFT, fill = BOTH, expand = 1)
+        self.scaleCtrl.pack(side=LEFT, fill=BOTH, expand=1)
         self.scaleCtrl.set(0.0)
 
     def createRefreshBT(self):
-        self.refreshBT = Button(self.interior(), text = 'Refresh', command = self.refresh)
-        self.refreshBT.pack(side = LEFT, fill = BOTH, expand = 1)
+        self.refreshBT = Button(
+            self.interior(), text='Refresh', command=self.refresh)
+        self.refreshBT.pack(side=LEFT, fill=BOTH, expand=1)
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Item Ctrls
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     def createDefaultCtrls(self):
         if self.renderItem == None or self.render2dItem == None:
             return
@@ -92,9 +95,9 @@ class MemoryExplorer(Pmw.MegaWidget, DirectObject):
         self.labels = []
 
     def getNewButton(self, width, ratio):
-        newBT =  Button(self.frame.interior(),
-                        anchor = W,
-                        width = width)
+        newBT = Button(self.frame.interior(),
+                       anchor=W,
+                       width=width)
 
         if ratio == 0.0:
             newBT['bg'] = "grey"
@@ -116,8 +119,8 @@ class MemoryExplorer(Pmw.MegaWidget, DirectObject):
 
     def addChildCtrl(self, item, totalBytes):
         self.addLabel("%s [+%s] : %s bytes" % (item.getName(),
-                                                item.getNumChildren(),
-                                                item.getVertexBytes()))
+                                               item.getNumChildren(),
+                                               item.getVertexBytes()))
 
         bt = self.addButton(item.getVertexBytes(),
                             totalBytes,
@@ -144,7 +147,7 @@ class MemoryExplorer(Pmw.MegaWidget, DirectObject):
         bt.bind("<Button-1>", callbackL)
         bt.bind("<Button-3>", callbackR)
 
-        bt.pack(side = TOP, anchor = NW)
+        bt.pack(side=TOP, anchor=NW)
         self.buttons.append(bt)
 
         self.balloon.bind(bt, item.getPathName())
@@ -152,8 +155,8 @@ class MemoryExplorer(Pmw.MegaWidget, DirectObject):
         return bt
 
     def addLabel(self, label):
-        label = Label(self.frame.interior(), text = label)
-        label.pack(side = TOP, anchor = NW,  expand = 0)
+        label = Label(self.frame.interior(), text=label)
+        label.pack(side=TOP, anchor=NW,  expand=0)
         self.labels.append(label)
 
     def getBTWidth(self, vertexBytes, totalBytes):
@@ -167,11 +170,11 @@ class MemoryExplorer(Pmw.MegaWidget, DirectObject):
 
         return width
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Callback
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     def onScaleUpdate(self, arg):
-        self.btWidth = DEFAULT_BT_WIDTH +  DEFAULT_BT_WIDTH * float(arg)
+        self.btWidth = DEFAULT_BT_WIDTH + DEFAULT_BT_WIDTH * float(arg)
 
         if self.rootItem:
             self.updateBTWidth()
@@ -192,8 +195,10 @@ class MemoryExplorer(Pmw.MegaWidget, DirectObject):
         if self.renderItem == None or self.render2dItem == None:
             return
         totalBytes = self.renderItem.getVertexBytes() + self.render2dItem.getVertexBytes()
-        self.buttons[0]['width'] = self.getBTWidth(self.renderItem.getVertexBytes(), totalBytes)
-        self.buttons[1]['width'] = self.getBTWidth(self.render2dItem.getVertexBytes(), totalBytes)
+        self.buttons[0]['width'] = self.getBTWidth(
+            self.renderItem.getVertexBytes(), totalBytes)
+        self.buttons[1]['width'] = self.getBTWidth(
+            self.render2dItem.getVertexBytes(), totalBytes)
 
     def onSelfButtonLClick(self, item):
         pass
@@ -229,9 +234,9 @@ class MemoryExplorer(Pmw.MegaWidget, DirectObject):
 
             self.setTitle(item.getPathName(), item.getVertexBytes())
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # List & Analyze
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     def makeList(self):
         self.renderItem = MemoryExplorerItem(None, render)
         self.buildList(self.renderItem)
@@ -256,8 +261,10 @@ class MemoryExplorer(Pmw.MegaWidget, DirectObject):
         self.resetCtrls()
         self.createDefaultCtrls()
 
-#--------------------------------------------------------------------------
-#--------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+
+
 class MemoryExplorerItem:
     def __init__(self, parent, nodePath):
         self.parent = parent
@@ -271,7 +278,7 @@ class MemoryExplorerItem:
         self.textureBytes = 0
 
         if parent:
-            self.pathName = parent.pathName + "/" +  nodePath.getName()
+            self.pathName = parent.pathName + "/" + nodePath.getName()
         else:
             self.pathName = nodePath.getName()
 
@@ -343,9 +350,10 @@ class MemoryExplorerItem:
             self.childrenVertexBytes += child.getVertexBytes()
             self.numFaces += child.numFaces
 
-    def ls(self, indent = ""):
-        print(indent + self.nodePath.getName() + " " + str(self.vertexBytes) + " " + str(self.numFaces) + " " + str(self.textureBytes))
-        indent = indent +  " "
+    def ls(self, indent=""):
+        print(indent + self.nodePath.getName() + " " + str(self.vertexBytes) +
+              " " + str(self.numFaces) + " " + str(self.textureBytes))
+        indent = indent + " "
 
         for child in self.children:
             child.ls(indent)

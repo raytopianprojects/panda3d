@@ -9,12 +9,14 @@ __all__ = ['DirectLabel']
 from panda3d.core import *
 from .DirectFrame import *
 
+
 class DirectLabel(DirectFrame):
     """
     DirectLabel(parent) - Create a DirectGuiWidget which has multiple
     states.  User explicitly chooses a state to display
     """
-    def __init__(self, parent = None, **kw):
+
+    def __init__(self, parent=None, **kw):
         # Inherits from DirectFrame
         # A Direct Frame can have:
         # - A background texture (pass in path to image, or Texture Card)
@@ -32,7 +34,7 @@ class DirectLabel(DirectFrame):
             ('numStates',       1,         None),
             ('state',           self.inactiveInitState, None),
             ('activeState',     0,         self.set_active_state),
-            )
+        )
         # Merge keyword options with default options
         self.defineoptions(kw, optiondefs)
 

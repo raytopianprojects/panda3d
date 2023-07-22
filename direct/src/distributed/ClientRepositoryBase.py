@@ -22,34 +22,37 @@ class ClientRepositoryBase(ConnectionRepository):
     of the client repository code, and OTPClientRepository, which is
     the VR Studio's implementation of the same.
     """
-    notify = DirectNotifyGlobal.directNotify.newCategory("ClientRepositoryBase")
+    notify = DirectNotifyGlobal.directNotify.newCategory(
+        "ClientRepositoryBase")
 
-    def __init__(self, dcFileNames = None, dcSuffix = '',
-                 connectMethod = None, threadedNet = None):
+    def __init__(self, dcFileNames=None, dcSuffix='',
+                 connectMethod=None, threadedNet=None):
         self.deferInterval = None
         if connectMethod is None:
             connectMethod = self.CM_HTTP
-        ConnectionRepository.__init__(self, connectMethod, base.config, hasOwnerView = True, threadedNet = threadedNet)
+        ConnectionRepository.__init__(
+            self, connectMethod, base.config, hasOwnerView=True, threadedNet=threadedNet)
         self.dcSuffix = dcSuffix
         if hasattr(self, 'setVerbose'):
             if self.config.GetBool('verbose-clientrepository'):
                 self.setVerbose(1)
 
-        self.context=100000
+        self.context = 100000
         self.setClientDatagram(1)
 
         self.deferredGenerates = []
         self.deferredDoIds = {}
         self.lastGenerate = 0
-        self.setDeferInterval(base.config.GetDouble('deferred-generate-interval', 0.2))
+        self.setDeferInterval(base.config.GetDouble(
+            'deferred-generate-interval', 0.2))
         self.noDefer = False  # Set this True to temporarily disable deferring.
 
         self.recorder = base.recorder
 
         self.readDCFile(dcFileNames)
-        self.cache=CRCache.CRCache()
+        self.cache = CRCache.CRCache()
         self.doDataCache = CRDataCache()
-        self.cacheOwner=CRCache.CRCache()
+        self.cacheOwner = CRCache.CRCache()
         self.serverDelta = 0
 
         self.bootedIndex = None
@@ -68,7 +71,8 @@ class ClientRepositoryBase(ConnectionRepository):
 
         # Keep track of how recently we last sent a heartbeat message.
         # We want to keep these coming at heartbeatInterval seconds.
-        self.heartbeatInterval = base.config.GetDouble('heartbeat-interval', 10)
+        self.heartbeatInterval = base.config.GetDouble(
+            'heartbeat-interval', 10)
         self.heartbeatStarted = 0
         self.lastHeartbeat = 0
 
@@ -87,22 +91,23 @@ class ClientRepositoryBase(ConnectionRepository):
 
         if self.deferredGenerates:
             taskMgr.remove('deferredGenerate')
-            taskMgr.doMethodLater(self.deferInterval, self.doDeferredGenerate, 'deferredGenerate')
+            taskMgr.doMethodLater(self.deferInterval,
+                                  self.doDeferredGenerate, 'deferredGenerate')
 
-    ## def queryObjectAll(self, doID, context=0):
-        ## """
-        ## Get a one-time snapshot look at the object.
-        ## """
-        ## assert self.notify.debugStateCall(self)
-        ## # Create a message
-        ## datagram = PyDatagram()
-        ## datagram.addServerHeader(
-            ## doID, localAvatar.getDoId(), 2020)
-        ## # A context that can be used to index the response if needed
-        ## datagram.addUint32(context)
-        ## self.send(datagram)
-        ## # Make sure the message gets there.
-        ## self.flush()
+    # def queryObjectAll(self, doID, context=0):
+        # """
+        # Get a one-time snapshot look at the object.
+        # """
+        # assert self.notify.debugStateCall(self)
+        # Create a message
+        # datagram = PyDatagram()
+        # datagram.addServerHeader(
+            # doID, localAvatar.getDoId(), 2020)
+        # A context that can be used to index the response if needed
+        # datagram.addUint32(context)
+        # self.send(datagram)
+        # Make sure the message gets there.
+        # self.flush()
 
     def specialName(self, label):
         name = ("SpecialName %s %s" % (self.specialNameNumber, label))
@@ -120,7 +125,7 @@ class ClientRepositoryBase(ConnectionRepository):
         return makeList(MsgId2Names.get(msgId, 'UNKNOWN MESSAGE: %s' % msgId))[0]
 
     def allocateContext(self):
-        self.context+=1
+        self.context += 1
         return self.context
 
     def setServerDelta(self, delta):
@@ -156,10 +161,12 @@ class ClientRepositoryBase(ConnectionRepository):
         # Look up the dclass
         assert parentId == self.GameGlobalsId or parentId in self.doId2do
         dclass = self.dclassesByNumber[classId]
-        assert(self.notify.debug("performing generate for %s %s" % (dclass.getName(), doId)))
+        assert (self.notify.debug("performing generate for %s %s" %
+                (dclass.getName(), doId)))
         dclass.startGenerate()
         # Create a new distributed object, and put it in the dictionary
-        distObj = self.generateWithRequiredOtherFields(dclass, doId, di, parentId, zoneId)
+        distObj = self.generateWithRequiredOtherFields(
+            dclass, doId, di, parentId, zoneId)
         dclass.stopGenerate()
 
     def flushGenerates(self):
@@ -250,7 +257,8 @@ class ClientRepositoryBase(ConnectionRepository):
             # Construct a new one
             classDef = dclass.getClassDef()
             if classDef == None:
-                self.notify.error("Could not create an undefined %s object." % (dclass.getName()))
+                self.notify.error(
+                    "Could not create an undefined %s object." % (dclass.getName()))
             distObj = classDef(self)
             distObj.dclass = dclass
             # Assign it an Id
@@ -264,11 +272,12 @@ class ClientRepositoryBase(ConnectionRepository):
             distObj.setLocation(parentId, zoneId)
             distObj.updateRequiredFields(dclass, di)
             # updateRequiredFields calls announceGenerate
-            self.notify.debug("New DO:%s, dclass:%s" % (doId, dclass.getName()))
+            self.notify.debug("New DO:%s, dclass:%s" %
+                              (doId, dclass.getName()))
         return distObj
 
     def generateWithRequiredOtherFields(self, dclass, doId, di,
-                                        parentId = None, zoneId = None):
+                                        parentId=None, zoneId=None):
         if doId in self.doId2do:
             # ...it is in our dictionary.
             # Just update it.
@@ -298,7 +307,8 @@ class ClientRepositoryBase(ConnectionRepository):
             # Construct a new one
             classDef = dclass.getClassDef()
             if classDef == None:
-                self.notify.error("Could not create an undefined %s object." % (dclass.getName()))
+                self.notify.error(
+                    "Could not create an undefined %s object." % (dclass.getName()))
             distObj = classDef(self)
             distObj.dclass = dclass
             # Assign it an Id
@@ -341,7 +351,8 @@ class ClientRepositoryBase(ConnectionRepository):
             # Construct a new one
             classDef = dclass.getOwnerClassDef()
             if classDef == None:
-                self.notify.error("Could not create an undefined %s object. Have you created an owner view?" % (dclass.getName()))
+                self.notify.error(
+                    "Could not create an undefined %s object. Have you created an owner view?" % (dclass.getName()))
             distObj = classDef(self)
             distObj.dclass = dclass
             # Assign it an Id
@@ -354,7 +365,6 @@ class ClientRepositoryBase(ConnectionRepository):
             distObj.updateRequiredOtherFields(dclass, di)
             # updateRequiredOtherFields calls announceGenerate
         return distObj
-
 
     def disableDoId(self, doId, ownerView=False):
         table, cache = self.getTables(ownerView)
@@ -382,7 +392,8 @@ class ClientRepositoryBase(ConnectionRepository):
             # The object had been deferred.  Great; we don't even have
             # to generate it now.
             del self.deferredDoIds[doId]
-            i = self.deferredGenerates.index((CLIENT_ENTER_OBJECT_REQUIRED_OTHER, doId))
+            i = self.deferredGenerates.index(
+                (CLIENT_ENTER_OBJECT_REQUIRED_OTHER, doId))
             del self.deferredGenerates[i]
             if len(self.deferredGenerates) == 0:
                 taskMgr.remove('deferredGenerate')
@@ -437,7 +448,6 @@ class ClientRepositoryBase(ConnectionRepository):
             # This object has been fully generated.  It's OK to update.
             self.__doUpdate(doId, di, ovUpdated)
 
-
     def __doUpdate(self, doId, di, ovUpdated):
         # Find the DO
         do = self.doId2do.get(doId)
@@ -453,7 +463,7 @@ class ClientRepositoryBase(ConnectionRepository):
             # a dict and adding the avatar handles to that dict when they are created
             # then change/remove the old method. I didn't do that because I couldn't think
             # of a use for it. -JML
-            try :
+            try:
                 handle = self.identifyAvatar(doId)
                 if handle:
                     dclass = self.dclassesByName[handle.dclassName]
@@ -464,7 +474,7 @@ class ClientRepositoryBase(ConnectionRepository):
                         "Asked to update non-existent DistObj " + str(doId))
             except:
                 self.notify.warning(
-                        "Asked to update non-existent DistObj " + str(doId) + "and failed to find it")
+                    "Asked to update non-existent DistObj " + str(doId) + "and failed to find it")
 
     def __doUpdateOwner(self, doId, di):
         ovObj = self.doId2ownerView.get(doId)
@@ -531,7 +541,6 @@ class ClientRepositoryBase(ConnectionRepository):
                 doDict[doId] = do
         return doDict
 
-
     def considerHeartbeat(self):
         """Send a heartbeat message if we haven't sent one recently."""
         if not self.heartbeatStarted:
@@ -561,7 +570,7 @@ class ClientRepositoryBase(ConnectionRepository):
 
     def waitForNextHeartBeat(self):
         taskMgr.doMethodLater(self.heartbeatInterval, self.sendHeartbeatTask,
-                              "heartBeat", taskChain = 'net')
+                              "heartBeat", taskChain='net')
 
     def replaceMethod(self, oldMethod, newFunction):
         return 0

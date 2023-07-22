@@ -56,12 +56,14 @@ class AnimControlInterval(Interval.Interval):
                 checkSz = self.controls.getAnim(0).getNumFrames()
                 for i in range(1, self.controls.getNumAnims()):
                     if checkSz != self.controls.getAnim(i).getNumFrames():
-                        self.notify.error("anim controls don't have the same number of frames!")
+                        self.notify.error(
+                            "anim controls don't have the same number of frames!")
         elif isinstance(controls, AnimControl):
             self.controls = AnimControlCollection()
             self.controls.storeAnim(controls, "")
         else:
-            self.notify.error("invalid input control(s) for AnimControlInterval")
+            self.notify.error(
+                "invalid input control(s) for AnimControlInterval")
 
         self.loopAnim = loop
         self.constrainedLoop = constrainedLoop
@@ -71,7 +73,8 @@ class AnimControlInterval(Interval.Interval):
         if name is None:
             name = id
 
-        self.frameRate = self.controls.getAnim(0).getFrameRate() * abs(playRate)
+        self.frameRate = self.controls.getAnim(
+            0).getFrameRate() * abs(playRate)
         # Compute start and end frames.
         if startFrame is not None:
             self.startFrame = startFrame

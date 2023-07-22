@@ -4,17 +4,20 @@ from . import ObjectGlobals as OG
 
 CLOSE_STDIN = "<CLOSE STDIN>"
 
+
 class StartupError(Exception):
     pass
+
 
 class Process:
     def __init__(self, parent, cmd, end_callback):
         self.process = wx.Process(parent)
         self.process.Redirect()
-        self.process.pid = wx.Execute(cmd, wx.EXEC_ASYNC|wx.EXEC_MAKE_GROUP_LEADER, self.process)
+        self.process.pid = wx.Execute(
+            cmd, wx.EXEC_ASYNC | wx.EXEC_MAKE_GROUP_LEADER, self.process)
         self.b = []
         if self.process.pid:
-            #what was up with wx.Process.Get*Stream names?
+            # what was up with wx.Process.Get*Stream names?
             self.process._stdin_ = self.process.GetOutputStream()
             self.process._stdout_ = self.process.GetInputStream()
             self.process._stderr_ = self.process.GetErrorStream()
@@ -26,11 +29,12 @@ class Process:
         if (input or self.b) and self.process and self.process._stdin_:
             if self.b or len(input) > 512:
                 if input:
-                    #if we don't chop up our input into resonably sized chunks,
-                    #some platforms (like Windows) will send some small number
-                    #of bytes per .write() call (sometimes 2 in the case of
-                    #Windows).
-                    self.b.extend([input[i:i+512] for i in range(0, len(input), 512)])
+                    # if we don't chop up our input into resonably sized chunks,
+                    # some platforms (like Windows) will send some small number
+                    # of bytes per .write() call (sometimes 2 in the case of
+                    # Windows).
+                    self.b.extend([input[i:i+512]
+                                  for i in range(0, len(input), 512)])
                 input = self.b.pop(0)
             self.process._stdin_.write(input)
             if hasattr(self.process._stdin_, "LastWrite"):
@@ -60,19 +64,22 @@ class Process:
                 return 1, None
             elif wx.Process.Exists(self.process.pid):
                 signal = getattr(wx, ks)
-                r = wx.Process.Kill(self.process.pid, signal, flags=wx.KILL_CHILDREN)
+                r = wx.Process.Kill(self.process.pid, signal,
+                                    flags=wx.KILL_CHILDREN)
             else:
                 r = 65535
                 self.CloseInp()
                 return 1, None
 
             if r not in (wx.KILL_OK, wx.KILL_NO_PROCESS, 65535):
-                return 0, (self.process.pid, signal, errors.get(r, "UNKNOWN_KILL_ERROR %s"%r))
+                return 0, (self.process.pid, signal, errors.get(r, "UNKNOWN_KILL_ERROR %s" % r))
             else:
                 return 1, None
 
+
 FROM_MAYA_TO_EGG = 0
 FROM_BAM_TO_MAYA = 1
+
 
 class MayaConverter(wx.Dialog):
     def __init__(self, parent, editor, mayaFile, callBack=None, obj=None, isAnim=False, convertMode=FROM_MAYA_TO_EGG):
@@ -90,7 +97,8 @@ class MayaConverter(wx.Dialog):
         sizer.Add(self.mainPanel, 1, wx.EXPAND, 0)
         self.SetSizer(sizer)
 
-        self.output = wx.TextCtrl(self.mainPanel, -1, style = wx.TE_MULTILINE, pos = (0, 0), size = (100, 400))
+        self.output = wx.TextCtrl(
+            self.mainPanel, -1, style=wx.TE_MULTILINE, pos=(0, 0), size=(100, 400))
         sizer2 = wx.BoxSizer(wx.VERTICAL)
         sizer2.Add(self.output, 1, wx.EXPAND, 0)
         self.mainPanel.SetSizer(sizer2)
@@ -109,20 +117,27 @@ class MayaConverter(wx.Dialog):
     def convertFromMaya(self):
         if self.isAnim:
             if self.obj:
-                command = 'maya2egg -uo ft -a chan %s -o %s.anim.egg'%(self.mayaFile, self.mayaFile)
-                self.process = Process(self, command, lambda p0=None: self.onProcessEnded(p0))
+                command = 'maya2egg -uo ft -a chan %s -o %s.anim.egg' % (
+                    self.mayaFile, self.mayaFile)
+                self.process = Process(
+                    self, command, lambda p0=None: self.onProcessEnded(p0))
             else:
-                command = 'maya2egg -uo ft -a model %s -o %s.model.egg'%(self.mayaFile, self.mayaFile)
-                self.process = Process(self, command, lambda p0=None: self.onModelProcessEnded(p0))
+                command = 'maya2egg -uo ft -a model %s -o %s.model.egg' % (
+                    self.mayaFile, self.mayaFile)
+                self.process = Process(
+                    self, command, lambda p0=None: self.onModelProcessEnded(p0))
         else:
-            command = 'maya2egg -uo ft %s -o %s.egg'%(self.mayaFile, self.mayaFile)
-            self.process = Process(self, command, lambda p0=None: self.onProcessEnded(p0))
+            command = 'maya2egg -uo ft %s -o %s.egg' % (
+                self.mayaFile, self.mayaFile)
+            self.process = Process(
+                self, command, lambda p0=None: self.onProcessEnded(p0))
 
     def convertToMaya(self):
         bamFileName = self.mayaFile + ".bam"
         eggFileName = self.mayaFile + ".egg"
-        command = 'bam2egg %s -o %s'%(bamFileName, eggFileName)
-        self.process = Process(self, command, lambda p0=None: self.onBam2EggEnded(p0))
+        command = 'bam2egg %s -o %s' % (bamFileName, eggFileName)
+        self.process = Process(
+            self, command, lambda p0=None: self.onBam2EggEnded(p0))
 
     def onEgg2MayaEnded(self, evt):
         self.process.CloseInp()
@@ -135,8 +150,10 @@ class MayaConverter(wx.Dialog):
         for i in self.process.Poll():
             self.output.AppendText(i)
         eggFileName = self.mayaFile + ".egg"
-        command = 'egg2maya -ui ft -uo ft %s -o %s'%(eggFileName, self.mayaFile)
-        self.process = Process(self, command, lambda p0=None: self.onEgg2MayaEnded(p0))
+        command = 'egg2maya -ui ft -uo ft %s -o %s' % (
+            eggFileName, self.mayaFile)
+        self.process = Process(
+            self, command, lambda p0=None: self.onEgg2MayaEnded(p0))
 
     def onPoll(self, evt):
         if self.process:
@@ -148,15 +165,17 @@ class MayaConverter(wx.Dialog):
         for i in self.process.Poll():
             self.output.AppendText(i)
         self.process = None
-        command = 'maya2egg -uo ft -a chan %s -o %s.anim.egg'%(self.mayaFile, self.mayaFile)
-        self.process = Process(self, command, lambda p0 = None: self.onProcessEnded(p0))
+        command = 'maya2egg -uo ft -a chan %s -o %s.anim.egg' % (
+            self.mayaFile, self.mayaFile)
+        self.process = Process(
+            self, command, lambda p0=None: self.onProcessEnded(p0))
 
     def onProcessEnded(self, evt):
         self.process.CloseInp()
         for i in self.process.Poll():
             self.output.AppendText(i)
 
-        self.output.AppendText('Converting %s is finished\n'%self.mayaFile)
+        self.output.AppendText('Converting %s is finished\n' % self.mayaFile)
         self.process = None
 
         name = os.path.basename(self.mayaFile)
@@ -164,23 +183,22 @@ class MayaConverter(wx.Dialog):
             if self.obj:
                 objDef = self.obj[OG.OBJ_DEF]
                 objNP = self.obj[OG.OBJ_NP]
-                animName = "%s.anim.egg"%self.mayaFile
+                animName = "%s.anim.egg" % self.mayaFile
                 if animName not in objDef.anims:
                     objDef.anims.append(animName)
                 name = os.path.basename(animName)
-                objNP.loadAnims({name:animName})
+                objNP.loadAnims({name: animName})
                 objNP.loop(name)
                 self.obj[OG.OBJ_ANIM] = animName
                 self.editor.ui.objectPropertyUI.updateProps(self.obj)
                 return
             else:
-                modelName = "%s.model.egg"%self.mayaFile
-                animName = "%s.anim.egg"%self.mayaFile
+                modelName = "%s.model.egg" % self.mayaFile
+                animName = "%s.anim.egg" % self.mayaFile
                 result = [name, modelName, animName]
         else:
-            modelName = "%s.egg"%self.mayaFile
+            modelName = "%s.egg" % self.mayaFile
             result = [name, modelName]
 
         if self.callBack:
             self.callBack(result)
-

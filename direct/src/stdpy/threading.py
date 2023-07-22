@@ -41,13 +41,14 @@ __all__ = [
     'enumerate', 'active_count',
     'settrace', 'setprofile', 'stack_size',
     'TIMEOUT_MAX',
-    ]
+]
 
 TIMEOUT_MAX = _thread.TIMEOUT_MAX
 
 local = _thread._local
 _newname = _thread._newname
 ThreadError = _thread.error
+
 
 class ThreadBase:
     """ A base class for both Thread and ExternalThread in this
@@ -78,11 +79,13 @@ class ThreadBase:
         else:
             self.__dict__[key] = value
 
+
 # Copy these static methods from Panda's Thread object.  These are
 # useful if you may be running in Panda's SIMPLE_THREADS compilation
 # mode.
 ThreadBase.forceYield = core.Thread.forceYield
 ThreadBase.considerYield = core.Thread.considerYield
+
 
 class Thread(ThreadBase):
     """ This class provides a wrapper around Panda's PythonThread
@@ -147,7 +150,7 @@ class Thread(ThreadBase):
 
         self.__target(*self.__args, **self.__kwargs)
 
-    def join(self, timeout = None):
+    def join(self, timeout=None):
         # We don't support a timed join here, sorry.
         assert timeout is None
         thread = self.__thread
@@ -160,6 +163,7 @@ class Thread(ThreadBase):
     def setName(self, name):
         self.__dict__['name'] = name
         self.__thread.setName(name)
+
 
 class ExternalThread(ThreadBase):
     """ Returned for a Thread object that wasn't created by this
@@ -185,11 +189,12 @@ class ExternalThread(ThreadBase):
     def run(self):
         raise RuntimeError
 
-    def join(self, timeout = None):
+    def join(self, timeout=None):
         raise RuntimeError
 
     def setDaemon(self, daemon):
         raise RuntimeError
+
 
 class MainThread(ExternalThread):
     """ Returned for the MainThread object. """
@@ -198,15 +203,16 @@ class MainThread(ExternalThread):
         ExternalThread.__init__(self, extThread, threadId)
         self.__dict__['daemon'] = False
 
+
 class Lock(core.Mutex):
     """ This class provides a wrapper around Panda's Mutex object.
     The wrapper is designed to emulate Python's own threading.Lock
     object. """
 
-    def __init__(self, name = "PythonLock"):
+    def __init__(self, name="PythonLock"):
         core.Mutex.__init__(self, name)
 
-    def acquire(self, blocking = True):
+    def acquire(self, blocking=True):
         if blocking:
             core.Mutex.acquire(self)
             return True
@@ -218,15 +224,16 @@ class Lock(core.Mutex):
     def __exit__(self, t, v, tb):
         self.release()
 
+
 class RLock(core.ReMutex):
     """ This class provides a wrapper around Panda's ReMutex object.
     The wrapper is designed to emulate Python's own threading.RLock
     object. """
 
-    def __init__(self, name = "PythonRLock"):
+    def __init__(self, name="PythonRLock"):
         core.ReMutex.__init__(self, name)
 
-    def acquire(self, blocking = True):
+    def acquire(self, blocking=True):
         if blocking:
             core.ReMutex.acquire(self)
             return True
@@ -244,7 +251,7 @@ class Condition(core.ConditionVarFull):
     object.  The wrapper is designed to emulate Python's own
     threading.Condition object. """
 
-    def __init__(self, lock = None):
+    def __init__(self, lock=None):
         if not lock:
             lock = Lock()
 
@@ -261,7 +268,7 @@ class Condition(core.ConditionVarFull):
     def release(self):
         self.__lock.release()
 
-    def wait(self, timeout = None):
+    def wait(self, timeout=None):
         if timeout is None:
             core.ConditionVarFull.wait(self)
         else:
@@ -277,15 +284,16 @@ class Condition(core.ConditionVarFull):
     def __exit__(self, t, v, tb):
         self.release()
 
+
 class Semaphore(core.Semaphore):
     """ This class provides a wrapper around Panda's Semaphore
     object.  The wrapper is designed to emulate Python's own
     threading.Semaphore object. """
 
-    def __init__(self, value = 1):
+    def __init__(self, value=1):
         core.Semaphore.__init__(self, value)
 
-    def acquire(self, blocking = True):
+    def acquire(self, blocking=True):
         if blocking:
             core.Semaphore.acquire(self)
             return True
@@ -297,12 +305,13 @@ class Semaphore(core.Semaphore):
     def __exit__(self, t, v, tb):
         self.release()
 
+
 class BoundedSemaphore(Semaphore):
     """ This class provides a wrapper around Panda's Semaphore
     object.  The wrapper is designed to emulate Python's own
     threading.BoundedSemaphore object. """
 
-    def __init__(self, value = 1):
+    def __init__(self, value=1):
         self.__max = value
         Semaphore.__init__(value)
 
@@ -311,6 +320,7 @@ class BoundedSemaphore(Semaphore):
             raise ValueError
 
         Semaphore.release(self)
+
 
 class Event:
     """ This class is designed to emulate Python's own threading.Event
@@ -343,7 +353,7 @@ class Event:
         finally:
             self.__lock.release()
 
-    def wait(self, timeout = None):
+    def wait(self, timeout=None):
         self.__lock.acquire()
         try:
             if timeout is None:
@@ -361,6 +371,7 @@ class Event:
 
         finally:
             self.__lock.release()
+
 
 class Timer(Thread):
     """Call a function after a specified number of seconds:
@@ -388,6 +399,7 @@ class Timer(Thread):
             self.function(*self.args, **self.kwargs)
         self.finished.set()
 
+
 def _create_thread_wrapper(t, threadId):
     """ Creates a thread wrapper for the indicated external thread. """
     if isinstance(t, core.MainThread):
@@ -397,15 +409,19 @@ def _create_thread_wrapper(t, threadId):
 
     return pyt
 
+
 def current_thread():
     t = core.Thread.getCurrentThread()
     return _thread._get_thread_wrapper(t, _create_thread_wrapper)
+
 
 def main_thread():
     t = core.Thread.getMainThread()
     return _thread._get_thread_wrapper(t, _create_thread_wrapper)
 
+
 currentThread = current_thread
+
 
 def enumerate():
     tlist = []
@@ -418,23 +434,32 @@ def enumerate():
     finally:
         _thread._threadsLock.release()
 
+
 def active_count():
     return len(enumerate())
+
 
 activeCount = active_count
 
 _settrace_func = None
+
+
 def settrace(func):
     global _settrace_func
     _settrace_func = func
 
+
 _setprofile_func = None
+
+
 def setprofile(func):
     global _setprofile_func
     _setprofile_func = func
 
-def stack_size(size = None):
+
+def stack_size(size=None):
     raise ThreadError
+
 
 if __debug__:
     def _test():
@@ -462,7 +487,7 @@ if __debug__:
 
             def __init__(self, limit):
                 _Verbose.__init__(self)
-                self.mon = Lock(name = "BoundedQueue.mon")
+                self.mon = Lock(name="BoundedQueue.mon")
                 self.rc = Condition(self.mon)
                 self.wc = Condition(self.mon)
                 self.limit = limit
@@ -504,7 +529,6 @@ if __debug__:
                     counter = counter + 1
                     self.queue.put("%s.%d" % (self.getName(), counter))
                     _sleep(random() * 0.00001)
-
 
         class ConsumerThread(Thread):
 

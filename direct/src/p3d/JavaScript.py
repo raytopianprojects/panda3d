@@ -6,7 +6,9 @@ code that runs in a browser via the web plugin.
    The browser plug-in is no longer supported.
 """
 
-__all__ = ["UndefinedObject", "Undefined", "ConcreteStruct", "BrowserObject", "MethodWrapper"]
+__all__ = ["UndefinedObject", "Undefined",
+           "ConcreteStruct", "BrowserObject", "MethodWrapper"]
+
 
 class UndefinedObject:
     """ This is a special object that is returned by the browser to
@@ -18,14 +20,16 @@ class UndefinedObject:
     def __bool__(self):
         return False
 
-    __nonzero__ = __bool__ # Python 2
+    __nonzero__ = __bool__  # Python 2
 
     def __str__(self):
         return "Undefined"
 
+
 # In fact, we normally always return this precise instance of the
 # UndefinedObject.
 Undefined = UndefinedObject()
+
 
 class ConcreteStruct:
     """ Python objects that inherit from this class are passed to
@@ -45,6 +49,7 @@ class ConcreteStruct:
         to restrict the set of properties that are uploaded. """
 
         return list(self.__dict__.items())
+
 
 class BrowserObject:
     """ This class provides the Python wrapper around some object that
@@ -90,7 +95,7 @@ class BrowserObject:
     def __bool__(self):
         return True
 
-    __nonzero__ = __bool__ # Python 2
+    __nonzero__ = __bool__  # Python 2
 
     def __call__(self, *args, **kw):
         needsResponse = True
@@ -118,11 +123,13 @@ class BrowserObject:
                     # assume we're not waiting for a response.
                     if args[0].startswith('void '):
                         needsResponse = False
-                    result = self.__runner.scriptRequest('eval', parentObj, value = args[0], needsResponse = needsResponse)
+                    result = self.__runner.scriptRequest(
+                        'eval', parentObj, value=args[0], needsResponse=needsResponse)
                 else:
                     # This is a normal method call.
                     try:
-                        result = self.__runner.scriptRequest('call', parentObj, propertyName = attribName, value = args, needsResponse = needsResponse)
+                        result = self.__runner.scriptRequest(
+                            'call', parentObj, propertyName=attribName, value=args, needsResponse=needsResponse)
                     except EnvironmentError:
                         # Problem on the call.  Maybe no such method?
                         raise AttributeError
@@ -134,7 +141,8 @@ class BrowserObject:
 
             else:
                 # Call it as a plain function.
-                result = self.__runner.scriptRequest('call', self, value = args, needsResponse = needsResponse)
+                result = self.__runner.scriptRequest(
+                    'call', self, value=args, needsResponse=needsResponse)
         except EnvironmentError:
             # Some odd problem on the call.
             raise TypeError
@@ -155,11 +163,11 @@ class BrowserObject:
         # No cache.  Go query the browser for the desired value.
         try:
             value = self.__runner.scriptRequest('get_property', self,
-                                                propertyName = name)
+                                                propertyName=name)
         except EnvironmentError:
             # Failed to retrieve the attribute.  But maybe there's a
             # method instead?
-            if self.__runner.scriptRequest('has_method', self, propertyName = name):
+            if self.__runner.scriptRequest('has_method', self, propertyName=name):
                 # Yes, so create a method wrapper for it.
                 return self.__cacheMethod(name)
 
@@ -180,8 +188,8 @@ class BrowserObject:
             return
 
         result = self.__runner.scriptRequest('set_property', self,
-                                             propertyName = name,
-                                             value = value)
+                                             propertyName=name,
+                                             value=value)
         if not result:
             raise AttributeError(name)
 
@@ -191,7 +199,7 @@ class BrowserObject:
             return
 
         result = self.__runner.scriptRequest('del_property', self,
-                                             propertyName = name)
+                                             propertyName=name)
         if not result:
             raise AttributeError(name)
 
@@ -203,7 +211,7 @@ class BrowserObject:
 
         try:
             value = self.__runner.scriptRequest('get_property', self,
-                                                propertyName = str(key))
+                                                propertyName=str(key))
         except EnvironmentError:
             # Failed to retrieve the property.  We return IndexError
             # for numeric keys so we can properly support Python's
@@ -218,8 +226,8 @@ class BrowserObject:
 
     def __setitem__(self, key, value):
         result = self.__runner.scriptRequest('set_property', self,
-                                             propertyName = str(key),
-                                             value = value)
+                                             propertyName=str(key),
+                                             value=value)
         if not result:
             if isinstance(key, str):
                 raise KeyError(key)
@@ -228,12 +236,13 @@ class BrowserObject:
 
     def __delitem__(self, key):
         result = self.__runner.scriptRequest('del_property', self,
-                                             propertyName = str(key))
+                                             propertyName=str(key))
         if not result:
             if isinstance(key, str):
                 raise KeyError(key)
             else:
                 raise IndexError(key)
+
 
 class MethodWrapper:
     """ This is a Python wrapper around a property of a BrowserObject
@@ -251,7 +260,7 @@ class MethodWrapper:
     def __bool__(self):
         return True
 
-    __nonzero__ = __bool__ # Python 2
+    __nonzero__ = __bool__  # Python 2
 
     def __call__(self, *args, **kw):
         needsResponse = True
@@ -278,11 +287,13 @@ class MethodWrapper:
                 # assume we're not waiting for a response.
                 if args[0].startswith('void '):
                     needsResponse = False
-                result = self.__runner.scriptRequest('eval', parentObj, value = args[0], needsResponse = needsResponse)
+                result = self.__runner.scriptRequest(
+                    'eval', parentObj, value=args[0], needsResponse=needsResponse)
             else:
                 # This is a normal method call.
                 try:
-                    result = self.__runner.scriptRequest('call', parentObj, propertyName = attribName, value = args, needsResponse = needsResponse)
+                    result = self.__runner.scriptRequest(
+                        'call', parentObj, propertyName=attribName, value=args, needsResponse=needsResponse)
                 except EnvironmentError:
                     # Problem on the call.  Maybe no such method?
                     raise AttributeError

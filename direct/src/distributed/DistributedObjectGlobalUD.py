@@ -5,6 +5,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 
 import sys
 
+
 class DistributedObjectGlobalUD(DistributedObjectUD):
     notify = directNotify.newCategory('DistributedObjectGlobalUD')
 
@@ -13,7 +14,7 @@ class DistributedObjectGlobalUD(DistributedObjectUD):
 
     def __init__(self, air):
         DistributedObjectUD.__init__(self, air)
-        self.ExecNamespace = {"self":self}
+        self.ExecNamespace = {"self": self}
 
     def announceGenerate(self):
         self.air.registerForChannel(self.doId)
@@ -21,11 +22,12 @@ class DistributedObjectGlobalUD(DistributedObjectUD):
 
     def delete(self):
         self.air.unregisterForChannel(self.doId)
-        ## self.air.removeDOFromTables(self)
+        # self.air.removeDOFromTables(self)
         DistributedObjectUD.delete(self)
 
     def execCommand(self, command, mwMgrId, avId, zoneId):
-        text = str(self.__execMessage(command))[:config.GetInt("ai-debug-length",300)]
+        text = str(self.__execMessage(command))[
+            :config.GetInt("ai-debug-length", 300)]
         self.notify.info(text)
 
     def __execMessage(self, message):
@@ -36,7 +38,7 @@ class DistributedObjectGlobalUD(DistributedObjectUD):
             for key, value in panda3d.core.__dict__.items():
                 if not key.startswith('__'):
                     self.ExecNamespace[key] = value
-            #self.importExecNamespace()
+            # self.importExecNamespace()
 
         # Now try to evaluate the expression using ChatInputNormal.ExecNamespace as
         # the local namespace.

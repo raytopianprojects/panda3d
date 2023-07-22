@@ -55,10 +55,10 @@ class ParticleDemo(ShowBase):
         self.accept('6', self.loadParticleConfig, ['fireish.ptf'])
 
         self.accept('escape', sys.exit)
-        base.disableMouse()
+        base.disable_mouse()
         base.camera.setPos(0, -20, 2)
-        base.camLens.setFov(25)
-        base.setBackgroundColor(0, 0, 0)
+        base.cam_lens.setFov(25)
+        base.set_background_color(0, 0, 0)
 
         # This command is required for Panda to render particles
         base.enableParticles()

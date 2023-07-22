@@ -107,7 +107,7 @@ class myLevelEditor(AppShell):
 
     def __init__(self, parent = None, **kw):
 
-        base.setBackgroundColor(0,0,0)
+        base.set_background_color(0, 0, 0)
         self.parent = parent
         ## Check TkTool is activated! ##
         self.wantTK = config.GetBool('want-tk', 0)
@@ -222,7 +222,7 @@ class myLevelEditor(AppShell):
         ###  Collision detection
         #################################
         self.cTrav = CollisionTraverser()
-        base.cTrav = self.cTrav
+        base.c_trav = self.cTrav
 
         for event in self.dataFlowEvents:
             self.accept(event[0], event[1], extraArgs = event[2:])
@@ -907,7 +907,7 @@ class myLevelEditor(AppShell):
 
         # Try to re-open the side window again
         while self.sideWindow == None:
-            wColor = base.getBackgroundColor()
+            wColor = base.get_background_color()
             self.worldColor[0] = wColor.getX()
             self.worldColor[1] = wColor.getY()
             self.worldColor[2] = wColor.getZ()
@@ -1580,7 +1580,7 @@ class myLevelEditor(AppShell):
 
     def toggleBackface(self):
         ################################################################
-        # toggleBackface(self)
+        # toggle_backface(self)
         # This function will be called when user use the hot-key to change the
         # world setting. (From seSession)
         # In this function we will restore the change and let side window know
@@ -1593,7 +1593,7 @@ class myLevelEditor(AppShell):
 
     def toggleTexture(self):
         ################################################################
-        # toggleTexture(self)
+        # toggle_texture(self)
         # This function will be called when user use the hot-key to change the
         # world setting. (From seSession)
         # In this function we will restore the change and let side window know
@@ -1606,7 +1606,7 @@ class myLevelEditor(AppShell):
 
     def toggleWireframe(self):
         ################################################################
-        # toggleWireframe(self)
+        # toggle_wireframe(self)
         # This function will be called when user use the hot-key to change the
         # world setting. (From seSession)
         # In this function we will restore the change and let side window know
@@ -1709,6 +1709,6 @@ class myLevelEditor(AppShell):
 
 
 
-editor = myLevelEditor(parent = base.tkRoot)
+editor = myLevelEditor(parent = base.tk_root)
 
 base.run()

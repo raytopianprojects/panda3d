@@ -10,6 +10,7 @@ notify = directNotify.newCategory("ExceptionVarDump")
 
 reentry = 0
 
+
 def _varDump__init__(self, *args, **kArgs):
     global reentry
     if reentry > 0:
@@ -30,7 +31,9 @@ def _varDump__init__(self, *args, **kArgs):
     self._moved__init__(*args, **kArgs)
     reentry -= 1
 
+
 sReentry = 0
+
 
 def _varDump__print(exc):
     global sReentry
@@ -60,6 +63,7 @@ def _varDump__print(exc):
     notify.info(exc._savedExcString)
     sReentry -= 1
 
+
 oldExcepthook = None
 # store these values here so that Task.py can always reliably access them
 # from its main exception handler
@@ -68,8 +72,10 @@ wantStackDumpUpload = False
 variableDumpReasons = []
 dumpOnExceptionInit = False
 
+
 class _AttrNotFound:
     pass
+
 
 def _excepthookDumpVars(eType, eValue, tb):
     origTb = tb
@@ -79,8 +85,8 @@ def _excepthookDumpVars(eType, eValue, tb):
         s += excStr
     notify.info(s)
     s = 'DUMPING STACK FRAME VARIABLES'
-    #import pdb;pdb.set_trace()
-    #foundRun = False
+    # import pdb;pdb.set_trace()
+    # foundRun = False
     foundRun = True
     while tb is not None:
         frame = tb.tb_frame
@@ -123,7 +129,7 @@ def _excepthookDumpVars(eType, eValue, tb):
 
         while len(stateStack) > 0:
             name, obj, traversedIds = stateStack.pop()
-            #notify.info('%s, %s, %s' % (name, fastRepr(obj), traversedIds))
+            # notify.info('%s, %s, %s' % (name, fastRepr(obj), traversedIds))
             r = fastRepr(obj, maxLen=10)
             if type(r) is str:
                 r = r.replace('\n', '\\n')
@@ -178,6 +184,7 @@ def _excepthookDumpVars(eType, eValue, tb):
 
     oldExcepthook(eType, eValue, origTb)
 
+
 def install(log, upload):
     """Installs the exception hook."""
     global oldExcepthook
@@ -188,7 +195,8 @@ def install(log, upload):
     wantStackDumpLog = log
     wantStackDumpUpload = upload
 
-    dumpOnExceptionInit = ConfigVariableBool('variable-dump-on-exception-init', False)
+    dumpOnExceptionInit = ConfigVariableBool(
+        'variable-dump-on-exception-init', False)
     if dumpOnExceptionInit:
         # this mode doesn't completely work because exception objects
         # thrown by the interpreter don't get created until the

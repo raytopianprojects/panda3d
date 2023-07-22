@@ -5,6 +5,7 @@ __all__ = ['randHash', 'RandomNumGen']
 from direct.directnotify import DirectNotifyGlobal
 from panda3d.core import Mersenne
 
+
 def randHash(num):
     """ this returns a random 16-bit integer, given a seed integer.
     It will always return the same output given the same input.
@@ -12,11 +13,12 @@ def randHash(num):
     bit patterns (i.e. doIds or zoneIds) to numbers with random bit patterns
     """
     rng = RandomNumGen(num)
-    return rng.randint(0, (1<<16) - 1)
+    return rng.randint(0, (1 << 16) - 1)
+
 
 class RandomNumGen:
     notify = \
-      DirectNotifyGlobal.directNotify.newCategory("RandomNumGen")
+        DirectNotifyGlobal.directNotify.newCategory("RandomNumGen")
 
     def __init__(self, seed):
         """seed must be an integer or another RandomNumGen"""
@@ -87,7 +89,7 @@ class RandomNumGen:
         """randrange([start,] stop[, step])
         same as choice(range(start, stop[, step])) without construction
         of a list"""
-        ## this was lifted from Python2.2's random.py
+        # this was lifted from Python2.2's random.py
         # This code is a bit messy to make it fast for the
         # common case while still doing adequate error checking
         istart = int(start)

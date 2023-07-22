@@ -6,6 +6,7 @@ from .DirectSelection import SelectionRay
 from direct.task import Task
 from copy import deepcopy
 
+
 class DirectManipulationControl(DirectObject):
     def __init__(self):
         # Create the grid
@@ -13,8 +14,10 @@ class DirectManipulationControl(DirectObject):
         self.hitPt = Point3(0)
         self.prevHit = Vec3(0)
 
-        self.hitPtScale = Point3(0) # [gjeon] to be used in new LE's camera control
-        self.prevHitScale = Vec3(0) # [gjeon] to be used in new LE's camera control
+        # [gjeon] to be used in new LE's camera control
+        self.hitPtScale = Point3(0)
+        # [gjeon] to be used in new LE's camera control
+        self.prevHitScale = Vec3(0)
 
         self.rotationCenter = Point3(0)
         self.initScaleMag = 1
@@ -26,7 +29,7 @@ class DirectManipulationControl(DirectObject):
         self.fSetCoa = 0
         self.fHitInit = 1
         self.fScaleInit = 1
-        self.fScaleInit1 = 1 # [gjeon] to be used in new LE's camera control
+        self.fScaleInit1 = 1  # [gjeon] to be used in new LE's camera control
         self.fWidgetTop = 0
         self.fFreeManip = 1
         self.fScaling3D = 0
@@ -34,21 +37,21 @@ class DirectManipulationControl(DirectObject):
         self.fMovable = 1
         self.mode = None
         self.worldSpaceManip = False
-        #turn this on to enable separate handles for scaling
+        # turn this on to enable separate handles for scaling
         self.useSeparateScaleHandles = False
         self.actionEvents = [
             ['DIRECT-mouse1', self.manipulationStart],
             ['DIRECT-mouse1Up', self.manipulationStop],
             ['tab', self.toggleObjectHandlesMode],
-##             ['.', self.objectHandles.multiplyScalingFactorBy, 2.0],
-##             ['>', self.objectHandles.multiplyScalingFactorBy, 2.0],
-##             [',', self.objectHandles.multiplyScalingFactorBy, 0.5],
-##             ['<', self.objectHandles.multiplyScalingFactorBy, 0.5],
+            # ['.', self.objectHandles.multiplyScalingFactorBy, 2.0],
+            # ['>', self.objectHandles.multiplyScalingFactorBy, 2.0],
+            # [',', self.objectHandles.multiplyScalingFactorBy, 0.5],
+            # ['<', self.objectHandles.multiplyScalingFactorBy, 0.5],
             ['DIRECT-widgetScaleUp', self.scaleWidget, 2.0],
             ['DIRECT-widgetScaleDown', self.scaleWidget, 0.5],
             ['shift-f', self.objectHandles.growToFit],
             ['i', self.plantSelectedNodePath],
-            ]
+        ]
         self.defaultSkipFlags = SKIP_HIDDEN | SKIP_BACKFACE
         self.optionalSkipFlags = 0
         self.unmovableTagList = []
@@ -83,7 +86,8 @@ class DirectManipulationControl(DirectObject):
         self.topViewWidget = ObjectHandles('topViewWidget')
         self.frontViewWidget = ObjectHandles('frontViewWidget')
         self.leftViewWidget = ObjectHandles('leftViewWidget')
-        self.widgetList = [self.topViewWidget, self.frontViewWidget, self.leftViewWidget, self.objectHandles]
+        self.widgetList = [self.topViewWidget, self.frontViewWidget,
+                           self.leftViewWidget, self.objectHandles]
 
         self.topViewWidget.hide(BitMask32.bit(1))
         self.topViewWidget.hide(BitMask32.bit(2))
@@ -113,11 +117,12 @@ class DirectManipulationControl(DirectObject):
            self.fScaling3D == 0:
 
             # Check for a widget hit point
-            entry = base.direct.iRay.pickWidget(skipFlags = SKIP_WIDGET)
+            entry = base.direct.iRay.pickWidget(skipFlags=SKIP_WIDGET)
             # Did we hit a widget?
             if entry:
                 # Yes!
-                self.hitPt.assign(entry.getSurfacePoint(entry.getFromNodePath()))
+                self.hitPt.assign(entry.getSurfacePoint(
+                    entry.getFromNodePath()))
                 self.hitPtDist = Vec3(self.hitPt).length()
                 # Constraint determined by nodes name
                 self.constraint = entry.getIntoNodePath().getName()
@@ -168,8 +173,8 @@ class DirectManipulationControl(DirectObject):
         return Task.done
 
     def watchMouseTask(self, state):
-        if (((abs (state.initX - base.direct.dr.mouseX)) > 0.01) or
-            ((abs (state.initY - base.direct.dr.mouseY)) > 0.01)):
+        if (((abs(state.initX - base.direct.dr.mouseX)) > 0.01) or
+                ((abs(state.initY - base.direct.dr.mouseY)) > 0.01)):
             taskMgr.remove('manip-move-wait')
             self.mode = 'move'
             self.manipulateObject()
@@ -197,11 +202,12 @@ class DirectManipulationControl(DirectObject):
         endX = base.direct.dr.mouseX
         endY = base.direct.dr.mouseY
 
-        if (((abs (endX - startX)) < 0.01) and
-            ((abs (endY - startY)) < 0.01)):
+        if (((abs(endX - startX)) < 0.01) and
+                ((abs(endY - startY)) < 0.01)):
             return
 
-        self.marquee = LineNodePath(render2d, 'marquee', 0.5, VBase4(.8, .6, .6, 1))
+        self.marquee = LineNodePath(
+            render2d, 'marquee', 0.5, VBase4(.8, .6, .6, 1))
         self.marqueeInfo = (startX, startY, endX, endY)
         self.marquee.drawLines([
             [(startX, 0, startY), (startX, 0, endY)],
@@ -252,8 +258,10 @@ class DirectManipulationControl(DirectObject):
                 lens.extrude((endX, endY), nlr, flr)
                 lens.extrude((startX, endY), nll, fll)
 
-                marqueeFrustum = BoundingHexahedron(fll, flr, fur, ful, nll, nlr, nur, nul);
-                marqueeFrustum.xform(base.direct.cam.getNetTransform().getMat())
+                marqueeFrustum = BoundingHexahedron(
+                    fll, flr, fur, ful, nll, nlr, nur, nul)
+                marqueeFrustum.xform(
+                    base.direct.cam.getNetTransform().getMat())
 
                 base.marqueeFrustum = marqueeFrustum
 
@@ -270,9 +278,9 @@ class DirectManipulationControl(DirectObject):
                     if (skipFlags & SKIP_HIDDEN) and geom.isHidden():
                         # Skip if hidden node
                         continue
-##                     elif (skipFlags & SKIP_BACKFACE) and base.direct.iRay.isEntryBackfacing():
-##                         # Skip, if backfacing poly
-##                         pass
+# elif (skipFlags & SKIP_BACKFACE) and base.direct.iRay.isEntryBackfacing():
+# Skip, if backfacing poly
+# pass
                     elif ((skipFlags & SKIP_CAMERA) and
                           (camera in geom.getAncestors())):
                         # Skip if parented to a camera.
@@ -315,7 +323,8 @@ class DirectManipulationControl(DirectObject):
                             nur = Point3(max[0], min[1], max[2])
                             nul = Point3(min[0], min[1], max[2])
 
-                            tbb = BoundingHexahedron(fll, flr, fur, ful, nll, nlr, nur, nul)
+                            tbb = BoundingHexahedron(
+                                fll, flr, fur, ful, nll, nlr, nur, nul)
 
                             tbb.xform(geom.getNetTransform().getMat())
 
@@ -329,16 +338,18 @@ class DirectManipulationControl(DirectObject):
                     base.direct.select(nodePath, 1)
 
             else:
-                entry = base.direct.iRay.pickGeom(skipFlags = skipFlags)
+                entry = base.direct.iRay.pickGeom(skipFlags=skipFlags)
                 if entry:
                     # Record hit point information
-                    self.hitPt.assign(entry.getSurfacePoint(entry.getFromNodePath()))
+                    self.hitPt.assign(entry.getSurfacePoint(
+                        entry.getFromNodePath()))
                     self.hitPtDist = Vec3(self.hitPt).length()
                     # Select it
-                    base.direct.select(entry.getIntoNodePath(), base.direct.fShift)
+                    base.direct.select(
+                        entry.getIntoNodePath(), base.direct.fShift)
                 else:
                     base.direct.deselectAll()
-        #elif self.mode == 'move':
+        # elif self.mode == 'move':
         self.manipulateObjectCleanup()
 
         self.mode = None
@@ -409,7 +420,7 @@ class DirectManipulationControl(DirectObject):
     def enableManipulation(self):
         # Accept events
         for event in self.actionEvents:
-            self.accept(event[0], event[1], extraArgs = event[2:])
+            self.accept(event[0], event[1], extraArgs=event[2:])
 
         self.fAllowSelectionOnly = 0
 
@@ -473,13 +484,13 @@ class DirectManipulationControl(DirectObject):
         else:
             self.objectHandles.disabledModeColor()
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Function:   get edit types list for specified objects which indicate
     #             how editable the objects are
     # Parameters: object, list of object to get edit types for
     # Changes:    none
     # Returns:    list of edit types
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     def getEditTypes(self, objects):
         # See if any of the selected in the don't manipulate tag list
         editTypes = 0
@@ -523,7 +534,7 @@ class DirectManipulationControl(DirectObject):
                 oh = 'base.direct.manipulationControl.objectHandles'
                 cluster(oh + '.showGuides()', 0)
                 cluster(oh + '.hideAllHandles()', 0)
-                cluster(oh + ('.showHandle("%s")'% self.constraint), 0)
+                cluster(oh + ('.showHandle("%s")' % self.constraint), 0)
             # Record relationship between selected nodes and widget
             base.direct.selected.getWrtAll()
             # hide the bbox of the selected objects during interaction
@@ -633,7 +644,7 @@ class DirectManipulationControl(DirectObject):
                 base.direct.widget.getMat(base.direct.selected.last))
         else:
             # Move the objects with the widget
-                base.direct.selected.moveWrtWidgetAll()
+            base.direct.selected.moveWrtWidgetAll()
         # Continue
         return Task.cont
 
@@ -707,11 +718,12 @@ class DirectManipulationControl(DirectObject):
                         widget.setPos(self.gridSnapping(widget, offset))
                     else:
                         widget.setPos(widget, offset)
-                #if base.direct.camera.getName() != 'persp':
-                    #self.prevHit.assign(self.hitPt)
+                # if base.direct.camera.getName() != 'persp':
+                    # self.prevHit.assign(self.hitPt)
             else:
                 if self.fGridSnap:
-                    base.direct.widget.setPos(self.gridSnapping(base.direct.widget, offset))
+                    base.direct.widget.setPos(
+                        self.gridSnapping(base.direct.widget, offset))
                 else:
                     base.direct.widget.setPos(base.direct.widget, offset)
 
@@ -741,7 +753,8 @@ class DirectManipulationControl(DirectObject):
                     self.prevHit.assign(self.hitPt)
             else:
                 if self.fGridSnap:
-                    base.direct.widget.setPos(self.gridSnapping(base.direct.widget, offset))
+                    base.direct.widget.setPos(
+                        self.gridSnapping(base.direct.widget, offset))
                 else:
                     base.direct.widget.setPos(base.direct.widget, offset)
 
@@ -815,7 +828,7 @@ class DirectManipulationControl(DirectObject):
         elif type == 'edge?':
             # Checking to see if we are viewing edge-on
             # Check angle between two vectors
-            return(abs(widgetDir.dot(widgetAxis)) < .2)
+            return (abs(widgetDir.dot(widgetAxis)) < .2)
 
     ### FREE MANIPULATION METHODS ###
     def xlateCamXZ(self, state):
@@ -915,7 +928,8 @@ class DirectManipulationControl(DirectObject):
 
     def scale1D(self, state):
         if hasattr(base.direct, "manipulationControl") and base.direct.manipulationControl.fMultiView:
-            self.hitPtScale.assign(self.objectHandles.getAxisIntersectPt(self.constraint[:1]))
+            self.hitPtScale.assign(
+                self.objectHandles.getAxisIntersectPt(self.constraint[:1]))
             self.hitPtScale = self.objectHandles.getMat().xformVec(self.hitPtScale)
             if self.fScaleInit1:
                 # First time through just record hit point
@@ -925,26 +939,30 @@ class DirectManipulationControl(DirectObject):
             else:
                 widgetPos = base.direct.widget.getPos()
                 d0 = (self.prevHitScale).length()
-                if d0 == 0: #make sure we don't divide by zero
+                if d0 == 0:  # make sure we don't divide by zero
                     d0 = 0.001
                 d1 = (self.hitPtScale).length()
-                if d1 == 0:  #make sure we don't set scale to zero
+                if d1 == 0:  # make sure we don't set scale to zero
                     d1 = 0.001
                 currScale = self.origScale
                 # Scale factor is ratio current mag with init mag
                 if self.constraint[:1] == 'x':
-                    currScale = Vec3(currScale.getX() * d1/d0, currScale.getY(), currScale.getZ())
+                    currScale = Vec3(currScale.getX() * d1/d0,
+                                     currScale.getY(), currScale.getZ())
                 elif self.constraint[:1] == 'y':
-                    currScale = Vec3(currScale.getX(), currScale.getY() * d1/d0, currScale.getZ())
+                    currScale = Vec3(
+                        currScale.getX(), currScale.getY() * d1/d0, currScale.getZ())
                 elif self.constraint[:1] == 'z':
-                    currScale = Vec3(currScale.getX(), currScale.getY(), currScale.getZ() * d1/d0)
+                    currScale = Vec3(
+                        currScale.getX(), currScale.getY(), currScale.getZ() * d1/d0)
                 base.direct.widget.setScale(currScale)
             return
 
         # [gjeon] Constrained 1D scale of the selected node based upon up down mouse motion
         if self.fScaleInit:
             self.fScaleInit = 0
-            self.initScaleMag = Vec3(self.objectHandles.getAxisIntersectPt(self.constraint[:1])).length()
+            self.initScaleMag = Vec3(
+                self.objectHandles.getAxisIntersectPt(self.constraint[:1])).length()
             # record initial scale
             self.initScale = base.direct.widget.getScale()
         # Reset fHitInitFlag
@@ -952,16 +970,18 @@ class DirectManipulationControl(DirectObject):
 
         # reset the scale of the scaling widget so the calls to
         # getAxisIntersectPt calculate the correct distance
-        base.direct.widget.setScale(1,1,1)
+        base.direct.widget.setScale(1, 1, 1)
 
         # Scale factor is ratio current mag with init mag
         if self.constraint[:1] == 'x':
             currScale = Vec3(self.initScale.getX() *
-                             self.objectHandles.getAxisIntersectPt('x').length() / self.initScaleMag,
+                             self.objectHandles.getAxisIntersectPt(
+                                 'x').length() / self.initScaleMag,
                              self.initScale.getY(), self.initScale.getZ())
         elif self.constraint[:1] == 'y':
             currScale = Vec3(self.initScale.getX(),
-                             self.initScale.getY() * self.objectHandles.getAxisIntersectPt('y').length() / self.initScaleMag,
+                             self.initScale.getY() * self.objectHandles.getAxisIntersectPt('y').length() /
+                             self.initScaleMag,
                              self.initScale.getZ())
         elif self.constraint[:1] == 'z':
             currScale = Vec3(self.initScale.getX(), self.initScale.getY(),
@@ -972,7 +992,8 @@ class DirectManipulationControl(DirectObject):
     def scale3D(self, state):
         if hasattr(base.direct, "manipulationControl") and base.direct.manipulationControl.fMultiView:
             if self.useSeparateScaleHandles:
-                self.hitPtScale.assign(self.objectHandles.getAxisIntersectPt(self.constraint[:1]))
+                self.hitPtScale.assign(
+                    self.objectHandles.getAxisIntersectPt(self.constraint[:1]))
                 self.hitPtScale = self.objectHandles.getMat().xformVec(self.hitPtScale)
                 if self.fScaleInit1:
                     # First time through just record hit point
@@ -982,18 +1003,20 @@ class DirectManipulationControl(DirectObject):
                 else:
                     widgetPos = base.direct.widget.getPos()
                     d0 = (self.prevHitScale).length()
-                    if d0 == 0: #make sure we don't divide by zero
+                    if d0 == 0:  # make sure we don't divide by zero
                         d0 = 0.001
                     d1 = (self.hitPtScale).length()
-                    if d1 == 0:  #make sure we don't set scale to zero
+                    if d1 == 0:  # make sure we don't set scale to zero
                         d1 = 0.001
                     currScale = self.origScale
                     # Scale factor is ratio current mag with init mag
-                    currScale = Vec3(currScale.getX() * d1/d0, currScale.getY() * d1/d0, currScale.getZ() * d1/d0)
+                    currScale = Vec3(
+                        currScale.getX() * d1/d0, currScale.getY() * d1/d0, currScale.getZ() * d1/d0)
                     base.direct.widget.setScale(currScale)
                 return
             else:
-                self.hitPtScale.assign(self.objectHandles.getMouseIntersectPt())
+                self.hitPtScale.assign(
+                    self.objectHandles.getMouseIntersectPt())
 
                 if self.fScaleInit1:
                     # First time through just record hit point
@@ -1003,11 +1026,11 @@ class DirectManipulationControl(DirectObject):
                 else:
                     widgetPos = base.direct.widget.getPos()
                     d0 = (self.prevHitScale - widgetPos).length()
-                    if d0 == 0: #make sure we don't divide by zero
+                    if d0 == 0:  # make sure we don't divide by zero
                         d0 = 0.001
                     d1 = (self.hitPtScale - widgetPos).length()
                     if d1 == 0:
-                        d1 = 0.001  #make sure we don't set scale to zero
+                        d1 = 0.001  # make sure we don't set scale to zero
                     currScale = self.origScale
                     currScale = currScale * d1/d0
                     base.direct.widget.setScale(currScale)
@@ -1021,7 +1044,7 @@ class DirectManipulationControl(DirectObject):
             self.manipRef.setHpr(base.direct.camera, 0, 0, 0)
             self.initScaleMag = Vec3(
                 self.objectHandles.getWidgetIntersectPt(
-                self.manipRef, 'y')).length()
+                    self.manipRef, 'y')).length()
             # record initial scale
             self.initScale = base.direct.widget.getScale()
         # Reset fHitInitFlag
@@ -1031,9 +1054,9 @@ class DirectManipulationControl(DirectObject):
         currScale = (
             self.initScale *
             (self.objectHandles.getWidgetIntersectPt(
-            self.manipRef, 'y').length() /
-             self.initScaleMag)
-            )
+                self.manipRef, 'y').length() /
+                self.initScaleMag)
+        )
         base.direct.widget.setScale(currScale)
 
     ## Utility functions ##
@@ -1041,7 +1064,7 @@ class DirectManipulationControl(DirectObject):
         """ Move selected object to intersection point of cursor on scene """
         # Check for intersection
         entry = base.direct.iRay.pickGeom(
-            skipFlags = SKIP_HIDDEN | SKIP_BACKFACE | SKIP_CAMERA)
+            skipFlags=SKIP_HIDDEN | SKIP_BACKFACE | SKIP_CAMERA)
         # MRM: Need to handle moving COA
         if (entry != None) and (base.direct.selected.last != None):
             # Record undo point
@@ -1057,6 +1080,7 @@ class DirectManipulationControl(DirectObject):
             # Let everyone know that something was moved
             messenger.send('DIRECT_manipulateObjectCleanup',
                            [base.direct.selected.getSelectedAsList()])
+
 
 class ObjectHandles(NodePath, DirectObject):
     def __init__(self, name='objectHandles'):
@@ -1132,28 +1156,28 @@ class ObjectHandles(NodePath, DirectObject):
         self.hideGuides()
 
         # tag with name so they can skipped during iRay selection
-        self.xPostCollision.setTag('WidgetName',name)
-        self.yPostCollision.setTag('WidgetName',name)
-        self.zPostCollision.setTag('WidgetName',name)
+        self.xPostCollision.setTag('WidgetName', name)
+        self.yPostCollision.setTag('WidgetName', name)
+        self.zPostCollision.setTag('WidgetName', name)
 
-        self.xRingCollision.setTag('WidgetName',name)
-        self.yRingCollision.setTag('WidgetName',name)
-        self.zRingCollision.setTag('WidgetName',name)
+        self.xRingCollision.setTag('WidgetName', name)
+        self.yRingCollision.setTag('WidgetName', name)
+        self.zRingCollision.setTag('WidgetName', name)
 
-        self.xDiscCollision.setTag('WidgetName',name)
-        self.yDiscCollision.setTag('WidgetName',name)
-        self.zDiscCollision.setTag('WidgetName',name)
+        self.xDiscCollision.setTag('WidgetName', name)
+        self.yDiscCollision.setTag('WidgetName', name)
+        self.zDiscCollision.setTag('WidgetName', name)
 
-        self.xScaleCollision.setTag('WidgetName',name)
-        self.yScaleCollision.setTag('WidgetName',name)
-        self.zScaleCollision.setTag('WidgetName',name)
+        self.xScaleCollision.setTag('WidgetName', name)
+        self.yScaleCollision.setTag('WidgetName', name)
+        self.zScaleCollision.setTag('WidgetName', name)
 
         # name disc geoms so they can be added to unpickables
         self.xDisc.find("**/+GeomNode").setName('x-disc-geom')
         self.yDisc.find("**/+GeomNode").setName('y-disc-geom')
         self.zDisc.find("**/+GeomNode").setName('z-disc-geom')
 
-        #turn scale off by default
+        # turn scale off by default
         self.disableHandles('scale')
 
         # Start with widget handles hidden
@@ -1167,7 +1191,7 @@ class ObjectHandles(NodePath, DirectObject):
         self.setColor(.5, .5, .5, 0.5, 1)
 
     def disabledModeColor(self):
-        self.setColor(0.1,0.1,0.1,0.1,1)
+        self.setColor(0.1, 0.1, 0.1, 0.1, 1)
 
     def manipModeColor(self):
         self.clearColor()
@@ -1210,23 +1234,23 @@ class ObjectHandles(NodePath, DirectObject):
             for handle in handles:
                 self.enableHandle(handle)
         elif handles == 'x':
-            self.enableHandles(['x-post','x-ring','x-disc', 'x-scale'])
+            self.enableHandles(['x-post', 'x-ring', 'x-disc', 'x-scale'])
         elif handles == 'y':
-            self.enableHandles(['y-post','y-ring','y-disc', 'y-scale'])
+            self.enableHandles(['y-post', 'y-ring', 'y-disc', 'y-scale'])
         elif handles == 'z':
-            self.enableHandles(['z-post','z-ring','z-disc', 'z-scale'])
+            self.enableHandles(['z-post', 'z-ring', 'z-disc', 'z-scale'])
         elif handles == 'post':
-            self.enableHandles(['x-post','y-post','z-post'])
+            self.enableHandles(['x-post', 'y-post', 'z-post'])
         elif handles == 'ring':
-            self.enableHandles(['x-ring','y-ring','z-ring'])
+            self.enableHandles(['x-ring', 'y-ring', 'z-ring'])
         elif handles == 'disc':
-            self.enableHandles(['x-disc','y-disc','z-disc'])
+            self.enableHandles(['x-disc', 'y-disc', 'z-disc'])
         elif handles == 'scale':
-            self.enableHandles(['x-scale','y-scale','z-scale'])
+            self.enableHandles(['x-scale', 'y-scale', 'z-scale'])
         elif handles == 'all':
-            self.enableHandles(['x-post','x-ring','x-disc','x-scale',
-                                'y-post','y-ring','y-disc','y-scale',
-                                'z-post','z-ring','z-disc','z-scale'])
+            self.enableHandles(['x-post', 'x-ring', 'x-disc', 'x-scale',
+                                'y-post', 'y-ring', 'y-disc', 'y-scale',
+                                'z-post', 'z-ring', 'z-disc', 'z-scale'])
 
     def enableHandle(self, handle):
         if handle == 'x-post':
@@ -1259,23 +1283,23 @@ class ObjectHandles(NodePath, DirectObject):
             for handle in handles:
                 self.disableHandle(handle)
         elif handles == 'x':
-            self.disableHandles(['x-post','x-ring','x-disc','x-scale'])
+            self.disableHandles(['x-post', 'x-ring', 'x-disc', 'x-scale'])
         elif handles == 'y':
-            self.disableHandles(['y-post','y-ring','y-disc','y-scale'])
+            self.disableHandles(['y-post', 'y-ring', 'y-disc', 'y-scale'])
         elif handles == 'z':
-            self.disableHandles(['z-post','z-ring','z-disc','z-scale'])
+            self.disableHandles(['z-post', 'z-ring', 'z-disc', 'z-scale'])
         elif handles == 'post':
-            self.disableHandles(['x-post','y-post','z-post'])
+            self.disableHandles(['x-post', 'y-post', 'z-post'])
         elif handles == 'ring':
-            self.disableHandles(['x-ring','y-ring','z-ring'])
+            self.disableHandles(['x-ring', 'y-ring', 'z-ring'])
         elif handles == 'disc':
-            self.disableHandles(['x-disc','y-disc','z-disc'])
+            self.disableHandles(['x-disc', 'y-disc', 'z-disc'])
         elif handles == 'scale':
-            self.disableHandles(['x-scale','y-scale','z-scale'])
+            self.disableHandles(['x-scale', 'y-scale', 'z-scale'])
         elif handles == 'all':
-            self.disableHandles(['x-post','x-ring','x-disc','x-scale',
-                                 'y-post','y-ring','y-disc','y-scale',
-                                 'z-post','z-ring','z-disc','z-scale'])
+            self.disableHandles(['x-post', 'x-ring', 'x-disc', 'x-scale',
+                                 'y-post', 'y-ring', 'y-disc', 'y-scale',
+                                 'z-post', 'z-ring', 'z-disc', 'z-scale'])
 
     def disableHandle(self, handle):
         if handle == 'x-post':
@@ -1369,7 +1393,8 @@ class ObjectHandles(NodePath, DirectObject):
 
     def setScalingFactor(self, scaleFactor):
         self.ohScalingFactor = scaleFactor
-        self.scalingNode.setScale(self.ohScalingFactor * self.directScalingFactor)
+        self.scalingNode.setScale(
+            self.ohScalingFactor * self.directScalingFactor)
 
     def getScalingFactor(self):
         return self.scalingNode.getScale()
@@ -1389,8 +1414,8 @@ class ObjectHandles(NodePath, DirectObject):
         self.ohScalingFactor = self.ohScalingFactor * factor
         sf = self.ohScalingFactor * self.directScalingFactor
         ival = self.scalingNode.scaleInterval(0.5, (sf, sf, sf),
-                                              blendType = 'easeInOut',
-                                              name = 'resizeObjectHandles')
+                                              blendType='easeInOut',
+                                              name='resizeObjectHandles')
         ival.start()
 
     def growToFit(self):
@@ -1401,8 +1426,8 @@ class ObjectHandles(NodePath, DirectObject):
         self.ohScalingFactor = sf
         sf = sf * self.directScalingFactor
         ival = self.scalingNode.scaleInterval(0.5, (sf, sf, sf),
-                                              blendType = 'easeInOut',
-                                              name = 'resizeObjectHandles')
+                                              blendType='easeInOut',
+                                              name='resizeObjectHandles')
         ival.start()
 
     def createObjectHandleLines(self):
@@ -1411,19 +1436,19 @@ class ObjectHandles(NodePath, DirectObject):
         lines = LineNodePath(self.xPost)
         lines.setColor(VBase4(1, 0, 0, 1))
         lines.setThickness(5)
-        #lines.moveTo(0, 0, 0)
-        #lines.drawTo(1.5, 0, 0)
+        # lines.moveTo(0, 0, 0)
+        # lines.drawTo(1.5, 0, 0)
         lines.moveTo(1.5, 0, 0)
-        #lines.create()
-        #lines = LineNodePath(self.xPost)
-        #lines.setColor(VBase4(1, 0, 0, 1))
-        #lines.setThickness(1.5)
-        #lines.moveTo(0, 0, 0)
+        # lines.create()
+        # lines = LineNodePath(self.xPost)
+        # lines.setColor(VBase4(1, 0, 0, 1))
+        # lines.setThickness(1.5)
+        # lines.moveTo(0, 0, 0)
         lines.drawTo(-1.5, 0, 0)
 
         arrowInfo0 = 1.3
         arrowInfo1 = 0.1
-        #lines.setThickness(5)
+        # lines.setThickness(5)
         lines.moveTo(1.5, 0, 0)
         lines.drawTo(arrowInfo0, arrowInfo1, arrowInfo1)
         lines.moveTo(1.5, 0, 0)
@@ -1436,7 +1461,7 @@ class ObjectHandles(NodePath, DirectObject):
         lines.create()
         lines.setName('x-post-line')
 
-        #X scale
+        # X scale
         self.xScale = self.xScaleGroup.attachNewNode('x-scale-visible')
         lines = LineNodePath(self.xScale)
         lines.setColor(VBase4(1, 0, 0, 1))
@@ -1457,8 +1482,8 @@ class ObjectHandles(NodePath, DirectObject):
         lines.moveTo(0, 1, 0)
         for ang in range(15, 370, 15):
             lines.drawTo(0,
-                          math.cos(deg2Rad(ang)),
-                          math.sin(deg2Rad(ang)))
+                         math.cos(deg2Rad(ang)),
+                         math.sin(deg2Rad(ang)))
         lines.create()
         lines.setName('x-ring-line')
 
@@ -1467,17 +1492,17 @@ class ObjectHandles(NodePath, DirectObject):
         lines = LineNodePath(self.yPost)
         lines.setColor(VBase4(0, 1, 0, 1))
         lines.setThickness(5)
-        #lines.moveTo(0, 0, 0)
-        #lines.drawTo(0, 1.5, 0)
+        # lines.moveTo(0, 0, 0)
+        # lines.drawTo(0, 1.5, 0)
         lines.moveTo(0, 1.5, 0)
-        #lines.create()
-        #lines = LineNodePath(self.yPost)
-        #lines.setColor(VBase4(0, 1, 0, 1))
-        #lines.setThickness(1.5)
-        #lines.moveTo(0, 0, 0)
+        # lines.create()
+        # lines = LineNodePath(self.yPost)
+        # lines.setColor(VBase4(0, 1, 0, 1))
+        # lines.setThickness(1.5)
+        # lines.moveTo(0, 0, 0)
         lines.drawTo(0, -1.5, 0)
 
-        #lines.setThickness(5)
+        # lines.setThickness(5)
         lines.moveTo(0, 1.5, 0)
         lines.drawTo(arrowInfo1, arrowInfo0, arrowInfo1)
         lines.moveTo(0, 1.5, 0)
@@ -1489,7 +1514,7 @@ class ObjectHandles(NodePath, DirectObject):
         lines.create()
         lines.setName('y-post-line')
 
-        #Y scale
+        # Y scale
         self.yScale = self.yScaleGroup.attachNewNode('y-scale-visible')
         lines = LineNodePath(self.yScale)
         lines.setColor(VBase4(0, 1, 0, 1))
@@ -1510,8 +1535,8 @@ class ObjectHandles(NodePath, DirectObject):
         lines.moveTo(1, 0, 0)
         for ang in range(15, 370, 15):
             lines.drawTo(math.cos(deg2Rad(ang)),
-                          0,
-                          math.sin(deg2Rad(ang)))
+                         0,
+                         math.sin(deg2Rad(ang)))
         lines.create()
         lines.setName('y-ring-line')
 
@@ -1520,17 +1545,17 @@ class ObjectHandles(NodePath, DirectObject):
         lines = LineNodePath(self.zPost)
         lines.setColor(VBase4(0, 0, 1, 1))
         lines.setThickness(5)
-        #lines.moveTo(0, 0, 0)
-        #lines.drawTo(0, 0, 1.5)
+        # lines.moveTo(0, 0, 0)
+        # lines.drawTo(0, 0, 1.5)
         lines.moveTo(0, 0, 1.5)
-        #lines.create()
-        #lines = LineNodePath(self.zPost)
-        #lines.setColor(VBase4(0, 0, 1, 1))
-        #lines.setThickness(1.5)
-        #lines.moveTo(0, 0, 0)
+        # lines.create()
+        # lines = LineNodePath(self.zPost)
+        # lines.setColor(VBase4(0, 0, 1, 1))
+        # lines.setThickness(1.5)
+        # lines.moveTo(0, 0, 0)
         lines.drawTo(0, 0, -1.5)
 
-        #lines.setThickness(5)
+        # lines.setThickness(5)
         lines.moveTo(0, 0, 1.5)
         lines.drawTo(arrowInfo1, arrowInfo1, arrowInfo0)
         lines.moveTo(0, 0, 1.5)
@@ -1543,7 +1568,7 @@ class ObjectHandles(NodePath, DirectObject):
         lines.create()
         lines.setName('z-post-line')
 
-        #Z scale
+        # Z scale
         self.zScale = self.zScaleGroup.attachNewNode('z-scale-visible')
         lines = LineNodePath(self.zScale)
         lines.setColor(VBase4(0, 0, 1, 1))
@@ -1564,8 +1589,8 @@ class ObjectHandles(NodePath, DirectObject):
         lines.moveTo(1, 0, 0)
         for ang in range(15, 370, 15):
             lines.drawTo(math.cos(deg2Rad(ang)),
-                          math.sin(deg2Rad(ang)),
-                          0)
+                         math.sin(deg2Rad(ang)),
+                         0)
         lines.create()
         lines.setName('z-ring-line')
 
@@ -1603,8 +1628,9 @@ class ObjectHandles(NodePath, DirectObject):
            base.direct.camera.getName() != 'persp':
             # create ray from the camera to detect 3d position
             iRay = SelectionRay(base.direct.camera)
-            iRay.collider.setFromLens(base.direct.camNode, base.direct.dr.mouseX, base.direct.dr.mouseY)
-            #iRay.collideWithBitMask(1)
+            iRay.collider.setFromLens(
+                base.direct.cam_node, base.direct.dr.mouseX, base.direct.dr.mouseY)
+            # iRay.collideWithBitMask(1)
             iRay.collideWithBitMask(BitMask32.bit(21))
             iRay.ct.traverse(base.direct.grid)
 
@@ -1674,8 +1700,9 @@ class ObjectHandles(NodePath, DirectObject):
     def getMouseIntersectPt(self):
         # create ray from the camera to detect 3d position
         iRay = SelectionRay(base.direct.camera)
-        iRay.collider.setFromLens(base.direct.camNode, base.direct.dr.mouseX, base.direct.dr.mouseY)
-        #iRay.collideWithBitMask(1)
+        iRay.collider.setFromLens(
+            base.direct.cam_node, base.direct.dr.mouseX, base.direct.dr.mouseY)
+        # iRay.collideWithBitMask(1)
         iRay.collideWithBitMask(BitMask32.bit(21))
         iRay.ct.traverse(base.direct.grid)
 
@@ -1730,41 +1757,42 @@ class ObjectHandles(NodePath, DirectObject):
 
         return self.hitPt
 
+
 def drawBox(lines, center, sideLength):
 
-        l = sideLength * 0.5
-        lines.moveTo(center[0] + l, center[1] + l, center[2] + l)
-        lines.drawTo(center[0] + l, center[1] + l, center[2] - l)
-        lines.drawTo(center[0] + l, center[1] - l, center[2] - l)
-        lines.drawTo(center[0] + l, center[1] - l, center[2] + l)
-        lines.drawTo(center[0] + l, center[1] + l, center[2] + l)
+    l = sideLength * 0.5
+    lines.moveTo(center[0] + l, center[1] + l, center[2] + l)
+    lines.drawTo(center[0] + l, center[1] + l, center[2] - l)
+    lines.drawTo(center[0] + l, center[1] - l, center[2] - l)
+    lines.drawTo(center[0] + l, center[1] - l, center[2] + l)
+    lines.drawTo(center[0] + l, center[1] + l, center[2] + l)
 
-        lines.moveTo(center[0] - l, center[1] + l, center[2] + l)
-        lines.drawTo(center[0] - l, center[1] + l, center[2] - l)
-        lines.drawTo(center[0] - l, center[1] - l, center[2] - l)
-        lines.drawTo(center[0] - l, center[1] - l, center[2] + l)
-        lines.drawTo(center[0] - l, center[1] + l, center[2] + l)
+    lines.moveTo(center[0] - l, center[1] + l, center[2] + l)
+    lines.drawTo(center[0] - l, center[1] + l, center[2] - l)
+    lines.drawTo(center[0] - l, center[1] - l, center[2] - l)
+    lines.drawTo(center[0] - l, center[1] - l, center[2] + l)
+    lines.drawTo(center[0] - l, center[1] + l, center[2] + l)
 
-        lines.moveTo(center[0] + l, center[1] + l, center[2] + l)
-        lines.drawTo(center[0] + l, center[1] + l, center[2] - l)
-        lines.drawTo(center[0] - l, center[1] + l, center[2] - l)
-        lines.drawTo(center[0] - l, center[1] + l, center[2] + l)
-        lines.drawTo(center[0] + l, center[1] + l, center[2] + l)
+    lines.moveTo(center[0] + l, center[1] + l, center[2] + l)
+    lines.drawTo(center[0] + l, center[1] + l, center[2] - l)
+    lines.drawTo(center[0] - l, center[1] + l, center[2] - l)
+    lines.drawTo(center[0] - l, center[1] + l, center[2] + l)
+    lines.drawTo(center[0] + l, center[1] + l, center[2] + l)
 
-        lines.moveTo(center[0] + l, center[1] - l, center[2] + l)
-        lines.drawTo(center[0] + l, center[1] - l, center[2] - l)
-        lines.drawTo(center[0] - l, center[1] - l, center[2] - l)
-        lines.drawTo(center[0] - l, center[1] - l, center[2] + l)
-        lines.drawTo(center[0] + l, center[1] - l, center[2] + l)
+    lines.moveTo(center[0] + l, center[1] - l, center[2] + l)
+    lines.drawTo(center[0] + l, center[1] - l, center[2] - l)
+    lines.drawTo(center[0] - l, center[1] - l, center[2] - l)
+    lines.drawTo(center[0] - l, center[1] - l, center[2] + l)
+    lines.drawTo(center[0] + l, center[1] - l, center[2] + l)
 
-        lines.moveTo(center[0] + l, center[1] + l, center[2] + l)
-        lines.drawTo(center[0] - l, center[1] + l, center[2] + l)
-        lines.drawTo(center[0] - l, center[1] - l, center[2] + l)
-        lines.drawTo(center[0] + l, center[1] - l, center[2] + l)
-        lines.drawTo(center[0] + l, center[1] + l, center[2] + l)
+    lines.moveTo(center[0] + l, center[1] + l, center[2] + l)
+    lines.drawTo(center[0] - l, center[1] + l, center[2] + l)
+    lines.drawTo(center[0] - l, center[1] - l, center[2] + l)
+    lines.drawTo(center[0] + l, center[1] - l, center[2] + l)
+    lines.drawTo(center[0] + l, center[1] + l, center[2] + l)
 
-        lines.moveTo(center[0] + l, center[1] + l, center[2] - l)
-        lines.drawTo(center[0] - l, center[1] + l, center[2] - l)
-        lines.drawTo(center[0] - l, center[1] - l, center[2] - l)
-        lines.drawTo(center[0] + l, center[1] - l, center[2] - l)
-        lines.drawTo(center[0] + l, center[1] + l, center[2] - l)
+    lines.moveTo(center[0] + l, center[1] + l, center[2] - l)
+    lines.drawTo(center[0] - l, center[1] + l, center[2] - l)
+    lines.drawTo(center[0] - l, center[1] - l, center[2] - l)
+    lines.drawTo(center[0] + l, center[1] - l, center[2] - l)
+    lines.drawTo(center[0] + l, center[1] + l, center[2] - l)

@@ -3,6 +3,7 @@ Defines AnimMgr
 """
 from .AnimMgrBase import *
 
+
 class AnimMgr(AnimMgrBase):
     """ Animation will create, manage, update animations in the scene """
 

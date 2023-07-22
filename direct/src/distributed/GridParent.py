@@ -12,24 +12,28 @@ from panda3d.direct import *
 # that the object is broadcasting its position relative to the gridCell
 # it lies in.
 
+
 class GridParent:
 
     # this lets GridParents share CellOrigins
     GridZone2CellOrigin = {}
     GridZone2count = {}
+
     @staticmethod
     def getCellOrigin(grid, zoneId):
         tup = (grid, zoneId)
         if tup not in GridParent.GridZone2count:
             GridParent.GridZone2count[tup] = 0
             # For readability when debugging, append the zone to the name
-            GridParent.GridZone2CellOrigin[tup] = grid.attachNewNode("cellOrigin-%s" % zoneId)
+            GridParent.GridZone2CellOrigin[tup] = grid.attachNewNode(
+                "cellOrigin-%s" % zoneId)
             # Get grid cell origin
             cellPos = grid.getZoneCellOrigin(zoneId)
             # Set the gridNode's position
             GridParent.GridZone2CellOrigin[tup].setPos(*cellPos)
         GridParent.GridZone2count[tup] += 1
         return GridParent.GridZone2CellOrigin[tup]
+
     @staticmethod
     def releaseCellOrigin(grid, zoneId):
         tup = (grid, zoneId)
@@ -96,7 +100,5 @@ class GridParent:
         else:
             self.av.reparentTo(self.cellOrigin)
 
-        #print "gridParent: reparent to %s" % self.av
-        #print "gridParent: pos = %s, %s" % (self.av.getPos(), self.av.getParent().getPos())
-
-
+        # print "gridParent: reparent to %s" % self.av
+        # print "gridParent: pos = %s, %s" % (self.av.getPos(), self.av.getParent().getPos())

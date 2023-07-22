@@ -9,6 +9,7 @@ import os
 import time
 from panda3d.core import Filename, HashVal, VirtualFileSystem
 
+
 class FileSpec:
     """ This class represents a disk file whose hash and size
     etc. were read from an xml file.  This class provides methods to
@@ -22,7 +23,7 @@ class FileSpec:
         self.timestamp = 0
         self.hash = None
 
-    def fromFile(self, packageDir, filename, pathname = None, st = None):
+    def fromFile(self, packageDir, filename, pathname=None, st=None):
         """ Reads the file information from the indicated file.  If st
         is supplied, it is the result of os.stat on the filename. """
 
@@ -48,7 +49,6 @@ class FileSpec:
         hv = HashVal()
         hv.hashFile(pathname)
         self.hash = hv.asHex()
-
 
     def loadXml(self, xelement):
         """ Reads the file information from the indicated XML
@@ -95,8 +95,8 @@ class FileSpec:
         if self.hash:
             xelement.SetAttribute('hash', self.hash)
 
-    def quickVerify(self, packageDir = None, pathname = None,
-                    notify = None, correctSelf = False):
+    def quickVerify(self, packageDir=None, pathname=None,
+                    notify=None, correctSelf=False):
         """ Performs a quick test to ensure the file has not been
         modified.  This test is vulnerable to people maliciously
         attempting to fool the program (by setting datestamps etc.).
@@ -145,7 +145,8 @@ class FileSpec:
             # Hard fail, the hash is wrong.
             if notify:
                 notify.debug("hash check wrong: %s" % (pathname))
-                notify.debug("  found %s, expected %s" % (self.actualFile.hash, self.hash))
+                notify.debug("  found %s, expected %s" %
+                             (self.actualFile.hash, self.hash))
             if correctSelf:
                 self.__correctHash(packageDir, pathname, st, notify)
             return False
@@ -165,8 +166,7 @@ class FileSpec:
 
         return True
 
-
-    def fullVerify(self, packageDir = None, pathname = None, notify = None):
+    def fullVerify(self, packageDir=None, pathname=None, notify=None):
         """ Performs a more thorough test to ensure the file has not
         been modified.  This test is less vulnerable to malicious
         attacks, since it reads and verifies the entire file.
@@ -194,7 +194,8 @@ class FileSpec:
             # Hard fail, the hash is wrong.
             if notify:
                 notify.debug("hash check wrong: %s" % (pathname))
-                notify.debug("  found %s, expected %s" % (self.actualFile.hash, self.hash))
+                notify.debug("  found %s, expected %s" %
+                             (self.actualFile.hash, self.hash))
             return False
 
         if notify:
@@ -233,7 +234,7 @@ class FileSpec:
 
         fileSpec = FileSpec()
         fileSpec.fromFile(packageDir, self.filename,
-                          pathname = pathname, st = st)
+                          pathname=pathname, st=st)
         self.actualFile = fileSpec
 
         return (fileSpec.hash == self.hash)

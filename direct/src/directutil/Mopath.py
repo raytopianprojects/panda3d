@@ -3,11 +3,12 @@ from direct.directtools.DirectGeometry import *
 
 from panda3d.core import NodePath, LineSegs
 
+
 class Mopath(DirectObject):
 
     nameIndex = 1
 
-    def __init__(self, name = None, fluid = 1, objectToLoad = None, upVectorNodePath = None, reverseUpVector = False):
+    def __init__(self, name=None, fluid=1, objectToLoad=None, upVectorNodePath=None, reverseUpVector=False):
         if (name == None):
             name = 'mopath%d' % self.nameIndex
             self.nameIndex = self.nameIndex + 1
@@ -24,17 +25,17 @@ class Mopath(DirectObject):
         self.upVectorNodePath = upVectorNodePath
         self.reverseUpVector = reverseUpVector
         self.reset()
-        if isinstance( objectToLoad, NodePath ):
-            self.loadNodePath( objectToLoad )
-        elif isinstance( objectToLoad, str ):
-            self.loadFile( objectToLoad )
+        if isinstance(objectToLoad, NodePath):
+            self.loadNodePath(objectToLoad)
+        elif isinstance(objectToLoad, str):
+            self.loadFile(objectToLoad)
         elif objectToLoad is not None:
             print("Mopath: Unable to load object '%s', objectToLoad must be a file name string or a NodePath" % objectToLoad)
 
     def getMaxT(self):
         return self.maxT * self.timeScale
 
-    def loadFile(self, filename, fReset = 1):
+    def loadFile(self, filename, fReset=1):
         nodePath = loader.loadModel(filename)
         if nodePath:
             self.loadNodePath(nodePath)
@@ -42,8 +43,7 @@ class Mopath(DirectObject):
         else:
             print('Mopath: no data in file: %s' % filename)
 
-
-    def loadNodePath(self, nodePath, fReset = 1):
+    def loadNodePath(self, nodePath, fReset=1):
         if fReset:
             self.reset()
 
@@ -56,7 +56,6 @@ class Mopath(DirectObject):
             self.maxT = self.hprNurbsCurve.getMaxT()
         else:
             print('Mopath: no valid curves in nodePath: %s' % nodePath)
-
 
     def reset(self):
         self.maxT = 0.0
@@ -77,7 +76,8 @@ class Mopath(DirectObject):
                 if (self.xyzNurbsCurve == None):
                     self.xyzNurbsCurve = node
                 else:
-                    print('Mopath: got a PCT_NONE curve and an XYZ Curve in nodePath: %s' % nodePath)
+                    print(
+                        'Mopath: got a PCT_NONE curve and an XYZ Curve in nodePath: %s' % nodePath)
             elif (node.getCurveType() == PCTT):
                 self.tNurbsCurve.append(node)
         else:
@@ -122,13 +122,15 @@ class Mopath(DirectObject):
         elif (self.fFaceForward and (self.xyzNurbsCurve != None)):
             if self.faceForwardDelta:
                 # Look at a point a bit ahead in parametric time.
-                t = min(self.playbackTime + self.faceForwardDelta, self.xyzNurbsCurve.getMaxT())
+                t = min(self.playbackTime + self.faceForwardDelta,
+                        self.xyzNurbsCurve.getMaxT())
                 lookPoint = Point3()
                 self.xyzNurbsCurve.getPoint(t, lookPoint)
                 if self.faceForwardNode:
                     self.faceForwardNode.setPos(lookPoint)
             else:
-                self.xyzNurbsCurve.getTangent(self.playbackTime, self.tangentVec)
+                self.xyzNurbsCurve.getTangent(
+                    self.playbackTime, self.tangentVec)
                 lookPoint = self.posPoint + self.tangentVec
 
             # use the self.upVectorNodePath position if it exists to
@@ -137,13 +139,13 @@ class Mopath(DirectObject):
                 node.lookAt(lookPoint)
             else:
                 if (self.reverseUpVector == False):
-                     node.lookAt(lookPoint,
-                                 self.upVectorNodePath.getPos() - self.posPoint)
+                    node.lookAt(lookPoint,
+                                self.upVectorNodePath.getPos() - self.posPoint)
                 else:
-                     node.lookAt(lookPoint,
-                                 self.posPoint - self.upVectorNodePath.getPos())
+                    node.lookAt(lookPoint,
+                                self.posPoint - self.upVectorNodePath.getPos())
 
-    def play(self, node, time = 0.0, loop = 0):
+    def play(self, node, time=0.0, loop=0):
         if (self.xyzNurbsCurve == None) and (self.hprNurbsCurve == None):
             print('Mopath: Mopath has no curves')
             return
@@ -174,7 +176,7 @@ class Mopath(DirectObject):
         task.currentTime = cTime
         return task.cont
 
-    def draw(self, subdiv = 1000):
+    def draw(self, subdiv=1000):
         """ Draws a quick and cheesy visualization of the Mopath using
         LineSegs.  Returns the NodePath representing the drawing. """
 
@@ -187,4 +189,3 @@ class Mopath(DirectObject):
             ls.drawTo(p)
 
         return NodePath(ls.create())
-

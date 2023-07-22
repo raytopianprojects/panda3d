@@ -6,13 +6,14 @@ from direct.task import Task
 from .DistributedNodeAI import DistributedNodeAI
 from .CartesianGridBase import CartesianGridBase
 
+
 class DistributedCartesianGridAI(DistributedNodeAI, CartesianGridBase):
     notify = directNotify.newCategory("DistributedCartesianGridAI")
 
     RuleSeparator = ":"
 
     def __init__(self, air, startingZone, gridSize, gridRadius, cellWidth,
-            style="Cartesian"):
+                 style="Cartesian"):
         DistributedNodeAI.__init__(self, air)
         self.style = style
         self.startingZone = startingZone
@@ -49,8 +50,8 @@ class DistributedCartesianGridAI(DistributedNodeAI, CartesianGridBase):
         avId = av.doId
 
         # Create a grid parent
-        #gridParent = self.attachNewNode("gridParent-%s" % avId)
-        #self.gridParents[avId] = gridParent
+        # gridParent = self.attachNewNode("gridParent-%s" % avId)
+        # self.gridParents[avId] = gridParent
         self.gridObjects[avId] = av
 
         # Put the avatar on the grid
@@ -61,8 +62,8 @@ class DistributedCartesianGridAI(DistributedNodeAI, CartesianGridBase):
 
     def removeObjectFromGrid(self, av):
         # TODO: WHAT LOCATION SHOULD WE SET THIS TO?
-        #av.wrtReparentTo(self.parentNP)
-        #av.setLocation(self.air.districtId, 1000)
+        # av.wrtReparentTo(self.parentNP)
+        # av.setLocation(self.air.districtId, 1000)
 
         # Remove grid parent for this av
         avId = av.doId
@@ -106,7 +107,7 @@ class DistributedCartesianGridAI(DistributedNodeAI, CartesianGridBase):
                 continue
             pos = av.getPos()
             if ((pos[0] < 0 or pos[1] < 0) or
-                (pos[0] > self.cellWidth or pos[1] > self.cellWidth)):
+                    (pos[0] > self.cellWidth or pos[1] > self.cellWidth)):
                 # we are out of the bounds of this current cell
                 self.handleAvatarZoneChange(av)
         # Do this every second, not every frame
@@ -128,7 +129,7 @@ class DistributedCartesianGridAI(DistributedNodeAI, CartesianGridBase):
 
         if not self.isValidZone(zoneId):
             self.notify.warning(
-                "%s handleAvatarZoneChange %s: not a valid zone (%s) for pos %s" %(self.doId, av.doId, zoneId, pos))
+                "%s handleAvatarZoneChange %s: not a valid zone (%s) for pos %s" % (self.doId, av.doId, zoneId, pos))
             return
 
         # Set the location on the server.
@@ -137,9 +138,8 @@ class DistributedCartesianGridAI(DistributedNodeAI, CartesianGridBase):
 
     def handleSetLocation(self, av, parentId, zoneId):
         pass
-        #if (av.parentId != parentId):
-            # parent changed, need to look up instance tree
-            # to see if avatar's named area location information
-            # changed
-            #av.requestRegionUpdateTask(regionegionUid)
-
+        # if (av.parentId != parentId):
+        # parent changed, need to look up instance tree
+        # to see if avatar's named area location information
+        # changed
+        # av.requestRegionUpdateTask(regionegionUid)

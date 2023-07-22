@@ -4,6 +4,7 @@ __all__ = ['Timer']
 
 from . import Task
 
+
 class Timer:
     id = 0
 

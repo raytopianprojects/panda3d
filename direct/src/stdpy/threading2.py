@@ -13,6 +13,8 @@ to import Panda's thread reimplementation instead of the system thread
 module, and so it is therefore layered on top of Panda's thread
 implementation. """
 
+from traceback import format_exc as _format_exc
+from time import time as _time
 import sys as _sys
 import atexit as _atexit
 
@@ -21,8 +23,6 @@ from direct.stdpy.thread import stack_size, _newname, _local as local
 from panda3d import core
 _sleep = core.Thread.sleep
 
-from time import time as _time
-from traceback import format_exc as _format_exc
 
 __all__ = ['get_ident', 'active_count', 'Condition', 'current_thread',
            'enumerate', 'main_thread', 'TIMEOUT_MAX',
@@ -68,6 +68,7 @@ else:
     class _Verbose(object):
         def __init__(self, verbose=None):
             pass
+
         def _note(self, *args):
             pass
 
@@ -76,9 +77,11 @@ else:
 _profile_hook = None
 _trace_hook = None
 
+
 def setprofile(func):
     global _profile_hook
     _profile_hook = func
+
 
 def settrace(func):
     global _trace_hook
@@ -86,10 +89,13 @@ def settrace(func):
 
 # Synchronization classes
 
+
 Lock = _allocate_lock
+
 
 def RLock(*args, **kwargs):
     return _RLock(*args, **kwargs)
+
 
 class _RLock(_Verbose):
 
@@ -101,9 +107,9 @@ class _RLock(_Verbose):
 
     def __repr__(self):
         return "<%s(%s, %d)>" % (
-                self.__class__.__name__,
-                self.__owner and self.__owner.getName(),
-                self.__count)
+            self.__class__.__name__,
+            self.__owner and self.__owner.getName(),
+            self.__count)
 
     def acquire(self, blocking=1):
         me = currentThread()
@@ -165,6 +171,7 @@ class _RLock(_Verbose):
 
 def Condition(*args, **kwargs):
     return _Condition(*args, **kwargs)
+
 
 class _Condition(_Verbose):
 
@@ -235,7 +242,7 @@ class _Condition(_Verbose):
                 # little at first, longer as time goes on, but never longer
                 # than 20 times per second (or the timeout time remaining).
                 endtime = _time() + timeout
-                delay = 0.0005 # 500 us -> initial delay of 1 ms
+                delay = 0.0005  # 500 us -> initial delay of 1 ms
                 while True:
                     gotit = waiter.acquire(0)
                     if gotit:
@@ -267,7 +274,7 @@ class _Condition(_Verbose):
                 self._note("%s.notify(): no waiters", self)
             return
         self._note("%s.notify(): notifying %d waiter%s", self, n,
-                   n!=1 and "s" or "")
+                   n != 1 and "s" or "")
         for waiter in waiters:
             waiter.release()
             try:
@@ -281,6 +288,7 @@ class _Condition(_Verbose):
 
 def Semaphore(*args, **kwargs):
     return _Semaphore(*args, **kwargs)
+
 
 class _Semaphore(_Verbose):
 
@@ -329,8 +337,10 @@ class _Semaphore(_Verbose):
 def BoundedSemaphore(*args, **kwargs):
     return _BoundedSemaphore(*args, **kwargs)
 
+
 class _BoundedSemaphore(_Semaphore):
     """Semaphore that checks that # releases is <= # acquires"""
+
     def __init__(self, value=1, verbose=None):
         _Semaphore.__init__(self, value, verbose)
         self._initial_value = value
@@ -343,6 +353,7 @@ class _BoundedSemaphore(_Semaphore):
 
 def Event(*args, **kwargs):
     return _Event(*args, **kwargs)
+
 
 class _Event(_Verbose):
 
@@ -378,6 +389,7 @@ class _Event(_Verbose):
                 self.__cond.wait(timeout)
         finally:
             self.__cond.release()
+
 
 # Active thread administration
 _active_limbo_lock = _allocate_lock()
@@ -500,13 +512,14 @@ class Thread(_Verbose):
                     exc_type, exc_value, exc_tb = self.__exc_info()
                     try:
                         self.__stderr.write("Exception in thread " + self.getName() +
-                            " (most likely raised during interpreter shutdown):\n")
-                        self.__stderr.write("Traceback (most recent call last):\n")
+                                            " (most likely raised during interpreter shutdown):\n")
+                        self.__stderr.write(
+                            "Traceback (most recent call last):\n")
                         while exc_tb:
                             self.__stderr.write('  File "%s", line %s, in %s\n' %
-                                (exc_tb.tb_frame.f_code.co_filename,
-                                    exc_tb.tb_lineno,
-                                    exc_tb.tb_frame.f_code.co_name))
+                                                (exc_tb.tb_frame.f_code.co_filename,
+                                                 exc_tb.tb_lineno,
+                                                 exc_tb.tb_frame.f_code.co_name))
                             exc_tb = exc_tb.tb_next
                         self.__stderr.write("%s: %s\n" % (exc_type, exc_value))
                     # Make sure that exc_tb gets deleted since it is a memory
@@ -620,8 +633,10 @@ class Thread(_Verbose):
 
 # The timer class was contributed by Itamar Shtull-Trauring
 
+
 def Timer(*args, **kwargs):
     return _Timer(*args, **kwargs)
+
 
 class _Timer(Thread):
     """Call a function after a specified number of seconds:
@@ -651,6 +666,7 @@ class _Timer(Thread):
 
 # Special thread class to represent the main thread
 # This is garbage collected through an exit handler
+
 
 class _MainThread(Thread):
 
@@ -714,10 +730,12 @@ def current_thread():
     try:
         return _active[get_ident()]
     except KeyError:
-        ##print "current_thread(): no current thread for", get_ident()
+        # print "current_thread(): no current thread for", get_ident()
         return _DummyThread()
 
+
 currentThread = current_thread
+
 
 def active_count():
     _active_limbo_lock.acquire()
@@ -725,7 +743,9 @@ def active_count():
     _active_limbo_lock.release()
     return count
 
+
 activeCount = active_count
+
 
 def enumerate():
     _active_limbo_lock.acquire()
@@ -733,20 +753,23 @@ def enumerate():
     _active_limbo_lock.release()
     return active
 
-#from thread import stack_size
+# from thread import stack_size
 
 # Create the main thread object,
 # and make it available for the interpreter
 # (Py_Main) as threading._shutdown.
 
+
 _main_thread = _MainThread()
 _shutdown = _main_thread._exitfunc
+
 
 def _pickSomeNonDaemonThread():
     for t in enumerate():
         if not t.isDaemon() and t.isAlive():
             return t
     return None
+
 
 def main_thread():
     """Return the main thread object.
@@ -758,10 +781,10 @@ def main_thread():
 # get thread-local implementation, either from the thread
 # module, or from the python fallback
 
-## try:
-##     from thread import _local as local
-## except ImportError:
-##     from _threading_local import local
+# try:
+# from thread import _local as local
+# except ImportError:
+# from _threading_local import local
 
 
 # Self-test code
@@ -815,7 +838,6 @@ if __debug__:
                     counter = counter + 1
                     self.queue.put("%s.%d" % (self.getName(), counter))
                     _sleep(random() * 0.00001)
-
 
         class ConsumerThread(Thread):
 

@@ -163,40 +163,41 @@ class ParticleEffect(NodePath):
     def saveConfig(self, filename):
         filename = Filename(filename)
         with open(filename.toOsSpecific(), 'w') as f:
-          # Add a blank line
-          f.write('\n')
+            # Add a blank line
+            f.write('\n')
 
-          # Make sure we start with a clean slate
-          f.write('self.reset()\n')
+            # Make sure we start with a clean slate
+            f.write('self.reset()\n')
 
-          pos = self.getPos()
-          hpr = self.getHpr()
-          scale = self.getScale()
-          f.write('self.setPos(%0.3f, %0.3f, %0.3f)\n' %
-                  (pos[0], pos[1], pos[2]))
-          f.write('self.setHpr(%0.3f, %0.3f, %0.3f)\n' %
-                  (hpr[0], hpr[1], hpr[2]))
-          f.write('self.setScale(%0.3f, %0.3f, %0.3f)\n' %
-                  (scale[0], scale[1], scale[2]))
+            pos = self.getPos()
+            hpr = self.getHpr()
+            scale = self.getScale()
+            f.write('self.setPos(%0.3f, %0.3f, %0.3f)\n' %
+                    (pos[0], pos[1], pos[2]))
+            f.write('self.setHpr(%0.3f, %0.3f, %0.3f)\n' %
+                    (hpr[0], hpr[1], hpr[2]))
+            f.write('self.setScale(%0.3f, %0.3f, %0.3f)\n' %
+                    (scale[0], scale[1], scale[2]))
 
-          # Save all the particles to file
-          num = 0
-          for p in list(self.particlesDict.values()):
-              target = 'p%d' % num
-              num = num + 1
-              f.write(target + ' = Particles.Particles(\'%s\')\n' % p.getName())
-              p.printParams(f, target)
-              f.write('self.addParticles(%s)\n' % target)
+            # Save all the particles to file
+            num = 0
+            for p in list(self.particlesDict.values()):
+                target = 'p%d' % num
+                num = num + 1
+                f.write(target + ' = Particles.Particles(\'%s\')\n' %
+                        p.getName())
+                p.printParams(f, target)
+                f.write('self.addParticles(%s)\n' % target)
 
-          # Save all the forces to file
-          num = 0
-          for fg in list(self.forceGroupDict.values()):
-              target = 'f%d' % num
-              num = num + 1
-              f.write(target + ' = ForceGroup.ForceGroup(\'%s\')\n' % \
-                                                  fg.getName())
-              fg.printParams(f, target)
-              f.write('self.addForceGroup(%s)\n' % target)
+            # Save all the forces to file
+            num = 0
+            for fg in list(self.forceGroupDict.values()):
+                target = 'f%d' % num
+                num = num + 1
+                f.write(target + ' = ForceGroup.ForceGroup(\'%s\')\n' %
+                        fg.getName())
+                fg.printParams(f, target)
+                f.write('self.addForceGroup(%s)\n' % target)
 
     def loadConfig(self, filename):
         vfs = VirtualFileSystem.getGlobalPtr()
@@ -205,12 +206,13 @@ class ParticleEffect(NodePath):
         try:
             exec(data)
         except:
-            self.notify.warning('loadConfig: failed to load particle file: '+ repr(filename))
+            self.notify.warning(
+                'loadConfig: failed to load particle file: ' + repr(filename))
             raise
 
-    def accelerate(self,time,stepCount = 1,stepTime=0.0):
+    def accelerate(self, time, stepCount=1, stepTime=0.0):
         for particles in self.getParticlesList():
-            particles.accelerate(time,stepCount,stepTime)
+            particles.accelerate(time, stepCount, stepTime)
 
     def clearToInitial(self):
         for particles in self.getParticlesList():
@@ -224,17 +226,19 @@ class ParticleEffect(NodePath):
         if self.__isValid():
             for particles in self.getParticlesList():
                 if firstBirthDelay is not None:
-                    particles.softStart(br=-1, first_birth_delay=firstBirthDelay)
+                    particles.softStart(
+                        br=-1, first_birth_delay=firstBirthDelay)
                 else:
                     particles.softStart()
         else:
             # Not asserting here since we want to crash live clients for more expedient bugfix
             # (Sorry, live clients)
-            self.notify.error('Trying to start effect(%s) after cleanup.' % (self.getName(),))
+            self.notify.error(
+                'Trying to start effect(%s) after cleanup.' % (self.getName(),))
 
     def __isValid(self):
         return hasattr(self, 'forceGroupDict') and \
-               hasattr(self, 'particlesDict')
+            hasattr(self, 'particlesDict')
 
     # Snake-case aliases.
     is_enabled = isEnabled

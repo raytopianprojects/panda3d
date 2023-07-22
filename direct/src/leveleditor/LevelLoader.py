@@ -19,6 +19,7 @@ from direct.leveleditor import ObjectGlobals as OG
 from .ObjectHandler import ObjectHandler
 from .ObjectPalette import ObjectPalette
 
+
 class LevelLoader(LevelLoaderBase):
     def __init__(self):
         LevelLoaderBase.__init__(self)
@@ -29,4 +30,3 @@ class LevelLoader(LevelLoaderBase):
         base.protoPalette = ProtoPalette()
         base.objectHandler = ObjectHandler(None)
         base.objectMgr = ObjectMgr(None)
-

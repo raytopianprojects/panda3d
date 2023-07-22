@@ -9,9 +9,11 @@ from __future__ import print_function
 
 __all__ = []
 
-import os, sys
+import os
+import sys
 from distutils import sysconfig
-import panda3d, pandac
+import panda3d
+import pandac
 from panda3d.interrogatedb import *
 
 
@@ -65,6 +67,7 @@ def comment(code):
     else:
         return ''
 
+
 def block_comment(code):
     code = code.strip()
 
@@ -76,6 +79,7 @@ def block_comment(code):
         return ""
 
     return code
+
 
 def translateFunctionName(name):
     if name.startswith("__"):
@@ -92,6 +96,7 @@ def translateFunctionName(name):
         else:
             new += i[0].upper() + i[1:]
     return new
+
 
 def translateTypeName(name, mangle=True):
     # Equivalent to C++ classNameFromCppName
@@ -114,6 +119,7 @@ def translateTypeName(name, mangle=True):
             class_name += chr
 
     return class_name
+
 
 def translated_type_name(type, scoped=True):
     while interrogate_type_is_wrapped(type):
@@ -166,11 +172,12 @@ def processElement(handle, element):
     else:
         suffix = ""
 
-    print(translated_type_name(interrogate_element_type(element)), end=' ', file=handle)
+    print(translated_type_name(
+        interrogate_element_type(element)), end=' ', file=handle)
     print(interrogate_element_name(element) + suffix + ';', file=handle)
 
 
-def processFunction(handle, function, isConstructor = False):
+def processFunction(handle, function, isConstructor=False):
     for i_wrapper in range(interrogate_function_number_of_python_wrappers(function)):
         wrapper = interrogate_function_python_wrapper(function, i_wrapper)
         if interrogate_wrapper_has_comment(wrapper):
@@ -182,11 +189,13 @@ def processFunction(handle, function, isConstructor = False):
                     print("static", end=' ', file=handle)
 
             if interrogate_wrapper_has_return_value(wrapper):
-                print(translated_type_name(interrogate_wrapper_return_type(wrapper)), end=' ', file=handle)
+                print(translated_type_name(
+                    interrogate_wrapper_return_type(wrapper)), end=' ', file=handle)
             else:
-                pass#print >>handle, "void",
+                pass  # print >>handle, "void",
 
-            print(translateFunctionName(interrogate_function_name(function)) + "(", end=' ', file=handle)
+            print(translateFunctionName(interrogate_function_name(
+                function)) + "(", end=' ', file=handle)
         else:
             print("__init__(", end=' ', file=handle)
 
@@ -195,9 +204,11 @@ def processFunction(handle, function, isConstructor = False):
             if not interrogate_wrapper_parameter_is_this(wrapper, i_param):
                 if not first:
                     print(",", end=' ', file=handle)
-                print(translated_type_name(interrogate_wrapper_parameter_type(wrapper, i_param)), end=' ', file=handle)
+                print(translated_type_name(interrogate_wrapper_parameter_type(
+                    wrapper, i_param)), end=' ', file=handle)
                 if interrogate_wrapper_parameter_has_name(wrapper, i_param):
-                    print(interrogate_wrapper_parameter_name(wrapper, i_param), end=' ', file=handle)
+                    print(interrogate_wrapper_parameter_name(
+                        wrapper, i_param), end=' ', file=handle)
                 first = False
 
         print(");", file=handle)
@@ -205,7 +216,8 @@ def processFunction(handle, function, isConstructor = False):
 
 def processType(handle, type):
     typename = translated_type_name(type, scoped=False)
-    derivations = [ translated_type_name(interrogate_type_get_derivation(type, n)) for n in range(interrogate_type_number_of_derivations(type)) ]
+    derivations = [translated_type_name(interrogate_type_get_derivation(
+        type, n)) for n in range(interrogate_type_number_of_derivations(type))]
 
     if interrogate_type_has_comment(type):
         print(block_comment(interrogate_type_comment(type)), file=handle)
@@ -213,16 +225,19 @@ def processType(handle, type):
     if interrogate_type_is_enum(type):
         print("enum %s {" % typename, file=handle)
         for i_value in range(interrogate_type_number_of_enum_values(type)):
-            docstring = comment(interrogate_type_enum_value_comment(type, i_value))
+            docstring = comment(
+                interrogate_type_enum_value_comment(type, i_value))
             if docstring:
                 print(docstring, file=handle)
-            print(interrogate_type_enum_value_name(type, i_value), "=", interrogate_type_enum_value(type, i_value), ",", file=handle)
+            print(interrogate_type_enum_value_name(type, i_value), "=",
+                  interrogate_type_enum_value(type, i_value), ",", file=handle)
 
     elif interrogate_type_is_typedef(type):
         wrapped_type = interrogate_type_wrapped_type(type)
         if interrogate_type_is_global(wrapped_type):
             wrapped_type_name = translated_type_name(wrapped_type)
-            print("typedef %s %s;" % (wrapped_type_name, typename), file=handle)
+            print("typedef %s %s;" %
+                  (wrapped_type_name, typename), file=handle)
         return
     else:
         if interrogate_type_is_struct(type):
@@ -232,11 +247,13 @@ def processType(handle, type):
         elif interrogate_type_is_union(type):
             classtype = "union"
         else:
-            print("I don't know what type %s is" % interrogate_type_true_name(type))
+            print("I don't know what type %s is" %
+                  interrogate_type_true_name(type))
             return
 
         if len(derivations) > 0:
-            print("%s %s : public %s {" % (classtype, typename, ", public ".join(derivations)), file=handle)
+            print("%s %s : public %s {" % (
+                classtype, typename, ", public ".join(derivations)), file=handle)
         else:
             print("%s %s {" % (classtype, typename), file=handle)
         print("public:", file=handle)
@@ -245,18 +262,21 @@ def processType(handle, type):
         processType(handle, interrogate_type_get_nested_type(type, i_ntype))
 
     for i_method in range(interrogate_type_number_of_constructors(type)):
-        processFunction(handle, interrogate_type_get_constructor(type, i_method), True)
+        processFunction(
+            handle, interrogate_type_get_constructor(type, i_method), True)
 
     for i_method in range(interrogate_type_number_of_methods(type)):
         processFunction(handle, interrogate_type_get_method(type, i_method))
 
     for i_method in range(interrogate_type_number_of_make_seqs(type)):
-        print("list", translateFunctionName(interrogate_make_seq_seq_name(interrogate_type_get_make_seq(type, i_method))), "();", file=handle)
+        print("list", translateFunctionName(interrogate_make_seq_seq_name(
+            interrogate_type_get_make_seq(type, i_method))), "();", file=handle)
 
     for i_element in range(interrogate_type_number_of_elements(type)):
         processElement(handle, interrogate_type_get_element(type, i_element))
 
     print("};", file=handle)
+
 
 def processModule(handle, package):
     print("Processing module %s" % (package))

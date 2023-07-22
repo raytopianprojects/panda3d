@@ -17,13 +17,13 @@ else:
 
 
 class OnscreenImage(DirectObject, NodePath):
-    def __init__(self, image = None,
-                 pos = None,
-                 hpr = None,
-                 scale = None,
-                 color = None,
-                 parent = None,
-                 sort = 0):
+    def __init__(self, image=None,
+                 pos=None,
+                 hpr=None,
+                 scale=None,
+                 color=None,
+                 parent=None,
+                 sort=0):
         """
         Make a image node from string or a `~panda3d.core.NodePath`, put
         it into the 2-D scene graph and set it up with all the indicated
@@ -57,24 +57,24 @@ class OnscreenImage(DirectObject, NodePath):
         if parent is None:
             from direct.showbase import ShowBaseGlobal
             parent = ShowBaseGlobal.aspect2d
-        self.setImage(image, parent = parent, sort = sort)
+        self.setImage(image, parent=parent, sort=sort)
 
         # Adjust pose
         # Set pos
         if (isinstance(pos, tuple) or
-            isinstance(pos, list)):
+                isinstance(pos, list)):
             self.setPos(*pos)
         elif isinstance(pos, VBase3):
             self.setPos(pos)
         # Hpr
         if (isinstance(hpr, tuple) or
-            isinstance(hpr, list)):
+                isinstance(hpr, list)):
             self.setHpr(*hpr)
         elif isinstance(hpr, VBase3):
             self.setHpr(hpr)
         # Scale
         if (isinstance(scale, tuple) or
-            isinstance(scale, list)):
+                isinstance(scale, list)):
             self.setScale(*scale)
         elif isinstance(scale, VBase3):
             self.setScale(scale)
@@ -88,9 +88,9 @@ class OnscreenImage(DirectObject, NodePath):
             self.setColor(color[0], color[1], color[2], color[3])
 
     def setImage(self, image,
-                 parent = NodePath(),
-                 transform = None,
-                 sort = 0):
+                 parent=NodePath(),
+                 transform=None,
+                 sort=0):
         # Get the original parent, transform, and sort, if any, so we can
         # preserve them across this call.
         if not self.isEmpty():
@@ -108,7 +108,7 @@ class OnscreenImage(DirectObject, NodePath):
         if isinstance(image, NodePath):
             self.assign(image.copyTo(parent, sort))
         elif isinstance(image, stringType) or \
-             isinstance(image, Texture):
+                isinstance(image, Texture):
             if isinstance(image, Texture):
                 # It's a Texture
                 tex = image

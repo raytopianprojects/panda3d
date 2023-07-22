@@ -1,6 +1,7 @@
 from . import DistributedNodeAI
 from . import DistributedSmoothNodeBase
 
+
 class DistributedSmoothNodeAI(DistributedNodeAI.DistributedNodeAI,
                               DistributedSmoothNodeBase.DistributedSmoothNodeBase):
 
@@ -63,46 +64,59 @@ class DistributedSmoothNodeAI(DistributedNodeAI.DistributedNodeAI,
     def setSmPosHprL(self, l, x, y, z, h, p, r, t=None):
         self.setPosHpr(x, y, z, h, p, r)
 
-    def clearSmoothing(self, bogus = None):
+    def clearSmoothing(self, bogus=None):
         pass
-
 
     # Do we use these on the AIx?
+
     def setComponentX(self, x):
         self.setX(x)
+
     def setComponentY(self, y):
         self.setY(y)
+
     def setComponentZ(self, z):
         self.setZ(z)
+
     def setComponentH(self, h):
         self.setH(h)
+
     def setComponentP(self, p):
         self.setP(p)
+
     def setComponentR(self, r):
         self.setR(r)
+
     def setComponentL(self, l):
         pass
+
     def setComponentT(self, t):
         pass
 
     def getComponentX(self):
         return self.getX()
+
     def getComponentY(self):
         return self.getY()
+
     def getComponentZ(self):
         return self.getZ()
+
     def getComponentH(self):
         return self.getH()
+
     def getComponentP(self):
         return self.getP()
+
     def getComponentR(self):
         return self.getR()
+
     def getComponentL(self):
         if (self.zoneId):
             return self.zoneId
         else:
             # we can't send None over the wire which self.zoneId can sometimes be
             return 0
+
     def getComponentT(self):
         return 0
-

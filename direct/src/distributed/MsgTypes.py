@@ -137,7 +137,7 @@ MsgName2Id = {
     'CLIENTAGENT_ADD_INTEREST':                     1200,
     'CLIENTAGENT_ADD_INTEREST_MULTIPLE':            1201,
     'CLIENTAGENT_REMOVE_INTEREST':                  1203,
-    }
+}
 
 # create id->name table for debugging
 MsgId2Names = invertDictLossless(MsgName2Id)
@@ -150,14 +150,14 @@ QUIET_ZONE_IGNORED_LIST = [
 
     # We mustn't ignore updates, because some updates for localToon
     # are always important.
-    #CLIENT_OBJECT_UPDATE_FIELD,
+    # CLIENT_OBJECT_UPDATE_FIELD,
 
     # These are now handled. If it is a create for a class that is in the
     # uber zone, we should create it.
-    #CLIENT_CREATE_OBJECT_REQUIRED,
-    #CLIENT_CREATE_OBJECT_REQUIRED_OTHER,
+    # CLIENT_CREATE_OBJECT_REQUIRED,
+    # CLIENT_CREATE_OBJECT_REQUIRED_OTHER,
 
-    ]
+]
 
 # The following is a different set of numbers from above.
 # These are the sub-message types for CLIENT_LOGIN_2.

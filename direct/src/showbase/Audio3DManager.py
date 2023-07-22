@@ -284,19 +284,22 @@ class Audio3DManager:
 
             for sound in sounds:
                 vel = self.getSoundVelocity(sound)
-                sound.set3dAttributes(pos[0], pos[1], pos[2], vel[0], vel[1], vel[2])
+                sound.set3dAttributes(
+                    pos[0], pos[1], pos[2], vel[0], vel[1], vel[2])
 
         # Update the position of the listener based on the object
         # to which it is attached
         if self.listener_target:
             pos = self.listener_target.getPos(self.root)
-            forward = self.root.getRelativeVector(self.listener_target, Vec3.forward())
+            forward = self.root.getRelativeVector(
+                self.listener_target, Vec3.forward())
             up = self.root.getRelativeVector(self.listener_target, Vec3.up())
             vel = self.get_listener_velocity()
             self.audio_manager.audio3dSetListenerAttributes(pos[0], pos[1], pos[2], vel[0], vel[1], vel[2], forward[0],
                                                             forward[1], forward[2], up[0], up[1], up[2])
         else:
-            self.audio_manager.audio3dSetListenerAttributes(0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1)
+            self.audio_manager.audio3dSetListenerAttributes(
+                0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1)
         return Task.cont
 
     def disable(self):

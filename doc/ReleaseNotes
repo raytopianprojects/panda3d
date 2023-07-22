@@ -971,8 +971,8 @@ The following issues were fixed:
 * Expose _NET_WM_PID to window managers in X11
 * Fix a range of bugs in tinydisplay renderer.
 * Don't error when setting lens far distance to infinity
-* Allow passing custom lens to saveCubeMap/saveSphereMap
-* Fix errors in saveCubeMap/saveSphereMap in threaded pipeline
+* Allow passing custom lens to save_cube_map/save_sphere_map
+* Fix errors in save_cube_map/save_sphere_map in threaded pipeline
 * Fix DynamicTextFont.makeCopy()
 * Make Texture memory size estimation more accurate
 * Fix various window resizing issues
@@ -1396,7 +1396,7 @@ x.x.0 releases.
 * Smoother transitions in FadeLodNode
 * Dynamically-generated outline on fonts: loader.loadFont(outlineWidth = xxx)
 * Texture.getRamImageAs()
-* base.toggleTexMem()
+* base.toggle_tex_mem()
 * Text generation performance optimization
 * Various performance optimizations
 * Several more minor bugs fixed
@@ -2024,7 +2024,7 @@ Rendering system:
 
   * Camera::set_cull_center() can be used for debugging culling by
     setting the effective point of visibility culling different from
-    the actual point.  From Python, use base.oobeCull() to examine
+    the actual point.  From Python, use base.oobe_cull() to examine
     this effect.
 
   * Alt-Enter in pview toggles between fullscreen and windowed modes.

@@ -17,9 +17,11 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 import types
 from direct.showbase.PythonUtil import report
 
+
 class InterestState:
     StateActive = 'Active'
     StatePendingDel = 'PendingDel'
+
     def __init__(self, desc, state, context, event, parentId, zoneIdList,
                  eventCounter, auto=False):
         self.desc = desc
@@ -37,42 +39,56 @@ class InterestState:
         self.parentId = parentId
         self.zoneIdList = zoneIdList
         self.auto = auto
+
     def addEvent(self, event):
         self.events.append(event)
         self.eventCounter.num += 1
+
     def getEvents(self):
         return list(self.events)
+
     def clearEvents(self):
         self.eventCounter.num -= len(self.events)
         assert self.eventCounter.num >= 0
         self.events = []
+
     def sendEvents(self):
         for event in self.events:
             messenger.send(event)
         self.clearEvents()
+
     def setDesc(self, desc):
         self.desc = desc
+
     def isPendingDelete(self):
         return self.state == InterestState.StatePendingDel
+
     def __repr__(self):
         return 'InterestState(desc=%s, state=%s, context=%s, event=%s, parentId=%s, zoneIdList=%s)' % (
             self.desc, self.state, self.context, self.events, self.parentId, self.zoneIdList)
 
+
 class InterestHandle:
     """This class helps to ensure that valid handles get passed in to DoInterestManager funcs"""
+
     def __init__(self, id):
         self._id = id
+
     def asInt(self):
         return self._id
+
     def __eq__(self, other):
         if type(self) == type(other):
             return self._id == other._id
         return self._id == other
+
     def __repr__(self):
         return '%s(%s)' % (self.__class__.__name__, self._id)
 
+
 # context value for interest changes that have no complete event
 NO_CONTEXT = 0
+
 
 class DoInterestManager(DirectObject.DirectObject):
     """
@@ -89,7 +105,7 @@ class DoInterestManager(DirectObject.DirectObject):
 
     # 'context' refers to a single request to change an interest set
     _ContextIdSerialNum = 100
-    _ContextIdMask = 0x3FFFFFFF # avoid making Python create a long
+    _ContextIdMask = 0x3FFFFFFF  # avoid making Python create a long
 
     _interests = {}
     if __debug__:
@@ -124,7 +140,7 @@ class DoInterestManager(DirectObject.DirectObject):
 
     def setAllInterestsCompleteCallback(self, callback):
         if ((self._completeEventCount.num == 0) and
-            (self._completeDelayedCallback is None)):
+                (self._completeDelayedCallback is None)):
             callback()
         else:
             self._allInterestsCompleteCallbacks.append(callback)
@@ -174,8 +190,6 @@ class DoInterestManager(DirectObject.DirectObject):
                         'addInterest: no setParentingRules defined in the DC for object %s (%s)'
                         '' % (parentId, parent.__class__.__name__))
 
-
-
         if event:
             contextId = self._getNextContextId()
         else:
@@ -187,7 +201,8 @@ class DoInterestManager(DirectObject.DirectObject):
         if self.__verbose():
             print('CR::INTEREST.addInterest(handle=%s, parentId=%s, zoneIdList=%s, description=%s, event=%s)' % (
                 handle, parentId, zoneIdList, description, event))
-        self._sendAddInterest(handle, contextId, parentId, zoneIdList, description)
+        self._sendAddInterest(handle, contextId, parentId,
+                              zoneIdList, description)
         if event:
             messenger.send(self._getAddInterestEvent(), [event])
         assert self.printInterestsIfDebug()
@@ -224,7 +239,7 @@ class DoInterestManager(DirectObject.DirectObject):
         assert self.printInterestsIfDebug()
         return InterestHandle(handle)
 
-    def removeInterest(self, handle, event = None):
+    def removeInterest(self, handle, event=None):
         """
         Stop looking in a (set of) zone(s)
         """
@@ -310,7 +325,7 @@ class DoInterestManager(DirectObject.DirectObject):
         assert self.printInterestsIfDebug()
         return existed
 
-    @report(types = ['args'], dConfigParam = 'guildmgr')
+    @report(types=['args'], dConfigParam='guildmgr')
     def removeAIInterest(self, handle):
         """
         handle is NOT an InterestHandle.  It's just a bare integer representing an
@@ -331,7 +346,7 @@ class DoInterestManager(DirectObject.DirectObject):
         """
         assert DoInterestManager.notify.debugCall()
         assert isinstance(handle, InterestHandle)
-        #assert not self._noNewInterests
+        # assert not self._noNewInterests
         handle = handle.asInt()
         if self._noNewInterests:
             DoInterestManager.notify.warning(
@@ -360,7 +375,8 @@ class DoInterestManager(DirectObject.DirectObject):
             if self.__verbose():
                 print('CR::INTEREST.alterInterest(handle=%s, parentId=%s, zoneIdList=%s, description=%s, event=%s)' % (
                     handle, parentId, zoneIdList, description, event))
-            self._sendAddInterest(handle, contextId, parentId, zoneIdList, description, action='modify')
+            self._sendAddInterest(
+                handle, contextId, parentId, zoneIdList, description, action='modify')
             exists = True
             assert self.printInterestsIfDebug()
         else:
@@ -371,17 +387,21 @@ class DoInterestManager(DirectObject.DirectObject):
     def openAutoInterests(self, obj):
         if hasattr(obj, '_autoInterestHandle'):
             # must be multiple inheritance
-            self.notify.debug('openAutoInterests(%s): interests already open' % obj.__class__.__name__)
+            self.notify.debug(
+                'openAutoInterests(%s): interests already open' % obj.__class__.__name__)
             return
         autoInterests = obj.getAutoInterests()
         obj._autoInterestHandle = None
         if not len(autoInterests):
             return
-        obj._autoInterestHandle = self.addAutoInterest(obj.doId, autoInterests, '%s-autoInterest' % obj.__class__.__name__)
+        obj._autoInterestHandle = self.addAutoInterest(
+            obj.doId, autoInterests, '%s-autoInterest' % obj.__class__.__name__)
+
     def closeAutoInterests(self, obj):
         if not hasattr(obj, '_autoInterestHandle'):
             # must be multiple inheritance
-            self.notify.debug('closeAutoInterests(%s): interests already closed' % obj)
+            self.notify.debug(
+                'closeAutoInterests(%s): interests already closed' % obj)
             return
         if obj._autoInterestHandle is not None:
             self.removeAutoInterest(obj._autoInterestHandle)
@@ -390,6 +410,7 @@ class DoInterestManager(DirectObject.DirectObject):
     # events for InterestWatcher
     def _getAddInterestEvent(self):
         return self._addInterestEvent
+
     def _getRemoveInterestEvent(self):
         return self._removeInterestEvent
 
@@ -407,6 +428,7 @@ class DoInterestManager(DirectObject.DirectObject):
                 'interest %s already in use' % handle)
         DoInterestManager._HandleSerialNum = handle
         return DoInterestManager._HandleSerialNum
+
     def _getNextContextId(self):
         contextId = DoInterestManager._ContextIdSerialNum
         while True:
@@ -427,14 +449,15 @@ class DoInterestManager(DirectObject.DirectObject):
             if DoInterestManager._interests[handle].isPendingDelete():
                 # make sure there is no pending event for this interest
                 if DoInterestManager._interests[handle].context == NO_CONTEXT:
-                    assert len(DoInterestManager._interests[handle].events) == 0
+                    assert len(
+                        DoInterestManager._interests[handle].events) == 0
                     del DoInterestManager._interests[handle]
 
     if __debug__:
         def printInterestsIfDebug(self):
             if DoInterestManager.notify.getDebug():
                 self.printInterests()
-            return 1 # for assert
+            return 1  # for assert
 
         def _addDebugInterestHistory(self, action, description, handle,
                                      contextId, parentId, zoneIdList):
@@ -447,18 +470,22 @@ class DoInterestManager(DirectObject.DirectObject):
 
         def printInterestHistory(self):
             print("***************** Interest History *************")
-            format = '%9s %' + str(DoInterestManager._debug_maxDescriptionLen) + 's %6s %6s %9s %s'
+            format = '%9s %' + \
+                str(DoInterestManager._debug_maxDescriptionLen) + \
+                's %6s %6s %9s %s'
             print(format % (
                 "Action", "Description", "Handle", "Context", "ParentId",
                 "ZoneIdList"))
             for i in DoInterestManager._debug_interestHistory:
                 print(format % tuple(i))
-            print("Note: interests with a Context of 0 do not get" \
-                " done/finished notices.")
+            print("Note: interests with a Context of 0 do not get"
+                  " done/finished notices.")
 
         def printInterestSets(self):
             print("******************* Interest Sets **************")
-            format = '%6s %' + str(DoInterestManager._debug_maxDescriptionLen) + 's %11s %11s %8s %8s %8s'
+            format = '%6s %' + \
+                str(DoInterestManager._debug_maxDescriptionLen) + \
+                's %11s %11s %8s %8s %8s'
             print(format % (
                 "Handle", "Description",
                 "ParentId", "ZoneIdList",
@@ -552,7 +579,7 @@ class DoInterestManager(DirectObject.DirectObject):
         datagram = PyDatagram()
         # Add message type
         datagram.addUint16(CLIENT_REMOVE_INTEREST)
-        datagram.addUint16((1<<15) + handle)
+        datagram.addUint16((1 << 15) + handle)
         self.send(datagram)
 
     def cleanupWaitAllInterestsComplete(self):
@@ -568,6 +595,7 @@ class DoInterestManager(DirectObject.DirectObject):
             # will automatically be scheduled when all interests complete
             # print 'checkMoreInterests(',self._completeEventCount.num,'):',globalClock.getFrameCount()
             return self._completeEventCount.num > 0
+
         def sendEvent():
             messenger.send(self.getAllInterestsCompleteEvent())
             for callback in self._allInterestsCompleteCallbacks:
@@ -593,7 +621,7 @@ class DoInterestManager(DirectObject.DirectObject):
             print('CR::INTEREST.interestDone(handle=%s)' % handle)
         DoInterestManager.notify.debug(
             "handleInterestDoneMessage--> Received handle %s, context %s" % (
-            handle, contextId))
+                handle, contextId))
         if handle in DoInterestManager._interests:
             eventsToSend = []
             # if the context matches, send out the event
@@ -601,13 +629,14 @@ class DoInterestManager(DirectObject.DirectObject):
                 DoInterestManager._interests[handle].context = NO_CONTEXT
                 # the event handlers may call back into the interest manager. Send out
                 # the events after we're once again in a stable state.
-                #DoInterestManager._interests[handle].sendEvents()
-                eventsToSend = list(DoInterestManager._interests[handle].getEvents())
+                # DoInterestManager._interests[handle].sendEvents()
+                eventsToSend = list(
+                    DoInterestManager._interests[handle].getEvents())
                 DoInterestManager._interests[handle].clearEvents()
             else:
                 DoInterestManager.notify.debug(
                     "handleInterestDoneMessage--> handle: %s: Expecting context %s, got %s" % (
-                    handle, DoInterestManager._interests[handle].context, contextId))
+                        handle, DoInterestManager._interests[handle].context, contextId))
             if __debug__:
                 state = DoInterestManager._interests[handle]
                 self._addDebugInterestHistory(
@@ -624,12 +653,14 @@ class DoInterestManager(DirectObject.DirectObject):
             self.queueAllInterestsCompleteEvent()
         assert self.printInterestsIfDebug()
 
+
 if __debug__:
     import unittest
 
     class AsyncTestCase(unittest.TestCase):
         def setCompleted(self):
             self._async_completed = True
+
         def isCompleted(self):
             return getattr(self, '_async_completed', False)
 
@@ -658,7 +689,8 @@ if __debug__:
                 if failed:
                     self.stream.write("failures=%d" % failed)
                 if errored:
-                    if failed: self.stream.write(", ")
+                    if failed:
+                        self.stream.write(", ")
                     self.stream.write("errors=%d" % errored)
                 self.stream.writeln(")")
             else:
@@ -669,11 +701,14 @@ if __debug__:
         def testInterestAdd(self):
             event = uniqueName('InterestAdd')
             self.acceptOnce(event, self.gotInterestAddResponse)
-            self.handle = base.cr.addInterest(base.cr.GameGlobalsId, 100, 'TestInterest', event=event)
+            self.handle = base.cr.addInterest(
+                base.cr.GameGlobalsId, 100, 'TestInterest', event=event)
+
         def gotInterestAddResponse(self):
             event = uniqueName('InterestRemove')
             self.acceptOnce(event, self.gotInterestRemoveResponse)
             base.cr.removeInterest(self.handle, event=event)
+
         def gotInterestRemoveResponse(self):
             self.setCompleted()
 

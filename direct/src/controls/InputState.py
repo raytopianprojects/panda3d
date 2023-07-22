@@ -3,46 +3,60 @@ from direct.showbase import DirectObject
 from direct.showbase.PythonUtil import SerialNumGen
 
 # internal class, don't create these on your own
+
+
 class InputStateToken:
     _SerialGen = SerialNumGen()
     Inval = 'invalidatedToken'
+
     def __init__(self, inputState):
         self._id = InputStateToken._SerialGen.next()
         self._hash = self._id
         self._inputState = inputState
+
     def release(self):
         # subclasses will override
         assert False
+
     def isValid(self):
         return self._id != InputStateToken.Inval
+
     def invalidate(self):
         self._id = InputStateToken.Inval
+
     def __hash__(self):
         return self._hash
 
-    #snake_case alias:
+    # snake_case alias:
     is_valid = isValid
+
 
 class InputStateWatchToken(InputStateToken, DirectObject.DirectObject):
     def release(self):
         self._inputState._ignore(self)
         self.ignoreAll()
+
+
 class InputStateForceToken(InputStateToken):
     def release(self):
         self._inputState._unforce(self)
 
+
 class InputStateTokenGroup:
     def __init__(self):
         self._tokens = []
+
     def addToken(self, token):
         self._tokens.append(token)
+
     def release(self):
         for token in self._tokens:
             token.release()
         self._tokens = []
 
-    #snake_case alias:
+    # snake_case alias:
     add_token = addToken
+
 
 class InputState(DirectObject.DirectObject):
     """
@@ -90,7 +104,7 @@ class InputState(DirectObject.DirectObject):
         """
         returns True/False
         """
-        #assert self.debugPrint("isSet(name=%s)"%(name))
+        # assert self.debugPrint("isSet(name=%s)"%(name))
         if name in self._forcingOn:
             return True
         elif name in self._forcingOff:
@@ -108,7 +122,8 @@ class InputState(DirectObject.DirectObject):
         return "InputState-%s" % (name,)
 
     def set(self, name, isActive, inputSource=None):
-        assert self.debugPrint("set(name=%s, isActive=%s, inputSource=%s)"%(name, isActive, inputSource))
+        assert self.debugPrint(
+            "set(name=%s, isActive=%s, inputSource=%s)" % (name, isActive, inputSource))
         # inputSource is a string that identifies where this input change
         # is coming from (like 'WASD', 'ArrowKeys', etc.)
         # Each unique inputSource is allowed to influence this input item
@@ -147,8 +162,8 @@ class InputState(DirectObject.DirectObject):
             token.release()
         """
         assert self.debugPrint(
-            "watch(name=%s, eventOn=%s, eventOff=%s, startState=%s)"%(
-            name, eventOn, eventOff, startState))
+            "watch(name=%s, eventOn=%s, eventOff=%s, startState=%s)" % (
+                name, eventOn, eventOff, startState))
         if inputSource is None:
             inputSource = "eventPair('%s','%s')" % (eventOn, eventOff)
         # Do we really need to reset the input state just because
@@ -169,7 +184,8 @@ class InputState(DirectObject.DirectObject):
                     'control-alt-%s', 'shift-%s', 'shift-alt-%s')
         tGroup = InputStateTokenGroup()
         for pattern in patterns:
-            tGroup.addToken(self.watch(name, pattern % event, '%s-up' % event, startState=startState, inputSource=inputSource))
+            tGroup.addToken(self.watch(name, pattern % event, '%s-up' %
+                            event, startState=startState, inputSource=inputSource))
         return tGroup
 
     def _ignore(self, token):
@@ -187,7 +203,6 @@ class InputState(DirectObject.DirectObject):
         # I commented this out because we shouldn't be modifying an
         # input state simply because we're not looking at it anymore.
         # self.set(name, False, inputSource)
-
 
     def force(self, name, value, inputSource):
         """
@@ -211,7 +226,7 @@ class InputState(DirectObject.DirectObject):
                 self.notify.error(
                     "%s is trying to force '%s' to ON, but '%s' is already being forced OFF by %s" %
                     (inputSource, name, name, self._forcingOff[name])
-                    )
+                )
             self._forcingOn.setdefault(name, set())
             self._forcingOn[name].add(inputSource)
         else:
@@ -219,7 +234,7 @@ class InputState(DirectObject.DirectObject):
                 self.notify.error(
                     "%s is trying to force '%s' to OFF, but '%s' is already being forced ON by %s" %
                     (inputSource, name, name, self._forcingOn[name])
-                    )
+                )
             self._forcingOff.setdefault(name, set())
             self._forcingOff[name].add(inputSource)
         return token
@@ -242,9 +257,9 @@ class InputState(DirectObject.DirectObject):
     def debugPrint(self, message):
         """for debugging"""
         return self.notify.debug(
-            "%s (%s) %s"%(id(self), len(self._state), message))
+            "%s (%s) %s" % (id(self), len(self._state), message))
 
-    #snake_case alias:
+    # snake_case alias:
     watch_with_modifiers = watchWithModifiers
     is_set = isSet
     get_event_name = getEventName

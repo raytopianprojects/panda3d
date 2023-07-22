@@ -19,7 +19,7 @@ class TaskThreaded:
     def __init__(self, name, threaded=True, timeslice=None, callback=None):
         # timeslice is how long this thread should take every frame.
         self.__name = name
-        self.__threaded=threaded
+        self.__threaded = threaded
         if timeslice is None:
             timeslice = .01
         self.__timeslice = timeslice
@@ -116,6 +116,7 @@ class TaskThreaded:
             return True
         return (globalClock.getRealTime() - self._taskStartTime) < self.__timeslice
 
+
 class TaskThread:
     # derive and override these four funcs
     # TaskThreaded obj is available as 'self.parent'
@@ -123,12 +124,15 @@ class TaskThread:
     # call self.finished() when you're done
     def setUp(self):
         pass
+
     def run(self):
         pass
+
     def tearDown(self):
         # undo what you did in setUp()
         # this will be called if we get destroyed early
         pass
+
     def done(self):
         # override this if you want to do stuff after the thread finishes
         pass
@@ -138,6 +142,7 @@ class TaskThread:
         self.tearDown()
         self._finished = True
         self.done()
+
     def isFinished(self):
         return self._finished
 
@@ -148,6 +153,7 @@ class TaskThread:
     def _init(self, parent):
         self.parent = parent
         self._finished = False
+
     def _destroy(self):
         del self.parent
         del self._finished

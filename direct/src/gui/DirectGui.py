@@ -7,8 +7,8 @@ from .OnscreenImage import *
 
 # MPG DirectStart should call this?
 # Set up default font
-#defaultFont = get_default_font()
-#if defaultFont:
+# defaultFont = get_default_font()
+# if defaultFont:
 #    PGItem.getTextNode().setFont(defaultFont)
 
 # Direct Gui Classes

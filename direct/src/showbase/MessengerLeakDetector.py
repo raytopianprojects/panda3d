@@ -1,7 +1,8 @@
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.showbase.DirectObject import DirectObject
 from direct.showbase.Job import Job
-import gc, sys
+import gc
+import sys
 
 if sys.version_info >= (3, 0):
     import builtins
@@ -12,11 +13,14 @@ else:
 class MessengerLeakObject(DirectObject):
     def __init__(self):
         self.accept('leakEvent', self._handleEvent)
+
     def _handleEvent(self):
         pass
 
+
 def _leakMessengerObject():
     leakObject = MessengerLeakObject()
+
 
 class MessengerLeakDetector(Job):
     # check for objects that are only referenced by the messenger
@@ -56,7 +60,8 @@ class MessengerLeakDetector(Job):
         while True:
             yield None
             objects = list(messenger._Messenger__objectEvents.keys())
-            assert self.notify.debug('%s objects in the messenger' % len(objects))
+            assert self.notify.debug(
+                '%s objects in the messenger' % len(objects))
             for object in objects:
                 yield None
                 assert self.notify.debug('---> new object: %s' % itype(object))
@@ -86,7 +91,8 @@ class MessengerLeakDetector(Job):
                     # swap the lists, prepare for the next pass
                     curObjList = nextObjList
                     nextObjList = []
-                    assert self.notify.debug('next search iteration, num objects: %s' % len(curObjList))
+                    assert self.notify.debug(
+                        'next search iteration, num objects: %s' % len(curObjList))
                     for curObj in curObjList:
                         if foundBuiltin:
                             break
@@ -95,19 +101,19 @@ class MessengerLeakDetector(Job):
                         assert self.notify.debug('curObj: %s @ %s, %s referrers, repr=%s' % (
                             itype(curObj), hex(id(curObj)), len(referrers), fastRepr(curObj, maxLen=2)))
                         for referrer in referrers:
-                            #assert self.notify.debug('referrer: %s' % itype(curObj))
+                            # assert self.notify.debug('referrer: %s' % itype(curObj))
                             yield None
                             refId = id(referrer)
                             # don't go in a loop
                             if refId in visitedObjIds:
-                                #assert self.notify.debug('already visited')
+                                # assert self.notify.debug('already visited')
                                 continue
                             # don't self-reference
                             if referrer is curObjList or referrer is nextObjList:
                                 continue
                             if refId in builtinIds:
                                 # not a leak, there is a path to builtin that does not involve the messenger
-                                #assert self.notify.debug('object has another path to __builtin__, it\'s not a messenger leak')
+                                # assert self.notify.debug('object has another path to __builtin__, it\'s not a messenger leak')
                                 foundBuiltin = True
                                 break
                             else:

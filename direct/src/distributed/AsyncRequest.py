@@ -1,4 +1,4 @@
-#from otp.ai.AIBaseGlobal import *
+# from otp.ai.AIBaseGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from direct.showbase.DirectObject import DirectObject
 from .ConnectionRepository import *
@@ -9,9 +9,13 @@ ASYNC_REQUEST_INFINITE_RETRIES = -1
 ASYNC_REQUEST_DEFAULT_NUM_RETRIES = 0
 
 if __debug__:
-    _overrideTimeoutTimeForAllAsyncRequests = ConfigVariableDouble("async-request-timeout", -1.0)
-    _overrideNumRetriesForAllAsyncRequests = ConfigVariableInt("async-request-num-retries", -1)
-    _breakOnTimeout = ConfigVariableBool("async-request-break-on-timeout", False)
+    _overrideTimeoutTimeForAllAsyncRequests = ConfigVariableDouble(
+        "async-request-timeout", -1.0)
+    _overrideNumRetriesForAllAsyncRequests = ConfigVariableInt(
+        "async-request-num-retries", -1)
+    _breakOnTimeout = ConfigVariableBool(
+        "async-request-break-on-timeout", False)
+
 
 class AsyncRequest(DirectObject):
     """
@@ -41,9 +45,9 @@ class AsyncRequest(DirectObject):
 
     notify = DirectNotifyGlobal.directNotify.newCategory('AsyncRequest')
 
-    def __init__(self, air, replyToChannelId = None,
-                 timeoutTime = ASYNC_REQUEST_DEFAULT_TIMEOUT_IN_SECONDS,
-                 numRetries = ASYNC_REQUEST_DEFAULT_NUM_RETRIES):
+    def __init__(self, air, replyToChannelId=None,
+                 timeoutTime=ASYNC_REQUEST_DEFAULT_TIMEOUT_IN_SECONDS,
+                 numRetries=ASYNC_REQUEST_DEFAULT_NUM_RETRIES):
         """
         air is the AI Respository.
         replyToChannelId may be an avatarId, an accountId, or a channelId.
@@ -57,7 +61,7 @@ class AsyncRequest(DirectObject):
             if _overrideNumRetriesForAllAsyncRequests.getValue() >= 0:
                 numRetries = _overrideNumRetriesForAllAsyncRequests.getValue()
         AsyncRequest._asyncRequests[id(self)] = self
-        self.deletingMessage = "AsyncRequest-deleting-%s"%(id(self,))
+        self.deletingMessage = "AsyncRequest-deleting-%s" % (id(self,))
         self.air = air
         self.replyToChannelId = replyToChannelId
         self.timeoutTask = None
@@ -76,7 +80,7 @@ class AsyncRequest(DirectObject):
         del self.replyToChannelId
 
     def askForObjectField(
-            self, dclassName, fieldName, doId, key = None, context = None):
+            self, dclassName, fieldName, doId, key=None, context=None):
         """
         Request an already created object, i.e. read from database.
         """
@@ -89,7 +93,7 @@ class AsyncRequest(DirectObject):
             context = self.air.allocateContext()
         self.air.contextToClassName[context] = dclassName
         self.acceptOnce(
-            "doFieldResponse-%s"%(context,),
+            "doFieldResponse-%s" % (context,),
             self._checkCompletion, [key])
 
         self.neededObjects[key] = None
@@ -98,7 +102,7 @@ class AsyncRequest(DirectObject):
         self._resetTimeoutTask()
 
     def askForObjectFields(
-            self, dclassName, fieldNames, doId, key = None, context = None):
+            self, dclassName, fieldNames, doId, key=None, context=None):
         """
         Request an already created object, i.e. read from database.
         """
@@ -111,7 +115,7 @@ class AsyncRequest(DirectObject):
             context = self.air.allocateContext()
         self.air.contextToClassName[context] = dclassName
         self.acceptOnce(
-            "doFieldResponse-%s"%(context,),
+            "doFieldResponse-%s" % (context,),
             self._checkCompletion, [key])
         self.air.queryObjectFields(dclassName, fieldNames, doId, context)
         self._resetTimeoutTask()
@@ -123,15 +127,16 @@ class AsyncRequest(DirectObject):
             # default the dictionary key to the fieldNames
             key = fieldNames
         if context is None:
-            context=self.air.allocateContext()
-        self.air.contextToClassName[context]=dclassName
+            context = self.air.allocateContext()
+        self.air.contextToClassName[context] = dclassName
         self.acceptOnce(
-            "doFieldResponse-%s"%(context,),
+            "doFieldResponse-%s" % (context,),
             self._checkCompletion, [key])
-        self.air.queryObjectStringFields(dbId,dclassName,objString,fieldNames,context)
+        self.air.queryObjectStringFields(
+            dbId, dclassName, objString, fieldNames, context)
         self._resetTimeoutTask()
 
-    def askForObject(self, doId, context = None):
+    def askForObject(self, doId, context=None):
         """
         Request an already created object, i.e. read from database.
         """
@@ -140,13 +145,13 @@ class AsyncRequest(DirectObject):
         if context is None:
             context = self.air.allocateContext()
         self.acceptOnce(
-            "doRequestResponse-%s"%(context,),
+            "doRequestResponse-%s" % (context,),
             self._checkCompletion, [None])
         self.air.queryObjectAll(doId, context)
         self._resetTimeoutTask()
 
     def createObject(self, name, className,
-            databaseId = None, values = None, context = None):
+                     databaseId=None, values=None, context=None):
         """
         Create a new database object.  You can get the doId from within
         your self.finish() function.
@@ -167,10 +172,10 @@ class AsyncRequest(DirectObject):
             self.air.getDatabaseGenerateResponseEvent(context),
             self._doCreateObject, [name, className, values])
         self.air.requestDatabaseGenerate(
-            className, context, databaseId = databaseId, values = values)
+            className, context, databaseId=databaseId, values=values)
         self._resetTimeoutTask()
 
-    def createObjectId(self, name, className, values = None, context = None):
+    def createObjectId(self, name, className, values=None, context=None):
         """
         Create a new database object.  You can get the doId from within
         your self.finish() function.
@@ -190,7 +195,7 @@ class AsyncRequest(DirectObject):
         self.accept(
             self.air.getDatabaseGenerateResponseEvent(context),
             self._checkCompletion, [name, None])
-        self.air.requestDatabaseGenerate(className, context, values = values)
+        self.air.requestDatabaseGenerate(className, context, values=values)
         self._resetTimeoutTask()
 
     def finish(self):
@@ -228,7 +233,7 @@ class AsyncRequest(DirectObject):
                 return
         self.finish()
 
-    def _resetTimeoutTask(self, createAnew = True):
+    def _resetTimeoutTask(self, createAnew=True):
         if self.timeoutTask:
             taskMgr.remove(self.timeoutTask)
             self.timeoutTask = None
@@ -236,11 +241,11 @@ class AsyncRequest(DirectObject):
             self.numRetries = self._initialNumRetries
             self.timeoutTask = taskMgr.doMethodLater(
                 self._timeoutTime, self.timeout,
-                "AsyncRequestTimer-%s"%(id(self,)))
+                "AsyncRequestTimer-%s" % (id(self,)))
 
     def timeout(self, task):
         assert AsyncRequest.notify.debugCall(
-            "neededObjects: %s"%(self.neededObjects,))
+            "neededObjects: %s" % (self.neededObjects,))
         if self.numRetries > 0:
             assert AsyncRequest.notify.debug(
                 'Timed out. Trying %d more time(s) : %s' %
@@ -253,10 +258,13 @@ class AsyncRequest(DirectObject):
                     if hasattr(self, "avatarId"):
                         print("\n\nself.avatarId =", self.avatarId)
                     print("\nself.neededObjects =", self.neededObjects)
-                    print("\ntimed out after %s seconds.\n\n"%(task.delayTime,))
-                    import pdb; pdb.set_trace()
+                    print("\ntimed out after %s seconds.\n\n" %
+                          (task.delayTime,))
+                    import pdb
+                    pdb.set_trace()
             self.delete()
             return Task.done
+
 
 def cleanupAsyncRequests():
     """

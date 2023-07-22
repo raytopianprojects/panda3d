@@ -10,12 +10,14 @@ from panda3d.core import *
 from . import DirectGuiGlobals as DGG
 from .DirectFrame import *
 
+
 class DirectButton(DirectFrame):
     """
     DirectButton(parent) - Create a DirectGuiWidget which responds
     to mouse clicks and execute a callback function if defined
     """
-    def __init__(self, parent = None, **kw):
+
+    def __init__(self, parent=None, **kw):
         # Inherits from DirectFrame
         # A Direct Frame can have:
         # - A background texture (pass in path to image, or Texture Card)
@@ -45,7 +47,7 @@ class DirectButton(DirectFrame):
             # Can only be specified at time of widget contruction
             # Do the text/graphics appear to move when the button is clicked
             ('pressEffect',     1,         DGG.INITOPT),
-            )
+        )
         # Merge keyword options with default options
         self.defineoptions(kw, optiondefs)
 
@@ -59,7 +61,8 @@ class DirectButton(DirectFrame):
         # bounding volume (which happens during initialise options).
         pressEffectNP = None
         if self['pressEffect']:
-            pressEffectNP = self.stateNodePath[1].attachNewNode('pressEffect', 1)
+            pressEffectNP = self.stateNodePath[1].attachNewNode(
+                'pressEffect', 1)
             self.stateNodePath[1] = pressEffectNP
 
         # Call option initialization functions
@@ -73,8 +76,8 @@ class DirectButton(DirectFrame):
 
             # Make a matrix that scales about the point
             mat = Mat4.translateMat(-centerX, 0, -centerY) * \
-                  Mat4.scaleMat(0.98) * \
-                  Mat4.translateMat(centerX, 0, centerY)
+                Mat4.scaleMat(0.98) * \
+                Mat4.translateMat(centerX, 0, centerY)
             pressEffectNP.setMat(mat)
 
     def setCommandButtons(self):
@@ -126,5 +129,3 @@ class DirectButton(DirectFrame):
             self.guiItem.setSound(DGG.ENTER + self.guiId, rolloverSound)
         else:
             self.guiItem.clearSound(DGG.ENTER + self.guiId)
-
-

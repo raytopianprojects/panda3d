@@ -29,8 +29,8 @@ class World(object):
             parent=base.a2dBottomRight, align=TextNode.A_right,
             style=1, fg=(1, 1, 1, 1), pos=(-0.1, 0.1), scale=.07)
 
-        base.setBackgroundColor(0, 0, 0)  # Set the background to black
-        base.disableMouse()  # disable mouse control of the camera
+        base.set_background_color(0, 0, 0)  # Set the background to black
+        base.disable_mouse()  # disable mouse control of the camera
         camera.setPos(0, 0, 45)  # Set the camera position (X, Y, Z)
         camera.setHpr(0, -90, 0)  # Set the camera orientation
         #(heading, pitch, roll) in degrees

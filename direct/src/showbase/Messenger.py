@@ -53,17 +53,17 @@ class Messenger:
         self.lock = Lock()
 
         if __debug__:
-            self.__isWatching=0
-            self.__watching={}
+            self.__isWatching = 0
+            self.__watching = {}
         # I'd like this to be in the __debug__, but I fear that someone will
         # want this in a release build.  If you're sure that that will not be
         # then please remove this comment and put the quiet/verbose stuff
         # under __debug__.
-        self.quieting={"NewFrame":1,
-                       "avatarMoving":1,
-                       "event-loop-done":1,
-                       'collisionLoopFinished':1,
-                       } # see def quiet()
+        self.quieting = {"NewFrame": 1,
+                         "avatarMoving": 1,
+                         "event-loop-done": 1,
+                         'collisionLoopFinished': 1,
+                         }  # see def quiet()
 
     def _getMessengerId(self, object):
         # TODO: allocate this id in DirectObject.__init__ and get derived
@@ -72,7 +72,8 @@ class Messenger:
         # get unique messenger id for this object
         # assumes lock is held.
         if not hasattr(object, '_MSGRmessengerId'):
-            object._MSGRmessengerId = (object.__class__.__name__, self._messengerIdGen)
+            object._MSGRmessengerId = (
+                object.__class__.__name__, self._messengerIdGen)
             self._messengerIdGen += 1
         return object._MSGRmessengerId
 
@@ -138,7 +139,7 @@ class Messenger:
 
         # Make sure that the method is callable
         assert hasattr(method, '__call__'), (
-            "method not callable in accept (ignoring): %s %s"%
+            "method not callable in accept (ignoring): %s %s" %
             (safeRepr(method), safeRepr(extraArgs)))
 
         # Make sure extraArgs is a list or tuple
@@ -303,22 +304,23 @@ class Messenger:
         if Messenger.notify.getDebug() and not self.quieting.get(event):
             assert Messenger.notify.debug(
                 'sent event: %s sentArgs = %s, taskChain = %s' % (
-                event, sentArgs, taskChain))
+                    event, sentArgs, taskChain))
 
         self.lock.acquire()
         try:
-            foundWatch=0
+            foundWatch = 0
             if __debug__:
                 if self.__isWatching:
                     for i in self.__watching.keys():
                         if str(event).find(i) >= 0:
-                            foundWatch=1
+                            foundWatch = 1
                             break
             acceptorDict = self.__callbacks.get(event)
             if not acceptorDict:
                 if __debug__:
                     if foundWatch:
-                        print("Messenger: \"%s\" was sent, but no function in Python listened."%(event,))
+                        print(
+                            "Messenger: \"%s\" was sent, but no function in Python listened." % (event,))
                 return
 
             if taskChain:
@@ -329,9 +331,9 @@ class Messenger:
                 if len(queue) == 1:
                     # If this is the first (only) item on the queue,
                     # spawn the task to empty it.
-                    taskMgr.add(self.__taskChainDispatch, name = 'Messenger-%s' % (taskChain),
-                                extraArgs = [taskChain], taskChain = taskChain,
-                                appendTask = True)
+                    taskMgr.add(self.__taskChainDispatch, name='Messenger-%s' % (taskChain),
+                                extraArgs=[taskChain], taskChain=taskChain,
+                                appendTask=True)
             else:
                 # Handle the event immediately.
                 self.__dispatch(acceptorDict, event, sentArgs, foundWatch)
@@ -394,18 +396,18 @@ class Messenger:
                     del acceptorDict[id]
                     # If the dictionary at this event is now empty, remove
                     # the event entry from the Messenger altogether
-                    if (event in self.__callbacks \
+                    if (event in self.__callbacks
                             and (len(self.__callbacks[event]) == 0)):
                         del self.__callbacks[event]
 
                 if __debug__:
                     if foundWatch:
-                        print("Messenger: \"%s\" --> %s%s"%(
+                        print("Messenger: \"%s\" --> %s%s" % (
                             event,
                             self.__methodRepr(method),
                             tuple(extraArgs + sentArgs)))
 
-                #print "Messenger: \"%s\" --> %s%s"%(
+                # print "Messenger: \"%s\" --> %s%s"%(
                 #            event,
                 #            self.__methodRepr(method),
                 #            tuple(extraArgs + sentArgs))
@@ -419,7 +421,7 @@ class Messenger:
                 # Release the lock temporarily while we call the method.
                 self.lock.release()
                 try:
-                    result = method (*(extraArgs + sentArgs))
+                    result = method(*(extraArgs + sentArgs))
                 finally:
                     self.lock.acquire()
 
@@ -460,13 +462,14 @@ class Messenger:
                     function = method.__func__
                 else:
                     function = method
-                #print ('function: ' + repr(function) + '\n' +
+                # print ('function: ' + repr(function) + '\n' +
                 #       'method: ' + repr(method) + '\n' +
                 #       'oldMethod: ' + repr(oldMethod) + '\n' +
                 #       'newFunction: ' + repr(newFunction) + '\n')
                 if (function == oldMethod):
                     if sys.version_info >= (3, 0):
-                        newMethod = types.MethodType(newFunction, method.__self__)
+                        newMethod = types.MethodType(
+                            newFunction, method.__self__)
                     else:
                         newMethod = types.MethodType(
                             newFunction, method.__self__, method.__self__.__class__)
@@ -480,7 +483,7 @@ class Messenger:
         isVerbose = 1 - Messenger.notify.getDebug()
         Messenger.notify.setDebug(isVerbose)
         if isVerbose:
-            print("Verbose mode true.  quiet list = %s"%(
+            print("Verbose mode true.  quiet list = %s" % (
                 list(self.quieting.keys()),))
 
     if __debug__:
@@ -496,7 +499,7 @@ class Messenger:
             """
             if not self.__watching.get(needle):
                 self.__isWatching += 1
-                self.__watching[needle]=1
+                self.__watching[needle] = 1
 
         def unwatch(self, needle):
             """
@@ -524,7 +527,7 @@ class Messenger:
             See Also: `unquiet`
             """
             if not self.quieting.get(message):
-                self.quieting[message]=1
+                self.quieting[message] = 1
 
         def unquiet(self, message):
             """
@@ -653,7 +656,7 @@ class Messenger:
         str = str + '='*50 + '\n'
         return str
 
-    #snake_case alias:
+    # snake_case alias:
     get_events = getEvents
     is_ignoring = isIgnoring
     who_accepts = whoAccepts

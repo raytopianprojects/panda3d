@@ -4,8 +4,9 @@ import gc
 from direct.showbase.PythonUtil import _getSafeReprNotify
 from direct.showbase.Job import Job
 
+
 class ReferrerSearch(Job):
-    def __init__(self, obj, maxRefs = 100):
+    def __init__(self, obj, maxRefs=100):
         Job.__init__(self, 'ReferrerSearch')
         self.obj = obj
         self.maxRefs = maxRefs
@@ -34,7 +35,8 @@ class ReferrerSearch(Job):
         self.info = safeReprNotify.getInfo()
         safeReprNotify.setInfo(0)
 
-        print('RefPath(%s): Beginning ReferrerSearch for %s' %(self._id, fastRepr(self.obj)))
+        print('RefPath(%s): Beginning ReferrerSearch for %s' %
+              (self._id, fastRepr(self.obj)))
 
         self.visited = set()
         for x in self.stepGenerator(0, [self.obj]):
@@ -45,7 +47,8 @@ class ReferrerSearch(Job):
         pass
 
     def finished(self):
-        print('RefPath(%s): Finished ReferrerSearch for %s' %(self._id, fastRepr(self.obj)))
+        print('RefPath(%s): Finished ReferrerSearch for %s' %
+              (self._id, fastRepr(self.obj)))
         self.obj = None
 
         safeReprNotify = _getSafeReprNotify()
@@ -68,7 +71,7 @@ class ReferrerSearch(Job):
     def myrepr(self, referrer, refersTo):
         pre = ''
         if (isinstance(referrer, dict)):
-            for k,v in referrer.items():
+            for k, v in referrer.items():
                 if v is refersTo:
                     pre = self.truncateAtNewLine(fastRepr(k)) + ']-> '
                     break
@@ -99,8 +102,8 @@ class ReferrerSearch(Job):
         at = path[-1]
 
         if id(at) in self.visited:
-               # don't continue down this path
-               return
+            # don't continue down this path
+            return
 
         # check for success
         if (self.isAtRoot(at, path)):
@@ -110,13 +113,13 @@ class ReferrerSearch(Job):
         # mark our progress after checking goal
         self.visited.add(id(at))
 
-        referrers = [ref for ref in gc.get_referrers(at) \
-                     if not (ref is path or \
-                       inspect.isframe(ref) or \
-                       (isinstance(ref, dict) and \
-                        list(ref.keys()) == list(locals().keys())) or \
-                       ref is self.__dict__ or \
-                       id(ref) in self.visited) ]
+        referrers = [ref for ref in gc.get_referrers(at)
+                     if not (ref is path or
+                             inspect.isframe(ref) or
+                             (isinstance(ref, dict) and
+                              list(ref.keys()) == list(locals().keys())) or
+                             ref is self.__dict__ or
+                             id(ref) in self.visited)]
 
         # Check to see if this object has an unusually large
         # ref-count.  This usually indicates that it is some
@@ -126,12 +129,12 @@ class ReferrerSearch(Job):
         if (self.isManyRef(at, path, referrers)):
             return
 
-        while(referrers):
+        while (referrers):
             ref = referrers.pop()
-            self.depth+=1
+            self.depth += 1
             for x in self.stepGenerator(depth + 1, path + [ref]):
                 pass
-            self.depth-=1
+            self.depth -= 1
             pass
         pass
 
@@ -157,17 +160,17 @@ class ReferrerSearch(Job):
 
         # Look for all referrers, culling out the ones that
         # we know to be red herrings.
-        referrers = [ref for ref in gc.get_referrers(at) \
-                     if not (# we disregard the steps of our traversal
-                             ref is path or \
-                             # The referrer is this call frame
-                             inspect.isframe(ref) or \
-                             # The referrer is the locals() dictionary (closure)
-                             (isinstance(ref, dict) and list(ref.keys()) == list(locals().keys())) or \
-                             # We found the reference on self
-                             ref is self.__dict__ or \
-                             # We've already seen this referrer
-                             id(ref) in self.visited) ]
+        referrers = [ref for ref in gc.get_referrers(at)
+                     if not (  # we disregard the steps of our traversal
+            ref is path or \
+            # The referrer is this call frame
+            inspect.isframe(ref) or \
+            # The referrer is the locals() dictionary (closure)
+            (isinstance(ref, dict) and list(ref.keys()) == list(locals().keys())) or \
+            # We found the reference on self
+            ref is self.__dict__ or \
+            # We've already seen this referrer
+            id(ref) in self.visited)]
 
         # Check to see if this object has an unusually large
         # ref-count.  This usually indicates that it is some
@@ -177,13 +180,13 @@ class ReferrerSearch(Job):
         if (self.isManyRef(at, path, referrers)):
             raise StopIteration
 
-        while(referrers):
+        while (referrers):
             ref = referrers.pop()
-            self.depth+=1
+            self.depth += 1
             for x in self.stepGenerator(depth + 1, path + [ref]):
                 yield None
                 pass
-            self.depth-=1
+            self.depth -= 1
             pass
 
         yield None
@@ -191,8 +194,8 @@ class ReferrerSearch(Job):
 
     def printStats(self, path):
         path = list(reversed(path))
-        path.insert(0,0)
-        print('RefPath(%s) - Stats - visited(%s) | found(%s) | depth(%s) | CurrentPath(%s)' % \
+        path.insert(0, 0)
+        print('RefPath(%s) - Stats - visited(%s) | found(%s) | depth(%s) | CurrentPath(%s)' %
               (self._id, len(self.visited), self.found, self.depth, ''.join(self.myrepr(path[x], path[x+1]) for x in range(len(path) - 1))))
         pass
 
@@ -204,20 +207,18 @@ class ReferrerSearch(Job):
         if at in path:
             sys.stdout.write("RefPath(%s): Circular: " % self._id)
             path = list(reversed(path))
-            path.insert(0,0)
+            path.insert(0, 0)
             for x in range(len(path) - 1):
                 sys.stdout.write(self.myrepr(path[x], path[x+1]))
                 pass
             print("")
             return True
 
-
-
         # __builtins__
         if at is __builtins__:
             sys.stdout.write("RefPath(%s): __builtins__-> " % self._id)
             path = list(reversed(path))
-            path.insert(0,0)
+            path.insert(0, 0)
             for x in range(len(path) - 1):
                 sys.stdout.write(self.myrepr(path[x], path[x+1]))
                 pass
@@ -226,7 +227,8 @@ class ReferrerSearch(Job):
 
         # any module scope
         if inspect.ismodule(at):
-            sys.stdout.write("RefPath(%s): Module(%s)-> " % (self._id, at.__name__))
+            sys.stdout.write("RefPath(%s): Module(%s)-> " %
+                             (self._id, at.__name__))
             path = list(reversed(path))
             for x in range(len(path) - 1):
                 sys.stdout.write(self.myrepr(path[x], path[x+1]))
@@ -236,7 +238,8 @@ class ReferrerSearch(Job):
 
         # any class scope
         if inspect.isclass(at):
-            sys.stdout.write("RefPath(%s): Class(%s)-> " % (self._id, at.__name__))
+            sys.stdout.write("RefPath(%s): Class(%s)-> " %
+                             (self._id, at.__name__))
             path = list(reversed(path))
             for x in range(len(path) - 1):
                 sys.stdout.write(self.myrepr(path[x], path[x+1]))
@@ -298,25 +301,26 @@ class ReferrerSearch(Job):
         return False
 
     def isManyRef(self, at, path, referrers):
-        if (len(referrers) > self.maxRefs and \
-            at is not self.obj):
+        if (len(referrers) > self.maxRefs and
+                at is not self.obj):
             if not isinstance(at, (list, tuple, dict, set)):
-                sys.stdout.write("RefPath(%s): ManyRefs(%s)[%s]-> " % (self._id, len(referrers), fastRepr(at)))
+                sys.stdout.write(
+                    "RefPath(%s): ManyRefs(%s)[%s]-> " % (self._id, len(referrers), fastRepr(at)))
                 path = list(reversed(path))
-                path.insert(0,0)
+                path.insert(0, 0)
                 for x in range(len(path) - 1):
                     sys.stdout.write(self.myrepr(path[x], path[x+1]))
                     pass
                 print("")
                 return True
             else:
-                sys.stdout.write("RefPath(%s): ManyRefsAllowed(%s)[%s]-> " % (self._id, len(referrers), fastRepr(at, maxLen = 1, strFactor = 30)))
+                sys.stdout.write("RefPath(%s): ManyRefsAllowed(%s)[%s]-> " % (
+                    self._id, len(referrers), fastRepr(at, maxLen=1, strFactor=30)))
                 print("")
                 pass
             pass
         return False
     pass
-
 
 
 """

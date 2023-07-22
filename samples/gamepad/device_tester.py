@@ -20,7 +20,7 @@ from direct.gui.DirectGui import (
 class Main(ShowBase):
     def __init__(self):
         super().__init__()
-        base.disableMouse()
+        base.disable_mouse()
         self.accept("escape", sys.exit)
         self.device_connectivity_monitor = DeviceConnectivityMonitor()
 

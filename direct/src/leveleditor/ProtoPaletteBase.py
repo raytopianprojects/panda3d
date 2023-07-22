@@ -5,6 +5,7 @@ import imp
 
 from .ObjectPaletteBase import *
 
+
 class ProtoPaletteBase(ObjectPaletteBase):
     def __init__(self):
         ObjectPaletteBase.__init__(self)
@@ -23,7 +24,8 @@ class ProtoPaletteBase(ObjectPaletteBase):
     def populate(self):
         moduleName = 'protoPaletteData'
         try:
-            file, pathname, description = imp.find_module(moduleName, [self.dirname])
+            file, pathname, description = imp.find_module(
+                moduleName, [self.dirname])
             module = imp.load_module(moduleName, file, pathname, description)
             self.data = module.protoData
             self.dataStruct = module.protoDataStruct
@@ -31,24 +33,26 @@ class ProtoPaletteBase(ObjectPaletteBase):
             print("protoPaletteData doesn't exist")
             return
 
-        #self.addItems()
+        # self.addItems()
 
     def saveProtoDataStruct(self, f):
         if not f:
             return
 
         for key in list(self.dataStruct.keys()):
-            f.write("\t'%s':'%s',\n"%(key, self.dataStruct[key]))
+            f.write("\t'%s':'%s',\n" % (key, self.dataStruct[key]))
 
     def saveProtoData(self, f):
         if not f:
-           return
+            return
 
         for key in list(self.data.keys()):
             if isinstance(self.data[key], ObjectBase):
-               f.write("\t'%s':ObjectBase(name='%s', model='%s', anims=%s, actor=%s),\n"%(key, self.data[key].name, self.data[key].model, self.data[key].anims, self.data[key].actor))
+                f.write("\t'%s':ObjectBase(name='%s', model='%s', anims=%s, actor=%s),\n" % (
+                    key, self.data[key].name, self.data[key].model, self.data[key].anims, self.data[key].actor))
             else:
-               f.write("\t'%s':ObjectGen(name='%s'),\n"%(key, self.data[key].name))
+                f.write("\t'%s':ObjectGen(name='%s'),\n" %
+                        (key, self.data[key].name))
 
     def saveToFile(self):
         try:

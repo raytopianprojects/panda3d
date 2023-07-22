@@ -73,9 +73,9 @@ class CountedResource(object):
         cls = type(self)
         cls.RESOURCE_COUNTER_INIT_FAILED = True
         assert cls.mro()[1] == CountedResource, \
-               (lambda: \
-                '%s cannot be subclassed.' \
-                 % cls.mro()[list(cls.mro()).index(CountedResource) - 1].__name__)()
+            (lambda:
+             '%s cannot be subclassed.'
+                % cls.mro()[list(cls.mro()).index(CountedResource) - 1].__name__)()
         del cls.RESOURCE_COUNTER_INIT_FAILED
         self.incrementCounter()
 
@@ -109,7 +109,6 @@ if __debug__ and __name__ == '__main__':
             # not necessary at the moment, but may be in
             # the future, so do it now for good measure.
             super(MouseResource, cls).release()
-
 
         def __init__(self):
             super(MouseResource, self).__init__()
@@ -225,6 +224,3 @@ if __debug__ and __name__ == '__main__':
         print('Cursor will be freed on function exit')
 
     demoFunc()
-
-
-

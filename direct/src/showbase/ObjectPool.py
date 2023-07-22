@@ -7,12 +7,15 @@ from direct.showbase.PythonUtil import invertDictLossless, makeList, safeRepr
 from direct.showbase.PythonUtil import getNumberedTypedString, getNumberedTypedSortedString
 import gc
 
+
 class Diff:
     def __init__(self, lost, gained):
-        self.lost=lost
-        self.gained=gained
+        self.lost = lost
+        self.gained = gained
+
     def printOut(self, full=False):
-        print('lost %s objects, gained %s objects' % (len(self.lost), len(self.gained)))
+        print('lost %s objects, gained %s objects' %
+              (len(self.lost), len(self.gained)))
         print('\n\nself.lost\n')
         print(self.lost.typeFreqStr())
         print('\n\nself.gained\n')
@@ -21,6 +24,7 @@ class Diff:
             self.gained.printObjsByType()
             print('\n\nGAINED-OBJECT REFERRERS\n')
             self.gained.printReferrers(1)
+
 
 class ObjectPool:
     """manipulate a pool of Python objects"""
@@ -85,7 +89,7 @@ class ObjectPool:
         return Diff(self.__class__(lostObjs), self.__class__(gainedObjs))
 
     def typeFreqStr(self):
-        s  =   'Object Pool: Type Frequencies'
+        s = 'Object Pool: Type Frequencies'
         s += '\n============================='
         counts = list(set(self._count2types.keys()))
         counts.sort()
@@ -103,11 +107,12 @@ class ObjectPool:
         counts.sort()
         # print types with the smallest number of instances first, in case
         # there's a large group that waits a long time before printing
-        #counts.reverse()
+        # counts.reverse()
         for count in counts:
             types = makeList(self._count2types[count])
             for typ in types:
-                print('TYPE: %s, %s objects' % (repr(typ), len(self._type2objs[typ])))
+                print('TYPE: %s, %s objects' %
+                      (repr(typ), len(self._type2objs[typ])))
                 print(getNumberedTypedSortedString(self._type2objs[typ]))
 
     def printReferrers(self, numEach=3):
@@ -126,7 +131,7 @@ class ObjectPool:
                     print('%s REFERRERS:\n' % len(referrers))
                     if len(referrers):
                         print(getNumberedTypedString(referrers, maxLen=80,
-                                                    numPrefix='REF'))
+                                                     numPrefix='REF'))
                     else:
                         print('<No Referrers>')
 

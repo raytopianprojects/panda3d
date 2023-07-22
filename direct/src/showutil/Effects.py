@@ -21,37 +21,46 @@ def createScaleXBounce(nodeObj, numBounces, startValues, totalTime, amplitude):
     return createBounce(nodeObj, numBounces, startValues, totalTime,
                         amplitude, SX_BOUNCE)
 
+
 def createScaleYBounce(nodeObj, numBounces, startValues, totalTime, amplitude):
     return createBounce(nodeObj, numBounces, startValues, totalTime,
                         amplitude, SY_BOUNCE)
+
 
 def createScaleZBounce(nodeObj, numBounces, startValue, totalTime, amplitude):
     return createBounce(nodeObj, numBounces, startValue, totalTime,
                         amplitude, SZ_BOUNCE)
 
+
 def createXBounce(nodeObj, numBounces, startValues, totalTime, amplitude):
     return createBounce(nodeObj, numBounces, startValues, totalTime,
                         amplitude, TX_BOUNCE)
+
 
 def createYBounce(nodeObj, numBounces, startValues, totalTime, amplitude):
     return createBounce(nodeObj, numBounces, startValues, totalTime,
                         amplitude, TY_BOUNCE)
 
+
 def createZBounce(nodeObj, numBounces, startValues, totalTime, amplitude):
     return createBounce(nodeObj, numBounces, startValues, totalTime,
                         amplitude, TZ_BOUNCE)
+
 
 def createHBounce(nodeObj, numBounces, startValues, totalTime, amplitude):
     return createBounce(nodeObj, numBounces, startValues, totalTime,
                         amplitude, H_BOUNCE)
 
+
 def createPBounce(nodeObj, numBounces, startValues, totalTime, amplitude):
     return createBounce(nodeObj, numBounces, startValues, totalTime,
                         amplitude, P_BOUNCE)
 
+
 def createRBounce(nodeObj, numBounces, startValues, totalTime, amplitude):
     return createBounce(nodeObj, numBounces, startValues, totalTime,
                         amplitude, R_BOUNCE)
+
 
 def createBounce(nodeObj, numBounces, startValues, totalTime, amplitude,
                  bounceType=SZ_BOUNCE):
@@ -75,7 +84,7 @@ def createBounce(nodeObj, numBounces, startValues, totalTime, amplitude,
     # will produce based on the given start value and amplitude
     #
     if ((bounceType == SX_BOUNCE) or (bounceType == TX_BOUNCE) or
-        (bounceType == H_BOUNCE)):
+            (bounceType == H_BOUNCE)):
         index = 0
     elif ((bounceType == SY_BOUNCE) or (bounceType == TY_BOUNCE) or
           (bounceType == P_BOUNCE)):
@@ -108,7 +117,7 @@ def createBounce(nodeObj, numBounces, startValues, totalTime, amplitude,
 
         # create the right type of lerp
         if ((bounceType == SX_BOUNCE) or (bounceType == SY_BOUNCE) or
-            (bounceType == SZ_BOUNCE)):
+                (bounceType == SZ_BOUNCE)):
             result.append(LerpScaleInterval(
                 nodeObj, currTime, newVec3, blendType=blend))
         elif ((bounceType == TX_BOUNCE) or (bounceType == TY_BOUNCE) or
@@ -129,5 +138,3 @@ def createBounce(nodeObj, numBounces, startValues, totalTime, amplitude,
         currTime = bounceTime
 
     return result
-
-

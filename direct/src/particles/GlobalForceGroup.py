@@ -4,7 +4,7 @@ from direct.showbase.PhysicsManagerGlobal import physicsMgr
 
 class GlobalForceGroup(ForceGroup.ForceGroup):
 
-    def __init__(self, name = None):
+    def __init__(self, name=None):
         ForceGroup.ForceGroup.__init__(self, name)
 
     def addForce(self, force):

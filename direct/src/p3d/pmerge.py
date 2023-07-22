@@ -1,5 +1,10 @@
 #! /usr/bin/env python
 
+from panda3d.core import Filename
+from direct.p3d import PackageMerger
+import os
+import getopt
+import sys
 usageText = """
 
 This script can be used to merge together the contents of two or more
@@ -43,17 +48,12 @@ Options:
 
 """
 
-import sys
-import getopt
-import os
 
-from direct.p3d import PackageMerger
-from panda3d.core import Filename
-
-def usage(code, msg = ''):
-    sys.stderr.write(usageText % {'prog' : os.path.split(sys.argv[0])[1]})
+def usage(code, msg=''):
+    sys.stderr.write(usageText % {'prog': os.path.split(sys.argv[0])[1]})
     sys.stderr.write(msg + '\n')
     sys.exit(code)
+
 
 try:
     opts, args = getopt.getopt(sys.argv[1:], 'i:p:h')
@@ -84,14 +84,14 @@ for arg in args:
 
 # It's now legal to have no input files if you only want to verify
 # timestamps and hashes.
-## if not inputDirs:
-##     print "no input directories specified."
-##     sys.exit(1)
+# if not inputDirs:
+# print "no input directories specified."
+# sys.exit(1)
 
 try:
     pm = PackageMerger.PackageMerger(installDir)
     for dir in inputDirs:
-        pm.merge(dir, packageNames = packageNames)
+        pm.merge(dir, packageNames=packageNames)
     pm.close()
 
 except PackageMerger.PackageMergerError:

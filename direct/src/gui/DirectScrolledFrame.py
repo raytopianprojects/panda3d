@@ -16,6 +16,7 @@ import DirectScrolledFrame
 d = DirectScrolledFrame(borderWidth=(0, 0))
 """
 
+
 class DirectScrolledFrame(DirectFrame):
     """
     DirectScrolledFrame -- a special frame that uses DirectScrollBar to
@@ -28,7 +29,8 @@ class DirectScrolledFrame(DirectFrame):
     0 and explicitly position and hide or show the scroll bars
     yourself.
     """
-    def __init__(self, parent = None, **kw):
+
+    def __init__(self, parent=None, **kw):
         optiondefs = (
             # Define type of DirectGuiWidget
             ('pgFunc',         PGScrollFrame,      None),
@@ -39,7 +41,7 @@ class DirectScrolledFrame(DirectFrame):
             ('autoHideScrollBars', 1,              self.setAutoHideScrollBars),
             ('scrollBarWidth', 0.08,               self.setScrollBarWidth),
             ('borderWidth',    (0.01, 0.01),       self.setBorderWidth),
-            )
+        )
 
         # Merge keyword options with default options
         self.defineoptions(kw, optiondefs)
@@ -57,16 +59,16 @@ class DirectScrolledFrame(DirectFrame):
         self.verticalScroll = self.createcomponent(
             "verticalScroll", (), None,
             DirectScrollBar, (self,),
-            borderWidth = self['borderWidth'],
-            frameSize = (-w / 2.0, w / 2.0, -1, 1),
-            orientation = DGG.VERTICAL)
+            borderWidth=self['borderWidth'],
+            frameSize=(-w / 2.0, w / 2.0, -1, 1),
+            orientation=DGG.VERTICAL)
 
         self.horizontalScroll = self.createcomponent(
             "horizontalScroll", (), None,
             DirectScrollBar, (self,),
-            borderWidth = self['borderWidth'],
-            frameSize = (-1, 1, -w / 2.0, w / 2.0),
-            orientation = DGG.HORIZONTAL)
+            borderWidth=self['borderWidth'],
+            frameSize=(-1, 1, -w / 2.0, w / 2.0),
+            orientation=DGG.HORIZONTAL)
 
         self.guiItem.setVerticalSlider(self.verticalScroll.guiItem)
         self.guiItem.setHorizontalSlider(self.horizontalScroll.guiItem)
@@ -77,11 +79,14 @@ class DirectScrolledFrame(DirectFrame):
         self.initialiseoptions(DirectScrolledFrame)
 
     def setScrollBarWidth(self):
-        if self.fInit: return
+        if self.fInit:
+            return
 
         w = self['scrollBarWidth']
-        self.verticalScroll["frameSize"] = (-w / 2.0, w / 2.0, self.verticalScroll["frameSize"][2], self.verticalScroll["frameSize"][3])
-        self.horizontalScroll["frameSize"] = (self.horizontalScroll["frameSize"][0], self.horizontalScroll["frameSize"][1], -w / 2.0, w / 2.0)
+        self.verticalScroll["frameSize"] = (
+            -w / 2.0, w / 2.0, self.verticalScroll["frameSize"][2], self.verticalScroll["frameSize"][3])
+        self.horizontalScroll["frameSize"] = (
+            self.horizontalScroll["frameSize"][0], self.horizontalScroll["frameSize"][1], -w / 2.0, w / 2.0)
 
     def setCanvasSize(self):
         f = self['canvasSize']

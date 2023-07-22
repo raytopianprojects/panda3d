@@ -4,7 +4,8 @@ __all__ = ['TaskManagerPanel', 'TaskManagerWidget']
 
 from direct.tkwidgets.AppShell import *
 from direct.showbase.DirectObject import DirectObject
-import Pmw, sys
+import Pmw
+import sys
 
 if sys.version_info >= (3, 0):
     from tkinter import *
@@ -17,22 +18,22 @@ else:
 class TaskManagerPanel(AppShell):
     # Override class variables here
     appname = 'TaskManager Panel'
-    frameWidth      = 300
-    frameHeight     = 400
+    frameWidth = 300
+    frameHeight = 400
     usecommandarea = 0
-    usestatusarea  = 0
+    usestatusarea = 0
 
-    def __init__(self, taskMgr, parent = None, **kw):
+    def __init__(self, taskMgr, parent=None, **kw):
         INITOPT = Pmw.INITOPT
         optiondefs = (
             ('title',       self.appname,       None),
-            )
+        )
         self.defineoptions(kw, optiondefs)
 
         self.taskMgr = taskMgr
 
         # Call superclass initialization function
-        AppShell.__init__(self, parent = parent)
+        AppShell.__init__(self, parent=parent)
 
         self.initialiseoptions(TaskManagerPanel)
 
@@ -43,9 +44,9 @@ class TaskManagerPanel(AppShell):
         self.taskMgrWidget = TaskManagerWidget(
             self.interior(), self.taskMgr)
 
-
     def onDestroy(self, event):
         self.taskMgrWidget.onDestroy()
+
 
 class TaskManagerWidget(DirectObject):
     """
@@ -72,53 +73,53 @@ class TaskManagerWidget(DirectObject):
         # Create a listbox
         self.taskListBox = Pmw.ScrolledListBox(
             parent,
-            labelpos = NW, label_text = 'Tasks:',
+            labelpos=NW, label_text='Tasks:',
             label_font=('MSSansSerif', 10, 'bold'),
-            listbox_takefocus = 1,
-            items = [],
-            selectioncommand = self.setCurrentTask)
-        self.taskListBox.pack(expand = 1, fill = BOTH)
+            listbox_takefocus=1,
+            items=[],
+            selectioncommand=self.setCurrentTask)
+        self.taskListBox.pack(expand=1, fill=BOTH)
 
         self._popupMenu = Menu(self.taskListBox.component('listbox'),
-                               tearoff = 0)
+                               tearoff=0)
         self._popupMenu.add_command(
-            label = 'Remove Task',
-            command = self.removeCurrentTask)
+            label='Remove Task',
+            command=self.removeCurrentTask)
         self._popupMenu.add_command(
-            label = 'Remove Matching Tasks',
-            command = self.removeMatchingTasks)
+            label='Remove Matching Tasks',
+            command=self.removeMatchingTasks)
 
         # Controls Frame
         controlsFrame = Frame(parent)
-        self.removeButton = Button(controlsFrame, text = 'Remove Task',
-                                   command = self.removeCurrentTask)
-        #self.removeButton.pack(expand = 1, fill = X, side = LEFT)
-        self.removeButton.grid(row = 0, column = 0, sticky = EW)
+        self.removeButton = Button(controlsFrame, text='Remove Task',
+                                   command=self.removeCurrentTask)
+        # self.removeButton.pack(expand = 1, fill = X, side = LEFT)
+        self.removeButton.grid(row=0, column=0, sticky=EW)
         self.removeMatchingButton = Button(controlsFrame,
-                                           text = 'Remove Matching Tasks',
-                                           command = self.removeMatchingTasks)
-        #self.removeMatchingButton.pack(expand = 1, fill = X, side = LEFT)
-        self.removeMatchingButton.grid(row = 0, column = 1, sticky = EW)
+                                           text='Remove Matching Tasks',
+                                           command=self.removeMatchingTasks)
+        # self.removeMatchingButton.pack(expand = 1, fill = X, side = LEFT)
+        self.removeMatchingButton.grid(row=0, column=1, sticky=EW)
 
         self.taskMgrVerbose = IntVar()
         self.taskMgrVerbose.set(0)
         self.update = Button(
             controlsFrame,
-            text = 'Update',
-            command = self.updateTaskListBox)
-        #self.update.pack(expand = 1, fill = X, side = LEFT)
-        self.update.grid(row = 1, column = 0, sticky = EW)
+            text='Update',
+            command=self.updateTaskListBox)
+        # self.update.pack(expand = 1, fill = X, side = LEFT)
+        self.update.grid(row=1, column=0, sticky=EW)
         self.dynamicUpdate = Checkbutton(
             controlsFrame,
-            text = 'Dynamic Update',
-            variable = self.taskMgrVerbose,
-            command = self.toggleTaskMgrVerbose)
-        #self.dynamicUpdate.pack(expand = 1, fill = X, side = LEFT)
-        self.dynamicUpdate.grid(row = 1, column = 1, sticky = EW)
+            text='Dynamic Update',
+            variable=self.taskMgrVerbose,
+            command=self.toggleTaskMgrVerbose)
+        # self.dynamicUpdate.pack(expand = 1, fill = X, side = LEFT)
+        self.dynamicUpdate.grid(row=1, column=1, sticky=EW)
         # Pack frames
-        controlsFrame.pack(fill = X)
-        controlsFrame.grid_columnconfigure(0, weight = 1)
-        controlsFrame.grid_columnconfigure(1, weight = 1)
+        controlsFrame.pack(fill=X)
+        controlsFrame.grid_columnconfigure(0, weight=1)
+        controlsFrame.grid_columnconfigure(1, weight=1)
 
         # Add hook to spawnTaskEvents
         self.accept('TaskManager-spawnTask', self.spawnTaskHook)
@@ -147,8 +148,9 @@ class TaskManagerWidget(DirectObject):
                              event.widget.winfo_pointery())
         return "break"
 
-    def setCurrentTask(self, event = None):
-        if len(self.taskListBox.curselection()) > 0: # [gjeon] to avoid crash when nothing is selected
+    def setCurrentTask(self, event=None):
+        # [gjeon] to avoid crash when nothing is selected
+        if len(self.taskListBox.curselection()) > 0:
             index = int(self.taskListBox.curselection()[0])
             self.currentTask = self.__taskDict[index]
         else:
@@ -159,7 +161,7 @@ class TaskManagerWidget(DirectObject):
         taskNames = []
         self.__taskDict = {}
         tasks = self.taskMgr.getTasks()
-        tasks.sort(key = lambda t: t.getName())
+        tasks.sort(key=lambda t: t.getName())
         count = 0
         for task in tasks:
             taskNames.append(task.getName())
@@ -171,7 +173,7 @@ class TaskManagerWidget(DirectObject):
             # And set current index (so keypresses will start with index 0)
             self.taskListBox.component('listbox').activate(0)
             # Select first item
-            #self.taskListBox.select_set(0) # [gjeon] commented out to avoid focus problem with other lists
+            # self.taskListBox.select_set(0) # [gjeon] commented out to avoid focus problem with other lists
             self.setCurrentTask()
 
     def toggleTaskMgrVerbose(self):
@@ -194,11 +196,11 @@ class TaskManagerWidget(DirectObject):
                 (name == 'resetPrevTransform') or
                 (name == 'tkLoop') or
                 (name == 'eventManager') or
-                (name == 'igLoop')):
+                    (name == 'igLoop')):
                 ok = askokcancel('TaskManagerControls',
                                  'Remove: %s?' % name,
-                                 parent = self.parent,
-                                 default = 'cancel')
+                                 parent=self.parent,
+                                 default='cancel')
             if ok:
                 self.taskMgr.remove(self.currentTask)
                 self.updateTaskListBox()
@@ -210,11 +212,11 @@ class TaskManagerWidget(DirectObject):
             (name == 'resetPrevTransform') or
             (name == 'tkLoop') or
             (name == 'eventManager') or
-            (name == 'igLoop')):
+                (name == 'igLoop')):
             ok = askokcancel('TaskManagerControls',
                              'Remove tasks named: %s?' % name,
-                             parent = self.parent,
-                             default = 'cancel')
+                             parent=self.parent,
+                             default='cancel')
         if ok:
             self.taskMgr.remove(name)
             self.updateTaskListBox()
@@ -222,5 +224,3 @@ class TaskManagerWidget(DirectObject):
     def onDestroy(self):
         self.ignore('TaskManager-spawnTask')
         self.ignore('TaskManager-removeTask')
-
-

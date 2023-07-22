@@ -66,9 +66,9 @@ class FogDemo(ShowBase):
         self.minuskeyEventText = self.genLabelText(15, "[-]: Decrease fog density")
 
         # disable mouse control so that we can place the camera
-        base.disableMouse()
+        base.disable_mouse()
         camera.setPosHpr(0, 0, 10, 0, -90, 0)
-        base.setBackgroundColor(0, 0, 0)  # set the background color to black
+        base.set_background_color(0, 0, 0)  # set the background color to black
 
         # World specific-code
 
@@ -100,11 +100,11 @@ class FogDemo(ShowBase):
         self.accept('l', self.fog.setColor, [.7, .7, .7])
         self.accept('d', self.fog.setColor, [0, 0, 0])
         # Sets keys to change the background colors
-        self.accept('shift-r', base.setBackgroundColor, [1, 0, 0])
-        self.accept('shift-g', base.setBackgroundColor, [0, 1, 0])
-        self.accept('shift-b', base.setBackgroundColor, [0, 0, 1])
-        self.accept('shift-l', base.setBackgroundColor, [.7, .7, .7])
-        self.accept('shift-d', base.setBackgroundColor, [0, 0, 0])
+        self.accept('shift-r', base.set_background_color, [1, 0, 0])
+        self.accept('shift-g', base.set_background_color, [0, 1, 0])
+        self.accept('shift-b', base.set_background_color, [0, 0, 1])
+        self.accept('shift-l', base.set_background_color, [.7, .7, .7])
+        self.accept('shift-d', base.set_background_color, [0, 0, 0])
         # Increases the fog density when "+" key is pressed
         self.accept('+', self.addFogDensity, [.01])
         # This is to handle the other "+" key (it's over = on the keyboard)

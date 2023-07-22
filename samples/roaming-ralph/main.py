@@ -148,7 +148,7 @@ class RoamingRalphDemo(ShowBase):
 
         # Uncomment this line to show a visual representation of the
         # collisions occuring
-        #self.cTrav.showCollisions(render)
+        #self.c_trav.showCollisions(render)
 
         # Create some lighting
         ambientLight = AmbientLight("ambientLight")
@@ -224,8 +224,8 @@ class RoamingRalphDemo(ShowBase):
 
         # Normally, we would have to call traverse() to check for collisions.
         # However, the class ShowBase that we inherit from has a task to do
-        # this for us, if we assign a CollisionTraverser to self.cTrav.
-        #self.cTrav.traverse(render)
+        # this for us, if we assign a CollisionTraverser to self.c_trav.
+        #self.c_trav.traverse(render)
 
         # Adjust ralph's Z coordinate.  If ralph's ray hit terrain,
         # update his Z. If it hit anything else, or didn't hit anything, put

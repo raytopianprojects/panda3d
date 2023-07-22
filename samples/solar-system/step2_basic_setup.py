@@ -39,12 +39,12 @@ class World(object):  # Our main class
 
         # Make the background color black (R=0, G=0, B=0)
         # instead of the default grey
-        base.setBackgroundColor(0, 0, 0)
+        base.set_background_color(0, 0, 0)
 
         # By default, the mouse controls the camera. Often, we disable that so that
         # the camera can be placed manually (if we don't do this, our placement
         # commands will be overridden by the mouse control)
-        base.disableMouse()
+        base.disable_mouse()
 
         # Set the camera position (x, y, z)
         camera.setPos(0, 0, 45)

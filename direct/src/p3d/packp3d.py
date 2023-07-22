@@ -1,5 +1,11 @@
 #! /usr/bin/env python
 
+from panda3d.core import *
+from direct.p3d import Packager
+import glob
+import getopt
+import os
+import sys
 usageText = """
 
 This command will pack a Panda application, consisting of a directory
@@ -96,18 +102,14 @@ Options:
 
 """
 
-import sys
-import os
-import getopt
-import glob
-from direct.p3d import Packager
-from panda3d.core import *
 
 # Temp hack for debugging.
-#from direct.p3d.AppRunner import dummyAppRunner; dummyAppRunner()
+# from direct.p3d.AppRunner import dummyAppRunner; dummyAppRunner()
+
 
 class ArgumentError(Exception):
     pass
+
 
 def makePackedApp(args):
     opts, args = getopt.getopt(args, 'o:d:m:S:e:n:x:p:c:r:s:Dh')
@@ -166,7 +168,8 @@ def makePackedApp(args):
             sys.exit(0)
 
     if not appFilename:
-        raise ArgumentError("No target app specified.  Use:\n  %s -o app.p3d\nUse -h to get more usage information." % (os.path.split(sys.argv[0])[1]))
+        raise ArgumentError(
+            "No target app specified.  Use:\n  %s -o app.p3d\nUse -h to get more usage information." % (os.path.split(sys.argv[0])[1]))
 
     if args:
         raise ArgumentError("Extra arguments on command line.")
@@ -176,7 +179,7 @@ def makePackedApp(args):
 
     appDir = Filename(appFilename.getDirname())
     if not appDir:
-      appDir = Filename('.')
+        appDir = Filename('.')
     appBase = appFilename.getBasenameWoExtension()
 
     if main:
@@ -189,7 +192,8 @@ def makePackedApp(args):
             if len(main) == 0:
                 raise ArgumentError('No Python files in root directory.')
             elif len(main) > 1:
-                raise ArgumentError('Multiple Python files in root directory; specify the main application with -m "main".')
+                raise ArgumentError(
+                    'Multiple Python files in root directory; specify the main application with -m "main".')
 
             main = Filename.fromOsSpecific(os.path.split(main[0])[1])
             main.makeAbsolute(root)
@@ -205,7 +209,7 @@ def makePackedApp(args):
 
     try:
         packager.setup()
-        packager.beginPackage(appBase, p3dApplication = True)
+        packager.beginPackage(appBase, p3dApplication=True)
 
         # Pre-require panda3d, to give a less-confusing error message
         # if one of our requirements pulls in a wrong version of
@@ -214,7 +218,7 @@ def makePackedApp(args):
             packager.do_require('panda3d')
 
         for name, version, host in requires:
-            packager.do_require(name, version = version, host = host)
+            packager.do_require(name, version=version, host=host)
 
         if configFlags:
             packager.do_config(**dict(configFlags))
@@ -229,6 +233,7 @@ def makePackedApp(args):
         inst = sys.exc_info()[1]
         print(inst.args[0])
         sys.exit(1)
+
 
 try:
     makePackedApp(sys.argv[1:])

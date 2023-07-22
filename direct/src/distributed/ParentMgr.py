@@ -67,7 +67,8 @@ class ParentMgr:
             child.wrtReparentTo(self.token2nodepath[parentToken])
         else:
             if isDefaultValue(parentToken):
-                self.notify.error('child %s requested reparent to default-value token: %s' % (repr(child), parentToken))
+                self.notify.error(
+                    'child %s requested reparent to default-value token: %s' % (repr(child), parentToken))
             self.notify.debug(
                 "child %s requested reparent to parent '%s' that is not (yet) registered" %
                 (repr(child), parentToken))
@@ -88,11 +89,13 @@ class ParentMgr:
                 (token, repr(self.token2nodepath[token])))
 
         if isDefaultValue(token):
-            self.notify.error('parent token (for %s) cannot be a default value (%s)' % (repr(parent), token))
+            self.notify.error(
+                'parent token (for %s) cannot be a default value (%s)' % (repr(parent), token))
 
         if type(token) is int:
             if token > 0xFFFFFFFF:
-                self.notify.error('parent token %s (for %s) is out of uint32 range' % (token, repr(parent)))
+                self.notify.error(
+                    'parent token %s (for %s) is out of uint32 range' % (token, repr(parent)))
 
         self.notify.debug("registering %s as '%s'" % (repr(parent), token))
         self.token2nodepath[token] = parent

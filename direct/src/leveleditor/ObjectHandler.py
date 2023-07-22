@@ -9,6 +9,7 @@ from direct.actor import Actor
 
 from . import ObjectGlobals as OG
 
+
 class ObjectHandler:
     """ ObjectHandler will create and update objects """
 
@@ -63,14 +64,12 @@ class ObjectHandler:
 
     def createGrass(self):
         environ = loader.loadModel("models/environment.egg")
-        environ.setScale(0.25,0.25,0.25)
-        environ.setPos(-8,42,0)
+        environ.setScale(0.25, 0.25, 0.25)
+        environ.setPos(-8, 42, 0)
         return environ
+
 
 class PandaActor(Actor.Actor):
     def __init__(self):
         Actor.Actor.__init__(self, "models/panda-model.egg")
         self.setScale(0.005)
-
-
-

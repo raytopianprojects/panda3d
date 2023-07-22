@@ -4,9 +4,10 @@ from .DirectGlobals import *
 from .DirectUtil import *
 import math
 
+
 class LineNodePath(NodePath):
-    def __init__(self, parent = None, name = None,
-                 thickness = 1.0, colorVec = VBase4(1)):
+    def __init__(self, parent=None, name=None,
+                 thickness=1.0, colorVec=VBase4(1)):
 
         # Initialize the superclass
         NodePath.__init__(self)
@@ -33,7 +34,7 @@ class LineNodePath(NodePath):
     def drawTo(self, *_args):
         self.lineSegs.drawTo(*_args)
 
-    def create(self, frameAccurate = 0):
+    def create(self, frameAccurate=0):
         self.lineSegs.create(self.lineNode, frameAccurate)
 
     def reset(self):
@@ -124,14 +125,17 @@ class LineNodePath(NodePath):
                 self.drawTo(*point)
 
 ##
-## Given a point in space, and a direction, find the point of intersection
-## of that ray with a plane at the specified origin, with the specified normal
-def planeIntersect (lineOrigin, lineDir, planeOrigin, normal):
+# Given a point in space, and a direction, find the point of intersection
+# of that ray with a plane at the specified origin, with the specified normal
+
+
+def planeIntersect(lineOrigin, lineDir, planeOrigin, normal):
     t = 0
     offset = planeOrigin - lineOrigin
     t = offset.dot(normal) / lineDir.dot(normal)
     hitPt = lineDir * t
     return hitPt + lineOrigin
+
 
 def getNearProjectionPoint(nodePath):
     # Find the position of the projection of the specified node path
@@ -143,6 +147,7 @@ def getNearProjectionPoint(nodePath):
     else:
         # Object is coplaner with camera, just return something reasonable
         return Point3(0, base.direct.dr.near, 0)
+
 
 def getScreenXY(nodePath):
     # Where does the node path's projection fall on the near plane
@@ -158,6 +163,7 @@ def getScreenXY(nodePath):
     # Return the resulting value
     return screenXY
 
+
 def getCrankAngle(center):
     # Used to compute current angle of mouse (relative to the coa's
     # origin) in screen space
@@ -165,12 +171,14 @@ def getCrankAngle(center):
     y = base.direct.dr.mouseY - center[2]
     return (180 + rad2Deg(math.atan2(y, x)))
 
+
 def relHpr(nodePath, base, h, p, r):
     # Compute nodePath2newNodePath relative to base coordinate system
     # nodePath2base
     mNodePath2Base = nodePath.getMat(base)
     # delta scale, orientation, and position matrix
-    mBase2NewBase = Mat4(Mat4.identMat()) # [gjeon] fixed to give required argument
+    # [gjeon] fixed to give required argument
+    mBase2NewBase = Mat4(Mat4.identMat())
     composeMatrix(mBase2NewBase, UNIT_VEC, VBase3(h, p, r), ZERO_VEC,
                   CSDefault)
     # base2nodePath
@@ -188,6 +196,8 @@ def relHpr(nodePath, base, h, p, r):
     nodePath.setHpr(hpr)
 
 # Quaternion interpolation
+
+
 def qSlerp(startQuat, endQuat, t):
     startQ = Quat(startQuat)
     destQuat = Quat(Quat.identQuat())
@@ -240,4 +250,3 @@ def qSlerp(startQuat, endQuat, t):
         destQuat.setK(startScale * startQ.getK() +
                       endScale * endQuat.getK())
     return destQuat
-

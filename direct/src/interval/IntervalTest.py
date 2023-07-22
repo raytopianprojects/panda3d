@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     donald = Actor()
     donald.loadModel("phase_6/models/char/donald-wheel-1000")
-    donald.loadAnims({"steer":"phase_6/models/char/donald-wheel-wheel"})
+    donald.loadAnims({"steer": "phase_6/models/char/donald-wheel-wheel"})
     donald.reparentTo(boat)
 
     dock = loader.loadModel('models/misc/smiley')
@@ -40,9 +40,9 @@ if __name__ == "__main__":
     donaldSteerInterval = ActorInterval(donald, 'steer')
     # This will create an anim interval that is started at t = 0 and then
     # loops for 10 seconds
-    donaldLoopInterval = ActorInterval(donald, 'steer', loop=1, duration = 10.0)
+    donaldLoopInterval = ActorInterval(donald, 'steer', loop=1, duration=10.0)
     donaldSteerTrack = Track([donaldSteerInterval, donaldLoopInterval],
-                             name = 'steerTrack')
+                             name='steerTrack')
 
     # Make the dock lerp up so that it's up when the boat reaches the end of
     # its mopath
@@ -51,7 +51,8 @@ if __name__ == "__main__":
                                   hpr=Vec3(0, 0, 0),
                                   name='dock-lerp')
     # We need the dock's state to be defined before the lerp
-    dockPos = PosHprInterval(dock, dock.getPos(), dock.getHpr(), 1.0, 'dockpos')
+    dockPos = PosHprInterval(
+        dock, dock.getPos(), dock.getHpr(), 1.0, 'dockpos')
     dockUpTime = BOAT_END - dockLerp.getDuration()
     hpr2 = Vec3(90.0, 90.0, 90.0)
     dockLerp2 = LerpHprInterval(dock, 3.0, hpr2, name='hpr-lerp')
@@ -125,7 +126,7 @@ if __name__ == "__main__":
         # Throw event again and see if ignore worked
         (7.0, i4),
         # Print done
-        (8.0, i6)], name = 'demo')
+        (8.0, i6)], name='demo')
 
     print(t1)
 
@@ -136,6 +137,7 @@ if __name__ == "__main__":
     # TRACK_START
 
     startTime = 0.0
+
     def printStart():
         global startTime
         startTime = globalClock.getFrameTime()
@@ -172,17 +174,17 @@ if __name__ == "__main__":
     i6 = FunctionInterval(printTrackStart)
     # This will print some arguments
     # This will be relative to track start
-    i7 = FunctionInterval(printArguments, extraArgs = [1, 10, 100])
+    i7 = FunctionInterval(printArguments, extraArgs=[1, 10, 100])
     # Create the track, if you don't specify offset type in tuple it defaults to
     # relative to TRACK_START (first entry below)
     t2 = Track([(0.0, i1),                 # i1 start at t = 0, duration = 0.0
                 (1.0, i2, TRACK_START),    # i2 start at t = 1, duration = 2.0
                 (2.0, i3, PREVIOUS_END),   # i3 start at t = 5, duration = 0.0
                 (1.0, i4, PREVIOUS_END),   # i4 start at t = 6, duration = 2.0
-                (3.0, i5, PREVIOUS_START), # i5 start at t = 9, duration = 0.0
+                (3.0, i5, PREVIOUS_START),  # i5 start at t = 9, duration = 0.0
                 (10.0, i6, TRACK_START),   # i6 start at t = 10, duration = 0.0
                 (12.0, i7)],               # i7 start at t = 12, duration = 0.0
-               name = 'startTimeDemo')
+               name='startTimeDemo')
 
     print(t2)
 
@@ -190,7 +192,6 @@ if __name__ == "__main__":
     # mtrack.play()
     # t1.play()
     # t2.play()
-
 
     def test(n):
         lerps = []

@@ -8,7 +8,9 @@ __all__ = ['Dial', 'AngleDial', 'DialWidget']
 from direct.showbase.TkGlobal import *
 from .Valuator import Valuator, VALUATOR_MINI, VALUATOR_FULL
 from direct.task import Task
-import math, operator, Pmw
+import math
+import operator
+import Pmw
 
 TWO_PI = 2.0 * math.pi
 ONEPOINTFIVE_PI = 1.5 * math.pi
@@ -18,12 +20,14 @@ INNER_SF = 0.2
 DIAL_FULL_SIZE = 45
 DIAL_MINI_SIZE = 30
 
+
 class Dial(Valuator):
     """
     Valuator widget which includes an angle dial and an entry for setting
     floating point values
     """
-    def __init__(self, parent = None, **kw):
+
+    def __init__(self, parent=None, **kw):
         INITOPT = Pmw.INITOPT
         optiondefs = (
             ('style',             VALUATOR_FULL,  INITOPT),
@@ -31,7 +35,7 @@ class Dial(Valuator):
             ('delta',             1.0,            self.setDelta),
             ('fSnap',             0,              self.setSnap),
             ('fRollover',         1,              self.setRollover),
-            )
+        )
         self.defineoptions(kw, optiondefs)
         Valuator.__init__(self, parent)
         self.initialiseoptions(Dial)
@@ -43,56 +47,56 @@ class Dial(Valuator):
             None,
             DialWidget,
             (self.interior(),),
-            style = self['style'],
-            command = self.setEntry,
-            value = self['value'])
+            style=self['style'],
+            command=self.setEntry,
+            value=self['value'])
         self._valuator._widget.bind('<Double-ButtonPress-1>', self.mouseReset)
 
     def packValuator(self):
         if self['style'] == VALUATOR_FULL:
-            self._valuator.grid(rowspan = 2, columnspan = 2,
-                                padx = 2, pady = 2)
+            self._valuator.grid(rowspan=2, columnspan=2,
+                                padx=2, pady=2)
             if self._label:
-                self._label.grid(row = 0, column = 2, sticky = EW)
-            self._entry.grid(row = 1, column = 2, sticky = EW)
-            self.interior().columnconfigure(2, weight = 1)
+                self._label.grid(row=0, column=2, sticky=EW)
+            self._entry.grid(row=1, column=2, sticky=EW)
+            self.interior().columnconfigure(2, weight=1)
         else:
             if self._label:
-                self._label.grid(row=0, column=0, sticky = EW)
-            self._entry.grid(row=0, column=1, sticky = EW)
-            self._valuator.grid(row=0, column=2, padx = 2, pady = 2)
-            self.interior().columnconfigure(0, weight = 1)
+                self._label.grid(row=0, column=0, sticky=EW)
+            self._entry.grid(row=0, column=1, sticky=EW)
+            self._valuator.grid(row=0, column=2, padx=2, pady=2)
+            self.interior().columnconfigure(0, weight=1)
 
     def addValuatorPropertiesToDialog(self):
         self.addPropertyToDialog(
             'base',
-            { 'widget': self._valuator,
-              'type': 'real',
-              'help': 'Dial value = base + delta * numRevs'})
+            {'widget': self._valuator,
+             'type': 'real',
+             'help': 'Dial value = base + delta * numRevs'})
         self.addPropertyToDialog(
             'delta',
-            { 'widget': self._valuator,
-              'type': 'real',
-              'help': 'Dial value = base + delta * numRevs'})
+            {'widget': self._valuator,
+             'type': 'real',
+             'help': 'Dial value = base + delta * numRevs'})
         self.addPropertyToDialog(
             'numSegments',
-            { 'widget': self._valuator,
-              'type': 'integer',
-              'help': 'Number of segments to divide dial into.'})
+            {'widget': self._valuator,
+             'type': 'integer',
+             'help': 'Number of segments to divide dial into.'})
 
     def addValuatorMenuEntries(self):
         # The popup menu
         self._fSnap = IntVar()
         self._fSnap.set(self['fSnap'])
-        self._popupMenu.add_checkbutton(label = 'Snap',
-                                        variable = self._fSnap,
-                                        command = self._setSnap)
+        self._popupMenu.add_checkbutton(label='Snap',
+                                        variable=self._fSnap,
+                                        command=self._setSnap)
         self._fRollover = IntVar()
         self._fRollover.set(self['fRollover'])
         if self['fAdjustable']:
-            self._popupMenu.add_checkbutton(label = 'Rollover',
-                                            variable = self._fRollover,
-                                            command = self._setRollover)
+            self._popupMenu.add_checkbutton(label='Rollover',
+                                            variable=self._fRollover,
+                                            command=self._setRollover)
 
     def setBase(self):
         """ Set Dial base value: value = base + delta * numRevs """
@@ -127,13 +131,13 @@ class Dial(Valuator):
 
 
 class AngleDial(Dial):
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         # Set the typical defaults for a 360 degree angle dial
         optiondefs = (
             ('delta',             360.0,          None),
             ('fRollover',         0,              None),
             ('dial_numSegments',  12,             None),
-            )
+        )
         self.defineoptions(kw, optiondefs)
         # Initialize the superclass
         Dial.__init__(self, parent)
@@ -143,8 +147,8 @@ class AngleDial(Dial):
 
 
 class DialWidget(Pmw.MegaWidget):
-    def __init__(self, parent = None, **kw):
-        #define the megawidget options
+    def __init__(self, parent=None, **kw):
+        # define the megawidget options
         INITOPT = Pmw.INITOPT
         optiondefs = (
             # Appearance
@@ -175,7 +179,7 @@ class DialWidget(Pmw.MegaWidget):
             ('postCallback',    None,           None),
             # Extra data to be passed to callback function, needs to be a list
             ('callbackData',    [],             None),
-            )
+        )
         self.defineoptions(kw, optiondefs)
 
         # Initialize the superclass
@@ -208,27 +212,27 @@ class DialWidget(Pmw.MegaWidget):
         # The canvas
         self._widget = self.createcomponent('canvas', (), None,
                                             Canvas, (interior,),
-                                            width = size, height = size,
-                                            background = self['background'],
-                                            highlightthickness = 0,
-                                            scrollregion = (-radius, -radius,
-                                                            radius, radius))
-        self._widget.pack(expand = 1, fill = BOTH)
+                                            width=size, height=size,
+                                            background=self['background'],
+                                            highlightthickness=0,
+                                            scrollregion=(-radius, -radius,
+                                                          radius, radius))
+        self._widget.pack(expand=1, fill=BOTH)
 
         # The dial face (no outline/fill, primarily for binding mouse events)
         self._widget.create_oval(-radius, -radius, radius, radius,
-                                 outline = '',
-                                 tags = ('dial',))
+                                 outline='',
+                                 tags=('dial',))
 
         # The indicator
-        self._widget.create_line(0, 0, 0, -radius, width = 2,
-                                 tags = ('indicator', 'dial'))
+        self._widget.create_line(0, 0, 0, -radius, width=2,
+                                 tags=('indicator', 'dial'))
 
         # The central knob
         self._widget.create_oval(-inner_radius, -inner_radius,
                                  inner_radius, inner_radius,
-                                 fill = 'grey50',
-                                 tags = ('knob',))
+                                 fill='grey50',
+                                 tags=('knob',))
 
         # Add event bindings
         self._widget.tag_bind('dial', '<ButtonPress-1>', self.mouseDown)
@@ -245,7 +249,7 @@ class DialWidget(Pmw.MegaWidget):
         # Make sure input variables processed
         self.initialiseoptions(DialWidget)
 
-    def set(self, value, fCommand = 1):
+    def set(self, value, fCommand=1):
         """
         self.set(value, fCommand = 1)
         Set dial to new value, execute command if fCommand == 1
@@ -268,7 +272,7 @@ class DialWidget(Pmw.MegaWidget):
         """
         return self.value
 
-    ## Canvas callback functions
+    # Canvas callback functions
     # Dial
     def mouseDown(self, event):
         self._onButtonPress()
@@ -281,11 +285,11 @@ class DialWidget(Pmw.MegaWidget):
     def shiftMouseMotion(self, event):
         self.mouseMotion(event, 1)
 
-    def mouseMotion(self, event, fShift = 0):
+    def mouseMotion(self, event, fShift=0):
         dialAngle = self.computeDialAngle(event, fShift)
         self.computeValueFromAngle(dialAngle)
 
-    def computeDialAngle(self, event, fShift = 0):
+    def computeDialAngle(self, event, fShift=0):
         x = self._widget.canvasx(event.x)
         y = self._widget.canvasy(event.y)
         rawAngle = math.atan2(y, x)
@@ -363,7 +367,7 @@ class DialWidget(Pmw.MegaWidget):
 
     def setNumDigits(self):
         # Set minimum exponent to use in velocity task
-        self.minExp = math.floor(-self['numDigits']/
+        self.minExp = math.floor(-self['numDigits'] /
                                  math.log10(Valuator.sfBase))
 
     # Methods to modify dial characteristics
@@ -398,13 +402,13 @@ class DialWidget(Pmw.MegaWidget):
             endx = startx * sf
             endy = starty * sf
             self._widget.create_line(startx, starty, endx, endy,
-                                     tags = ('ticks','dial'))
+                                     tags=('ticks', 'dial'))
 
     def highlightKnob(self, event):
-        self._widget.itemconfigure('knob', fill = 'black')
+        self._widget.itemconfigure('knob', fill='black')
 
     def restoreKnob(self, event):
-        self._widget.itemconfigure('knob', fill = 'grey50')
+        self._widget.itemconfigure('knob', fill='grey50')
 
     # To call user callbacks
     def _onButtonPress(self, *args):
@@ -421,13 +425,13 @@ class DialWidget(Pmw.MegaWidget):
 if __name__ == '__main__':
     tl = Toplevel()
     d = Dial(tl)
-    d2 = Dial(tl, dial_numSegments = 12, max = 360,
-              dial_fRollover = 0, value = 180)
-    d3 = Dial(tl, dial_numSegments = 12, max = 90, min = -90,
-              dial_fRollover = 0)
-    d4 = Dial(tl, dial_numSegments = 16, max = 256,
-              dial_fRollover = 0)
-    d.pack(expand = 1, fill = X)
-    d2.pack(expand = 1, fill = X)
-    d3.pack(expand = 1, fill = X)
-    d4.pack(expand = 1, fill = X)
+    d2 = Dial(tl, dial_numSegments=12, max=360,
+              dial_fRollover=0, value=180)
+    d3 = Dial(tl, dial_numSegments=12, max=90, min=-90,
+              dial_fRollover=0)
+    d4 = Dial(tl, dial_numSegments=16, max=256,
+              dial_fRollover=0)
+    d.pack(expand=1, fill=X)
+    d2.pack(expand=1, fill=X)
+    d3.pack(expand=1, fill=X)
+    d4.pack(expand=1, fill=X)

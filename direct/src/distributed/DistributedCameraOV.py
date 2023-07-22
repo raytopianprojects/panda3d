@@ -2,6 +2,7 @@ from panda3d.core import *
 from panda3d.direct import *
 from direct.distributed.DistributedObjectOV import DistributedObjectOV
 
+
 class DistributedCameraOV(DistributedObjectOV):
     def __init__(self, cr):
         DistributedObjectOV.__init__(self, cr)
@@ -29,27 +30,27 @@ class DistributedCameraOV(DistributedObjectOV):
         f.close()
 
     def unpackFixture(self, data):
-        data = data.strip().replace('Camera','')
-        pos,hpr,fov = eval(data)
-        return pos,hpr,fov
+        data = data.strip().replace('Camera', '')
+        pos, hpr, fov = eval(data)
+        return pos, hpr, fov
 
     def loadFromFile(self, name):
         self.b_setFixtures([])
         f = open('cameras-%s.txt' % name, 'r')
         for line in f.readlines():
-            pos,hpr,fov = self.unpackFixture(line)
-            self.addFixture([pos[0],pos[1],pos[2],
-                             hpr[0],hpr[1],hpr[2],
-                             fov[0],fov[1],
+            pos, hpr, fov = self.unpackFixture(line)
+            self.addFixture([pos[0], pos[1], pos[2],
+                             hpr[0], hpr[1], hpr[2],
+                             fov[0], fov[1],
                              'Standby'])
         f.close()
 
     def refreshFixture(self, id, data):
-        pos,hpr,fov = self.unpackFixture(data)
+        pos, hpr, fov = self.unpackFixture(data)
         fixture = self.fixtures[id]
-        fixture = [pos[0],pos[1],pos[2],
-                   hpr[0],hpr[1],hpr[2],
-                   fov[0],fov[1],
+        fixture = [pos[0], pos[1], pos[2],
+                   hpr[0], hpr[1], hpr[2],
+                   fov[0], fov[1],
                    fixture[8]]
 
         # distributed only
@@ -63,7 +64,7 @@ class DistributedCameraOV(DistributedObjectOV):
     def d_setFixtures(self, fixtures):
         self.sendUpdate('setFixtures', [fixtures])
 
-    def addFixture(self, fixture, index = None):
+    def addFixture(self, fixture, index=None):
         if index is not None:
             self.fixtures.insert(index, fixture)
         else:
@@ -91,7 +92,7 @@ class DistributedCameraOV(DistributedObjectOV):
         self.fixtures.pop(index)
         self.b_setFixtures(self.fixtures)
 
-    def saveFixture(self, index = None):
+    def saveFixture(self, index=None):
         """
         Position the camera with ~oobe, then call this to save its telemetry.
         """

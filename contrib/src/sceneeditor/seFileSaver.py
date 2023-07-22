@@ -122,8 +122,8 @@ class FileSaver:
         out_file.write("\n")
         out_file.write(i2+"base.enableParticles()# Enable Particle effects\n")
         out_file.write("\n")
-        out_file.write(i2+"self.cTrav = CollisionTraverser() # Setup a traverser for collisions\n")
-        out_file.write(i2+"base.cTrav = self.cTrav\n")
+        out_file.write(i2+"self.c_trav = CollisionTraverser() # Setup a traverser for collisions\n")
+        out_file.write(i2+"base.c_trav = self.c_trav\n")
         out_file.write(i2+"self.CollisionHandler.setInPattern(\"enter%in\")# The message to be raised when something enters a collision node\n")
         out_file.write(i2+"self.CollisionHandler.setOutPattern(\"exit%in\")# The message to be raised when something exits a collision node\n")
         out_file.write("\n")
@@ -400,7 +400,7 @@ class FileSaver:
         out_file.write(i2+"##########################################################################################################\n")
         out_file.write(i2+"# Code for setting up Collision Nodes\n")
         out_file.write(i2+"# To use collision detection:\n")
-        out_file.write(i2+"# You must set up your own bitmasking and event handlers, the traverser \"cTrav\" is created for you at the top\n")
+        out_file.write(i2+"# You must set up your own bitmasking and event handlers, the traverser \"c_trav\" is created for you at the top\n")
         out_file.write(i2+"# The collision nodes are stored in collisionDict\n")
         out_file.write(i2+"##########################################################################################################\n\n")
         for collnode in AllScene.collisionDict:
@@ -463,7 +463,7 @@ class FileSaver:
 
             out_file.write(i2+"self." + collnodeS + "_Node" + "=CollisionNode(\""+collnodeS+"\")\n")
             out_file.write(i2+"self." + collnodeS + "_Node" + ".addSolid(collSolid)\n")
-            out_file.write(i2+"base.cTrav.addCollider(self." + collnodeS + "_Node,self.CollisionHandler)\n")
+            out_file.write(i2+"base.c_trav.addCollider(self." + collnodeS + "_Node,self.CollisionHandler)\n")
             out_file.write("\n")
 
 
@@ -591,9 +591,9 @@ class FileSaver:
         out_file.write(i2+ "camera.getChild(0).node().getLens().setFocalLength(" + str(camera.getChild(0).node().getLens().getFocalLength()) + ")\n")
         out_file.write(i2+ "camera.setTag(\"Metadata\",\"" + camera.getTag("Metadata") + "\")\n")
         out_file.write(i2+ "camera.reparentTo(render)\n")
-        out_file.write(i2+ "base.disableMouse()\n")
-        self.bgColor=base.getBackgroundColor()
-        out_file.write(i2+ "base.setBackgroundColor(%.3f,%.3f,%.3f)\n"%(self.bgColor.getX(),self.bgColor.getY(),self.bgColor.getZ()))
+        out_file.write(i2+ "base.disable_mouse()\n")
+        self.bgColor=base.get_background_color()
+        out_file.write(i2+ "base.set_background_color(%.3f,%.3f,%.3f)\n"%(self.bgColor.getX(),self.bgColor.getY(),self.bgColor.getZ()))
         out_file.write("\n")
 
 

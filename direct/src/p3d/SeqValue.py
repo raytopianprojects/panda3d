@@ -5,6 +5,7 @@
 """
 __all__ = ["SeqValue"]
 
+
 class SeqValue:
 
     """ This represents a sequence value read from a contents.xml
@@ -16,7 +17,7 @@ class SeqValue:
     the series; or it may be compared with another SeqValue, which
     compares all of the integers componentwise. """
 
-    def __init__(self, value = None):
+    def __init__(self, value=None):
         self.value = ()
         if value is not None:
             self.set(value)
@@ -47,7 +48,7 @@ class SeqValue:
             value = map(int, value)
             self.value = tuple(value)
 
-    def loadXml(self, xelement, attribute = 'seq'):
+    def loadXml(self, xelement, attribute='seq'):
         """ Reads the seq from the indicated XML element.  Returns
         true if loaded, false if not given or if there was an
         error. """
@@ -63,8 +64,7 @@ class SeqValue:
 
         return False
 
-
-    def storeXml(self, xelement, attribute = 'seq'):
+    def storeXml(self, xelement, attribute='seq'):
         """ Adds the seq to the indicated XML element. """
         if self.value:
             value = '.'.join(map(str, self.value))

@@ -166,7 +166,7 @@ class DirectGuiBase(DirectObject.DirectObject):
         # no components with this group have been created.
         # self._dynamicGroups = ()
 
-    def defineoptions(self, keywords, optionDefs, dynamicGroups = ()):
+    def defineoptions(self, keywords, optionDefs, dynamicGroups=()):
         """ defineoptions(keywords, optionDefs, dynamicGroups = {}) """
         # Create options, providing the default value and the method
         # to call when the value is changed.  If any option created by
@@ -271,8 +271,8 @@ class DirectGuiBase(DirectObject.DirectObject):
                     text = 'Unknown option "'
                 else:
                     text = 'Unknown options "'
-                raise KeyError(text + ', '.join(unusedOptions) + \
-                        '" for ' + myClass.__name__)
+                raise KeyError(text + ', '.join(unusedOptions) +
+                               '" for ' + myClass.__name__)
             # Can now call post init func
             self.postInitialiseFunc()
 
@@ -363,10 +363,10 @@ class DirectGuiBase(DirectObject.DirectObject):
                 # This is one of the options of this gui item.
                 # Check it is an initialisation option.
                 if optionInfo[option][FUNCTION] is DGG.INITOPT:
-                    print('Cannot configure initialisation option "' \
+                    print('Cannot configure initialisation option "'
                           + option + '" for ' + self.__class__.__name__)
                     break
-                    #raise KeyError, \
+                    # raise KeyError, \
                 #           'Cannot configure initialisation option "' \
                 #           + option + '" for ' + self.__class__.__name__
                 optionInfo[option][VALUE] = value
@@ -388,7 +388,7 @@ class DirectGuiBase(DirectObject.DirectObject):
                         if subComponent is not None:
                             # componentOption becomes entry_width
                             componentOption = subComponent + '_' \
-                                    + componentOption
+                                + componentOption
 
                         # Expand option string to write on error
                         # option = entryField_entry_width
@@ -412,8 +412,8 @@ class DirectGuiBase(DirectObject.DirectObject):
 
                         if len(componentConfigFuncs) == 0 and \
                                 component not in self._dynamicGroups:
-                            raise KeyError('Unknown option "' + option + \
-                                    '" for ' + self.__class__.__name__)
+                            raise KeyError('Unknown option "' + option +
+                                           '" for ' + self.__class__.__name__)
 
                     # Add the configure method(s) (may be more than
                     # one if this is configuring a component group)
@@ -424,10 +424,10 @@ class DirectGuiBase(DirectObject.DirectObject):
                         # Create a dictionary of keyword/values keyed
                         # on configuration function
                         indirectOptions[componentConfigFunc][componentOption] \
-                                = value
+                            = value
                 else:
-                    raise KeyError('Unknown option "' + option + \
-                            '" for ' + self.__class__.__name__)
+                    raise KeyError('Unknown option "' + option +
+                                   '" for ' + self.__class__.__name__)
 
         # Call the configure methods for any components.
         # Pass in the dictionary of keyword/values created above
@@ -439,7 +439,7 @@ class DirectGuiBase(DirectObject.DirectObject):
             info = optionInfo[option]
             func = info[DGG._OPT_FUNCTION]
             if func is not None:
-              func()
+                func()
 
     # Allow index style references
     def __setitem__(self, key, value):
@@ -481,8 +481,8 @@ class DirectGuiBase(DirectObject.DirectObject):
                             return componentCget(componentOption)
 
         # Option not found
-        raise KeyError('Unknown option "' + option + \
-                '" for ' + self.__class__.__name__)
+        raise KeyError('Unknown option "' + option +
+                       '" for ' + self.__class__.__name__)
 
     # Allow index style refererences
     __getitem__ = cget
@@ -494,7 +494,8 @@ class DirectGuiBase(DirectObject.DirectObject):
         """
         # Check for invalid component name
         if '_' in componentName:
-            raise ValueError('Component name "%s" must not contain "_"' % componentName)
+            raise ValueError(
+                'Component name "%s" must not contain "_"' % componentName)
 
         # Get construction keywords
         if hasattr(self, '_constructorKeywords'):
@@ -572,7 +573,7 @@ class DirectGuiBase(DirectObject.DirectObject):
         widget = widgetClass(*widgetArgs, **kw)
         componentClass = widget.__class__.__name__
         self.__componentInfo[componentName] = (widget, widget.configure,
-                componentClass, widget.cget, componentGroup)
+                                               componentClass, widget.cget, componentGroup)
         return widget
 
     def component(self, name):
@@ -601,7 +602,7 @@ class DirectGuiBase(DirectObject.DirectObject):
                     remainingComponents = subComponent
                 else:
                     remainingComponents = subComponent + '_' \
-                            + remainingComponents
+                        + remainingComponents
         # Get the component from __componentInfo dictionary
         widget = self.__componentInfo[component][0]
         if remainingComponents is None:
@@ -634,7 +635,7 @@ class DirectGuiBase(DirectObject.DirectObject):
         del self.__componentInfo
         del self.postInitialiseFuncList
 
-    def bind(self, event, command, extraArgs = []):
+    def bind(self, event, command, extraArgs=[]):
         """
         Bind the command (which should expect one arg) to the specified
         event (such as ENTER, EXIT, B1PRESS, B1CLICK, etc.)
@@ -646,7 +647,7 @@ class DirectGuiBase(DirectObject.DirectObject):
             from direct.showbase.PythonUtil import StackTrace
             print(gEvent)
             print(StackTrace())
-        self.accept(gEvent, command, extraArgs = extraArgs)
+        self.accept(gEvent, command, extraArgs=extraArgs)
 
     def unbind(self, event):
         """
@@ -656,8 +657,10 @@ class DirectGuiBase(DirectObject.DirectObject):
         gEvent = event + self.guiId
         self.ignore(gEvent)
 
+
 def toggleGuiGridSnap():
     DirectGuiWidget.snapToGrid = 1 - DirectGuiWidget.snapToGrid
+
 
 def setGuiGridSpacing(spacing):
     DirectGuiWidget.gridSpacing = spacing
@@ -679,7 +682,7 @@ class DirectGuiWidget(DirectGuiBase, NodePath):
 
     guiDict = {}
 
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         # Direct gui widgets are node paths
         # Direct gui widgets have:
         # -  stateNodePaths (to hold visible representation of widget)
@@ -719,7 +722,7 @@ class DirectGuiWidget(DirectGuiBase, NodePath):
             ('suppressMouse',  1,            DGG.INITOPT),
             ('suppressKeys',   0,            DGG.INITOPT),
             ('enableEdit',     1,            DGG.INITOPT),
-            )
+        )
         # Merge keyword options with default options
         self.defineoptions(kw, optiondefs)
 
@@ -810,17 +813,17 @@ class DirectGuiWidget(DirectGuiBase, NodePath):
         self.bind(DGG.PRINT, self.printConfig)
         # Can we move this to showbase
         # Certainly we don't need to do this for every button!
-        #mb = base.mouseWatcherNode.getModifierButtons()
-        #mb.addButton(KeyboardButton.control())
-        #base.mouseWatcherNode.setModifierButtons(mb)
+        # mb = base.mouseWatcherNode.getModifierButtons()
+        # mb.addButton(KeyboardButton.control())
+        # base.mouseWatcherNode.setModifierButtons(mb)
 
     def disableEdit(self):
         self.unbind(DGG.B2PRESS)
         self.unbind(DGG.B2RELEASE)
         self.unbind(DGG.PRINT)
-        #mb = base.mouseWatcherNode.getModifierButtons()
-        #mb.removeButton(KeyboardButton.control())
-        #base.mouseWatcherNode.setModifierButtons(mb)
+        # mb = base.mouseWatcherNode.getModifierButtons()
+        # mb.removeButton(KeyboardButton.control())
+        # base.mouseWatcherNode.setModifierButtons(mb)
 
     def editStart(self, event):
         taskMgr.remove('guiEditTask')
@@ -828,7 +831,7 @@ class DirectGuiWidget(DirectGuiBase, NodePath):
         vMouse2render2d = Point3(event.getMouse()[0], 0, event.getMouse()[1])
         editVec = Vec3(vWidget2render2d - vMouse2render2d)
         if base.mouseWatcherNode.getModifierButtons().isDown(
-            KeyboardButton.control()):
+                KeyboardButton.control()):
             t = taskMgr.add(self.guiScaleTask, 'guiEditTask')
             t.refPos = vWidget2render2d
             t.editVecLen = editVec.length()
@@ -873,15 +876,15 @@ class DirectGuiWidget(DirectGuiBase, NodePath):
 
     def resetFrameSize(self):
         if not self.fInit:
-            self.setFrameSize(fClearFrame = 1)
+            self.setFrameSize(fClearFrame=1)
 
-    def setFrameSize(self, fClearFrame = 0):
+    def setFrameSize(self, fClearFrame=0):
         # Use ready state to determine frame Type
         frameType = self.getFrameType()
         if self['frameSize']:
             # Use user specified bounds
             self.bounds = self['frameSize']
-            #print "%s bounds = %s" % (self.getName(), self.bounds)
+            # print "%s bounds = %s" % (self.getName(), self.bounds)
             bw = (0, 0)
 
         else:
@@ -898,7 +901,7 @@ class DirectGuiWidget(DirectGuiBase, NodePath):
                 self.guiItem.setFrameStyle(0, self.frameStyle[0])
 
             if ((frameType != PGFrameStyle.TNone) and
-                (frameType != PGFrameStyle.TFlat)):
+                    (frameType != PGFrameStyle.TFlat)):
                 bw = self['borderWidth']
             else:
                 bw = (0, 0)
@@ -910,24 +913,23 @@ class DirectGuiWidget(DirectGuiBase, NodePath):
             self.bounds[2] - bw[1],
             self.bounds[3] + bw[1])
 
-
-    def getBounds(self, state = 0):
+    def getBounds(self, state=0):
         self.stateNodePath[state].calcTightBounds(self.ll, self.ur)
         # Scale bounds to give a pad around graphics
         vec_right = Vec3.right()
         vec_up = Vec3.up()
         left = (vec_right[0] * self.ll[0]
-              + vec_right[1] * self.ll[1]
-              + vec_right[2] * self.ll[2])
+                + vec_right[1] * self.ll[1]
+                + vec_right[2] * self.ll[2])
         right = (vec_right[0] * self.ur[0]
-               + vec_right[1] * self.ur[1]
-               + vec_right[2] * self.ur[2])
+                 + vec_right[1] * self.ur[1]
+                 + vec_right[2] * self.ur[2])
         bottom = (vec_up[0] * self.ll[0]
-                + vec_up[1] * self.ll[1]
-                + vec_up[2] * self.ll[2])
+                  + vec_up[1] * self.ll[1]
+                  + vec_up[2] * self.ll[2])
         top = (vec_up[0] * self.ur[0]
-             + vec_up[1] * self.ur[1]
-             + vec_up[2] * self.ur[2])
+               + vec_up[1] * self.ur[1]
+               + vec_up[2] * self.ur[2])
         self.ll = Point3(left, 0.0, bottom)
         self.ur = Point3(right, 0.0, top)
         self.bounds = [self.ll[0] - self['pad'][0],
@@ -947,7 +949,7 @@ class DirectGuiWidget(DirectGuiBase, NodePath):
         y = self.bounds[2] + (self.bounds[3] - self.bounds[2])/2.0
         return (x, y)
 
-    def getFrameType(self, state = 0):
+    def getFrameType(self, state=0):
         return self.frameStyle[state].getType()
 
     def updateFrameStyle(self):
@@ -955,7 +957,7 @@ class DirectGuiWidget(DirectGuiBase, NodePath):
             for i in range(self['numStates']):
                 self.guiItem.setFrameStyle(i, self.frameStyle[i])
 
-    def setRelief(self, fSetStyle = 1):
+    def setRelief(self, fSetStyle=1):
         relief = self['relief']
         # Convert None, and string arguments
         if relief == None:
@@ -1066,7 +1068,7 @@ class DirectGuiWidget(DirectGuiBase, NodePath):
             # Call superclass destruction method (clears out hooks)
             DirectGuiBase.destroy(self)
 
-    def printConfig(self, indent = 0):
+    def printConfig(self, indent=0):
         space = ' ' * indent
         print('%s%s - %s' % (space, self.guiId, self.__class__.__name__))
         print('%sPos:   %s' % (space, tuple(self.getPos())))

@@ -19,6 +19,7 @@ animations based on walker events.
 from direct.directnotify import DirectNotifyGlobal
 from . import NonPhysicsWalker
 
+
 class GhostWalker(NonPhysicsWalker.NonPhysicsWalker):
 
     notify = DirectNotifyGlobal.directNotify.newCategory("GhostWalker")

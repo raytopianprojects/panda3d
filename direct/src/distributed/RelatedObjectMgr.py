@@ -4,6 +4,7 @@
 from direct.showbase import DirectObject
 from direct.directnotify import DirectNotifyGlobal
 
+
 class RelatedObjectMgr(DirectObject.DirectObject):
     """
     This class manages a relationship between DistributedObjects that
@@ -37,8 +38,8 @@ class RelatedObjectMgr(DirectObject.DirectObject):
         del self.cr
         del self.pendingObjects
 
-    def requestObjects(self, doIdList, allCallback = None, eachCallback = None,
-                       timeout = None, timeoutCallback = None):
+    def requestObjects(self, doIdList, allCallback=None, eachCallback=None,
+                       timeout=None, timeoutCallback=None):
         """
         Requests a callback to be called when the objects in the
         doIdList are generated.  The allCallback will be called only
@@ -74,7 +75,8 @@ class RelatedObjectMgr(DirectObject.DirectObject):
 
         See Also: abortRequest()
         """
-        assert self.notify.debug("requestObjects(%s, timeout=%s)" % (doIdList, timeout))
+        assert self.notify.debug(
+            "requestObjects(%s, timeout=%s)" % (doIdList, timeout))
 
         # First, see if we have all of the objects already.
         objects, doIdsPending = self.__generateObjectList(doIdList)
@@ -105,7 +107,8 @@ class RelatedObjectMgr(DirectObject.DirectObject):
 
         doLaterName = None
         if timeout != None:
-            doLaterName = "RelatedObject-%s" % (RelatedObjectMgr.doLaterSequence)
+            doLaterName = "RelatedObject-%s" % (
+                RelatedObjectMgr.doLaterSequence)
             assert self.notify.debug("doLaterName = %s" % (doLaterName))
 
             RelatedObjectMgr.doLaterSequence += 1
@@ -125,7 +128,7 @@ class RelatedObjectMgr(DirectObject.DirectObject):
         if doLaterName:
             # Now spawn a do-later to catch the timeout.
             taskMgr.doMethodLater(timeout, self.__timeoutExpired, doLaterName,
-                                  extraArgs = [tuple])
+                                  extraArgs=[tuple])
 
         return tuple
 
@@ -139,7 +142,8 @@ class RelatedObjectMgr(DirectObject.DirectObject):
         """
         if tuple:
             allCallback, eachCallback, timeoutCallback, doIdsPending, doIdList, doLaterName = tuple
-            assert self.notify.debug("aborting request for %s (remaining: %s)" % (doIdList, doIdsPending))
+            assert self.notify.debug(
+                "aborting request for %s (remaining: %s)" % (doIdList, doIdsPending))
 
             if doLaterName:
                 taskMgr.remove(doLaterName)
@@ -165,10 +169,10 @@ class RelatedObjectMgr(DirectObject.DirectObject):
 
         self.pendingObjects = {}
 
-
     def __timeoutExpired(self, tuple):
         allCallback, eachCallback, timeoutCallback, doIdsPending, doIdList, doLaterName = tuple
-        assert self.notify.debug("timeout expired for %s (remaining: %s)" % (doIdList, doIdsPending))
+        assert self.notify.debug(
+            "timeout expired for %s (remaining: %s)" % (doIdList, doIdsPending))
 
         self.__removePending(tuple, doIdsPending)
 
@@ -192,7 +196,6 @@ class RelatedObjectMgr(DirectObject.DirectObject):
                 del self.pendingObjects[doId]
                 self.__noListenFor(doId)
 
-
     def __listenFor(self, doId):
         # Start listening for the indicated object to be generated.
         assert self.notify.debug("Now listening for generate from %s" % (doId))
@@ -201,7 +204,8 @@ class RelatedObjectMgr(DirectObject.DirectObject):
 
     def __noListenFor(self, doId):
         # Stop listening for the indicated object to be generated.
-        assert self.notify.debug("No longer listening for generate from %s" % (doId))
+        assert self.notify.debug(
+            "No longer listening for generate from %s" % (doId))
         announceGenerateName = "generate-%s" % (doId)
         self.ignore(announceGenerateName)
 
@@ -227,18 +231,21 @@ class RelatedObjectMgr(DirectObject.DirectObject):
             if len(doIdsPending) == 0:
                 # That was the last doId on the list.  Call the
                 # allCallback!
-                assert self.notify.debug("All objects generated on list: %s" % (doIdList,))
+                assert self.notify.debug(
+                    "All objects generated on list: %s" % (doIdList,))
                 if doLaterName:
                     taskMgr.remove(doLaterName)
 
                 objects, doIdsPending = self.__generateObjectList(doIdList)
                 if None in objects:
-                    assert self.notify.warning('calling %s with None.\n objects=%s\n doIdsPending=%s\n doIdList=%s\n' % (allCallback,objects,doIdsPending,doIdList))
+                    assert self.notify.warning('calling %s with None.\n objects=%s\n doIdsPending=%s\n doIdList=%s\n' % (
+                        allCallback, objects, doIdsPending, doIdList))
                 if allCallback:
                     allCallback(objects)
 
             else:
-                assert self.notify.debug("Objects still pending: %s" % (doIdsPending))
+                assert self.notify.debug(
+                    "Objects still pending: %s" % (doIdsPending))
 
     def __generateObjectList(self, doIdList):
         objects = []
@@ -254,4 +261,3 @@ class RelatedObjectMgr(DirectObject.DirectObject):
                 objects.append(None)
 
         return objects, doIdsPending
-

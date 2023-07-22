@@ -17,10 +17,12 @@ import shutil
 import direct
 from panda3d.core import Filename, DSearchPath
 
-def usage(code, msg = ''):
+
+def usage(code, msg=''):
     sys.stderr.write(__doc__)
     sys.stderr.write(msg + '\n')
     sys.exit(code)
+
 
 def makeBundle(startDir):
     fstartDir = Filename.fromOsSpecific(startDir)
@@ -46,7 +48,8 @@ def makeBundle(startDir):
     plistFilename.makeDir()
     exeFilename = Filename(bundleFilename, 'Contents/MacOS/nppanda3d')
     exeFilename.makeDir()
-    resourceFilename = Filename(bundleFilename, 'Contents/Resources/nppanda3d.rsrc')
+    resourceFilename = Filename(
+        bundleFilename, 'Contents/Resources/nppanda3d.rsrc')
     resourceFilename.makeDir()
 
     # Compile the .r file to an .rsrc file.
@@ -57,12 +60,14 @@ def makeBundle(startDir):
         raise IOError('Unable to run Rez')
 
     # Copy in Info.plist and the compiled executable.
-    shutil.copyfile(Filename(fstartDir, "nppanda3d.plist").toOsSpecific(), plistFilename.toOsSpecific())
+    shutil.copyfile(Filename(
+        fstartDir, "nppanda3d.plist").toOsSpecific(), plistFilename.toOsSpecific())
     shutil.copyfile(nppanda3d.toOsSpecific(), exeFilename.toOsSpecific())
 
     # All done!
     bundleFilename.touch()
     print(bundleFilename.toOsSpecific())
+
 
 def buildDmg(startDir):
     fstartDir = Filename.fromOsSpecific(startDir)
@@ -70,11 +75,12 @@ def buildDmg(startDir):
     output = Filename(fstartDir, 'nppanda3d.dmg')
     output.unlink()
     cmd = 'hdiutil create -fs HFS+ -srcfolder "%(dir)s" -volname "%(volname)s" "%(output)s"' % {
-        'dir' : rootFilename.toOsSpecific(),
-        'volname' : 'nppanda3d',
-        'output' : output.toOsSpecific(),
-        }
+        'dir': rootFilename.toOsSpecific(),
+        'volname': 'nppanda3d',
+        'output': output.toOsSpecific(),
+    }
     os.system(cmd)
+
 
 if __name__ == '__main__':
     try:
@@ -93,5 +99,4 @@ if __name__ == '__main__':
     makeBundle(startDir)
 
     # We don't need the dmg these days; the installer is better.
-    #buildDmg(startDir)
-
+    # buildDmg(startDir)

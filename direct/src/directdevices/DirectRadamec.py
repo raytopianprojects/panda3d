@@ -17,11 +17,12 @@ RAD_TILT = 1
 RAD_ZOOM = 2
 RAD_FOCUS = 3
 
+
 class DirectRadamec(DirectObject):
     radamecCount = 0
     notify = DirectNotifyGlobal.directNotify.newCategory('DirectRadamec')
 
-    def __init__(self, device = 'Analog0', nodePath = None):
+    def __init__(self, device='Analog0', nodePath=None):
         # See if device manager has been initialized
         if base.direct.deviceManager == None:
             base.direct.deviceManager = DirectDeviceManager()
@@ -68,16 +69,18 @@ class DirectRadamec(DirectObject):
         self.notify.debug("TILT = %s" % self.aList[RAD_TILT])
         self.notify.debug("ZOOM = %s" % self.aList[RAD_ZOOM])
         self.notify.debug("FOCUS = %s" % self.aList[RAD_FOCUS])
-        self.notify.debug("Normalized: panVal: %s  tiltVal: %s" % (panVal, tiltVal))
+        self.notify.debug("Normalized: panVal: %s  tiltVal: %s" %
+                          (panVal, tiltVal))
 
     # Normalize to the range [-minVal, maxVal] based on some hard-coded
     # max/min numbers of the Radamec device
-    def normalizeChannel(self, chan, minVal = -1, maxVal = 1):
+    def normalizeChannel(self, chan, minVal=-1, maxVal=1):
         try:
             maxRange = self.maxRange[chan]
             minRange = self.minRange[chan]
         except IndexError:
-            raise RuntimeError("can't normalize this channel (channel %d)" % chan)
+            raise RuntimeError(
+                "can't normalize this channel (channel %d)" % chan)
         range = maxRange - minRange
         clampedVal = CLAMP(self.aList[chan], minRange, maxRange)
         return ((maxVal - minVal) * (clampedVal - minRange) / range) + minVal

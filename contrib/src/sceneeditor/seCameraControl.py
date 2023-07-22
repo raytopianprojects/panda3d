@@ -642,7 +642,7 @@ class DirectCameraControl(DirectObject):
 
     def enableMouseFly(self, fKeyEvents = 1):
         # disable C++ fly interface
-        base.disableMouse()
+        base.disable_mouse()
         # Enable events
         for event in self.actionEvents:
             self.accept(event[0], event[1], extraArgs = event[2:])
@@ -663,7 +663,7 @@ class DirectCameraControl(DirectObject):
         # Kill tasks
         self.removeManipulateCameraTask()
         taskMgr.remove('stickToWidget')
-        base.enableMouse()
+        base.enable_mouse()
 
     def removeManipulateCameraTask(self):
         taskMgr.remove('manipulateCamera')

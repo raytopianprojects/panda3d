@@ -5,8 +5,9 @@ from direct.distributed.DistributedObjectBase import DistributedObjectBase
 from direct.showbase import PythonUtil
 from panda3d.core import *
 from panda3d.direct import *
-#from PyDatagram import PyDatagram
-#from PyDatagramIterator import PyDatagramIterator
+# from PyDatagram import PyDatagram
+# from PyDatagramIterator import PyDatagramIterator
+
 
 class DistributedObjectAI(DistributedObjectBase):
     notify = directNotify.newCategory("DistributedObjectAI")
@@ -19,7 +20,7 @@ class DistributedObjectAI(DistributedObjectBase):
             self.DistributedObjectAI_initialized = 1
             DistributedObjectBase.__init__(self, air)
 
-            self.accountName=''
+            self.accountName = ''
             # Record the repository
             self.air = air
 
@@ -47,7 +48,7 @@ class DistributedObjectAI(DistributedObjectBase):
             self._zoneData = None
 
     # Uncomment if you want to debug DO leaks
-    #def __del__(self):
+    # def __del__(self):
     #    """
     #    For debugging purposes, this just prints out what got deleted
     #    """
@@ -112,12 +113,14 @@ class DistributedObjectAI(DistributedObjectBase):
         """
         self.__generates -= 1
         if self.__generates < 0:
-            self.notify.debug('DistributedObjectAI: delete() called more times than generate()')
+            self.notify.debug(
+                'DistributedObjectAI: delete() called more times than generate()')
         if self.__generates == 0:
             # prevent this code from executing multiple times
             if self.air is not None:
                 # self.doId may not exist.  The __dict__ syntax works around that.
-                assert self.notify.debug('delete(): %s' % (self.__dict__.get("doId")))
+                assert self.notify.debug(
+                    'delete(): %s' % (self.__dict__.get("doId")))
 
                 if not self._DOAI_requestedDelete:
                     # this logs every delete that was not requested by us.
@@ -149,9 +152,9 @@ class DistributedObjectAI(DistributedObjectBase):
                 # DCR: I've re-enabled this block of code so that Toontown's
                 # AI won't leak channels.
                 # Let me know if it causes trouble.
-                ### Asad: As per Roger's suggestion, turn off the following
-                ### block until a solution is thought out of how to prevent
-                ### this delete message or to handle this message better
+                # Asad: As per Roger's suggestion, turn off the following
+                # block until a solution is thought out of how to prevent
+                # this delete message or to handle this message better
                 # TODO: do we still need this check?
                 if not getattr(self, "doNotDeallocateChannel", False):
                     if self.air:
@@ -213,7 +216,7 @@ class DistributedObjectAI(DistributedObjectBase):
         oldZoneId = self.zoneId
         self.air.storeObjectLocation(self, parentId, zoneId)
         if ((oldParentId != parentId) or
-            (oldZoneId != zoneId)):
+                (oldZoneId != zoneId)):
             self.releaseZoneData()
             messenger.send(self.getZoneChangeEvent(), [zoneId, oldZoneId])
             # if we are not going into the quiet zone, send a 'logical' zone
@@ -270,6 +273,7 @@ class DistributedObjectAI(DistributedObjectBase):
 
     def startMessageBundle(self, name):
         self.air.startMessageBundle(name)
+
     def sendMessageBundle(self):
         self.air.sendMessageBundle(self.doId)
 
@@ -278,6 +282,7 @@ class DistributedObjectAI(DistributedObjectBase):
         # arguments are newZoneId, oldZoneId
         # includes the quiet zone.
         return DistributedObjectAI.staticGetZoneChangeEvent(self.doId)
+
     def getLogicalZoneChangeEvent(self):
         # this event is generated whenever this object changes to a
         # non-quiet-zone zone.
@@ -288,6 +293,7 @@ class DistributedObjectAI(DistributedObjectBase):
     @staticmethod
     def staticGetZoneChangeEvent(doId):
         return 'DOChangeZone-%s' % doId
+
     @staticmethod
     def staticGetLogicalZoneChangeEvent(doId):
         return 'DOLogicalChangeZone-%s' % doId
@@ -321,20 +327,20 @@ class DistributedObjectAI(DistributedObjectBase):
 
     def getRender(self):
         # note that this will return a different node if we change zones
-        #return self.air.getRender(self.zoneId)
+        # return self.air.getRender(self.zoneId)
         return self.getZoneData().getRender()
 
     def getNonCollidableParent(self):
         return self.getZoneData().getNonCollidableParent()
 
     def getParentMgr(self):
-        #return self.air.getParentMgr(self.zoneId)
+        # return self.air.getParentMgr(self.zoneId)
         return self.getZoneData().getParentMgr()
 
     def getCollTrav(self, *args, **kArgs):
         return self.getZoneData().getCollTrav(*args, **kArgs)
 
-    def sendUpdate(self, fieldName, args = []):
+    def sendUpdate(self, fieldName, args=[]):
         assert self.notify.debugStateCall(self)
         if self.air:
             self.air.sendUpdate(self, fieldName, args)
@@ -391,7 +397,8 @@ class DistributedObjectAI(DistributedObjectBase):
             self.__preallocDoId = 0
 
         # The repository is the one that really does the work
-        self.air.generateWithRequiredAndId(self, doId, parentId, zoneId, optionalFields)
+        self.air.generateWithRequiredAndId(
+            self, doId, parentId, zoneId, optionalFields)
         self.generate()
         self.announceGenerate()
         self.postGenerateMessage()
@@ -401,7 +408,7 @@ class DistributedObjectAI(DistributedObjectBase):
         # have we already allocated a doId?
         if self.__preallocDoId:
             assert doId is None or doId == self.doId
-            doId=self.doId
+            doId = self.doId
             self.__preallocDoId = 0
 
         # Assign it an id
@@ -412,7 +419,8 @@ class DistributedObjectAI(DistributedObjectBase):
         # Put the new DO in the dictionaries
         self.air.addDOToTables(self, location=(parentId, zoneId))
         # Send a generate message
-        self.sendGenerateWithRequired(self.air, parentId, zoneId, optionalFields)
+        self.sendGenerateWithRequired(
+            self.air, parentId, zoneId, optionalFields)
         self.generate()
         self.announceGenerate()
         self.postGenerateMessage()
@@ -443,7 +451,7 @@ class DistributedObjectAI(DistributedObjectBase):
         assert self.notify.debugStateCall(self)
         dg = self.dclass.aiFormatGenerate(
             self, self.doId, parentId, zoneId,
-            #repository.serverId,
+            # repository.serverId,
             self.generateTargetChannel(repository),
             repository.ourChannel,
             optionalFields)
@@ -500,12 +508,13 @@ class DistributedObjectAI(DistributedObjectBase):
         # We assume the context number is passed as a uint16.
         self.__nextBarrierContext = (self.__nextBarrierContext + 1) & 0xffff
 
-        assert self.notify.debug('beginBarrier(%s, %s, %s, %s)' % (context, name, avIds, timeout))
+        assert self.notify.debug(
+            'beginBarrier(%s, %s, %s, %s)' % (context, name, avIds, timeout))
 
         if avIds:
             barrier = Barrier.Barrier(
                 name, self.uniqueName(name), avIds, timeout,
-                doneFunc = PythonUtil.Functor(
+                doneFunc=PythonUtil.Functor(
                     self.__barrierCallback, context, callback))
             self.__barriers[context] = barrier
 
@@ -558,7 +567,8 @@ class DistributedObjectAI(DistributedObjectBase):
             del self.__barriers[context]
             callback(avIds)
         else:
-            self.notify.warning("Unexpected completion from barrier %s" % (context))
+            self.notify.warning(
+                "Unexpected completion from barrier %s" % (context))
 
     def isGridParent(self):
         # If this distributed object is a DistributedGrid return 1.  0 by default

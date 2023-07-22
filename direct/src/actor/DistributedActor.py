@@ -6,6 +6,7 @@ from direct.distributed import DistributedNode
 
 from . import Actor
 
+
 class DistributedActor(DistributedNode.DistributedNode, Actor.Actor):
     def __init__(self, cr):
         try:
@@ -31,7 +32,6 @@ class DistributedActor(DistributedNode.DistributedNode, Actor.Actor):
             self.DistributedActor_deleted = 1
             DistributedNode.DistributedNode.delete(self)
             Actor.Actor.delete(self)
-
 
     def loop(self, animName, restart=1, partName=None, fromFrame=None, toFrame=None):
         return Actor.Actor.loop(self, animName, restart, partName, fromFrame, toFrame)

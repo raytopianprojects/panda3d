@@ -4,6 +4,7 @@ from panda3d.core import ConfigVariableInt
 
 __all__ = ["CRDataCache"]
 
+
 class CRDataCache:
     # Stores cached data for DistributedObjects between instantiations on the client
 
@@ -64,15 +65,18 @@ class CRDataCache:
         def _checkMemLeaks(self):
             assert self._len == len(self._doId2name2data)
 
+
 if __debug__:
     class TestCachedData(CachedDOData):
         def __init__(self):
             CachedDOData.__init__(self)
             self._destroyed = False
             self._flushed = False
+
         def destroy(self):
             CachedDOData.destroy(self)
             self._destroyed = True
+
         def flush(self):
             CachedDOData.flush(self)
             self._flushed = True
@@ -114,4 +118,3 @@ if __debug__:
     dc._stopMemLeakCheck()
     dc.destroy()
     del dc
-

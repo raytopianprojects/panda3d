@@ -28,20 +28,21 @@ import math
 
 class GravityWalker(DirectObject.DirectObject):
     notify = directNotify.newCategory("GravityWalker")
-    wantDebugIndicator = ConfigVariableBool('want-avatar-physics-indicator', False)
+    wantDebugIndicator = ConfigVariableBool(
+        'want-avatar-physics-indicator', False)
     wantFloorSphere = ConfigVariableBool('want-floor-sphere', False)
     earlyEventSphere = ConfigVariableBool('early-event-sphere', False)
 
     DiagonalFactor = math.sqrt(2.) / 2.
 
     # special methods
-    def __init__(self, gravity = 64.348, standableGround=0.707,
-            hardLandingForce=16.0, legacyLifter=False):
+    def __init__(self, gravity=64.348, standableGround=0.707,
+                 hardLandingForce=16.0, legacyLifter=False):
         assert self.notify.debugStateCall(self)
         DirectObject.DirectObject.__init__(self)
-        self.__gravity=gravity
-        self.__standableGround=standableGround
-        self.__hardLandingForce=hardLandingForce
+        self.__gravity = gravity
+        self.__standableGround = standableGround
+        self.__hardLandingForce = hardLandingForce
         self._legacyLifter = legacyLifter
 
         self.mayJump = 1
@@ -52,22 +53,22 @@ class GravityWalker(DirectObject.DirectObject):
 
         self.falling = 0
         self.needToDeltaPos = 0
-        self.physVelocityIndicator=None
-        self.avatarControlForwardSpeed=0
-        self.avatarControlJumpForce=0
-        self.avatarControlReverseSpeed=0
-        self.avatarControlRotateSpeed=0
-        self.getAirborneHeight=None
+        self.physVelocityIndicator = None
+        self.avatarControlForwardSpeed = 0
+        self.avatarControlJumpForce = 0
+        self.avatarControlReverseSpeed = 0
+        self.avatarControlRotateSpeed = 0
+        self.getAirborneHeight = None
 
-        self.priorParent=Vec3(0)
-        self.__oldPosDelta=Vec3(0)
-        self.__oldDt=0
+        self.priorParent = Vec3(0)
+        self.__oldPosDelta = Vec3(0)
+        self.__oldDt = 0
 
-        self.moving=0
-        self.speed=0.0
-        self.rotationSpeed=0.0
-        self.slideSpeed=0.0
-        self.vel=Vec3(0.0)
+        self.moving = 0
+        self.speed = 0.0
+        self.rotationSpeed = 0.0
+        self.slideSpeed = 0.0
+        self.vel = Vec3(0.0)
         self.collisionsActive = 0
 
         self.isAirborne = 0
@@ -75,13 +76,13 @@ class GravityWalker(DirectObject.DirectObject):
 
     def setWalkSpeed(self, forward, jump, reverse, rotate):
         assert self.notify.debugStateCall(self)
-        self.avatarControlForwardSpeed=forward
-        self.avatarControlJumpForce=jump
-        self.avatarControlReverseSpeed=reverse
-        self.avatarControlRotateSpeed=rotate
+        self.avatarControlForwardSpeed = forward
+        self.avatarControlJumpForce = jump
+        self.avatarControlReverseSpeed = reverse
+        self.avatarControlRotateSpeed = rotate
 
     def getSpeeds(self):
-        #assert self.debugPrint("getSpeeds()")
+        # assert self.debugPrint("getSpeeds()")
         return (self.speed, self.rotationSpeed, self.slideSpeed)
 
     def getIsAirborne(self):
@@ -90,7 +91,7 @@ class GravityWalker(DirectObject.DirectObject):
     def setAvatar(self, avatar):
         self.avatar = avatar
         if avatar is not None:
-            pass # setup the avatar
+            pass  # setup the avatar
 
     def setupRay(self, bitmask, floorOffset, reach):
         assert self.notify.debugStateCall(self)
@@ -99,7 +100,8 @@ class GravityWalker(DirectObject.DirectObject):
         # a higher or lower value depending on whether you want an avatar
         # that is outside of the world to step up to the floor when they
         # get under valid floor:
-        self.cRay = CollisionRay(0.0, 0.0, CollisionHandlerRayStart, 0.0, 0.0, -1.0)
+        self.cRay = CollisionRay(
+            0.0, 0.0, CollisionHandlerRayStart, 0.0, 0.0, -1.0)
         cRayNode = CollisionNode('GW.cRayNode')
         cRayNode.addSolid(self.cRay)
         self.cRayNodePath = self.avatarNodePath.attachNewNode(cRayNode)
@@ -108,7 +110,7 @@ class GravityWalker(DirectObject.DirectObject):
 
         # set up floor collision mechanism
         self.lifter = CollisionHandlerGravity()
-        #self.lifter = CollisionHandlerHighestEvent()
+        # self.lifter = CollisionHandlerHighestEvent()
         self.lifter.setLegacyMode(self._legacyLifter)
         self.lifter.setGravity(self.__gravity)
         self.lifter.addInPattern("enter%in")
@@ -121,7 +123,7 @@ class GravityWalker(DirectObject.DirectObject):
         # If this is too low, we actually "fall" off steep stairs
         # and float above them as we go down. I increased this
         # from 8.0 to 16.0 to prevent this
-        #self.lifter.setMaxVelocity(16.0)
+        # self.lifter.setMaxVelocity(16.0)
 
         self.lifter.addCollider(self.cRayNodePath, self.avatarNodePath)
 
@@ -157,7 +159,8 @@ class GravityWalker(DirectObject.DirectObject):
         # This is a sphere a little larger than the wall sphere to
         # trigger events.
         self.avatarRadius = avatarRadius
-        cSphere = CollisionSphere(0.0, 0.0, avatarRadius-0.1, avatarRadius*1.04)
+        cSphere = CollisionSphere(
+            0.0, 0.0, avatarRadius-0.1, avatarRadius*1.04)
         # Mark it intangible just to emphasize its non-physical purpose.
         cSphere.setTangible(0)
         cSphereNode = CollisionNode('GW.cEventSphereNode')
@@ -201,7 +204,7 @@ class GravityWalker(DirectObject.DirectObject):
         self.floorBitmask = bitMask
 
     def swapFloorBitMask(self, oldMask, newMask):
-        self.floorBitmask = self.floorBitmask &~ oldMask
+        self.floorBitmask = self.floorBitmask & ~ oldMask
         self.floorBitmask |= newMask
 
         if self.cRayNodePath and not self.cRayNodePath.isEmpty():
@@ -215,7 +218,7 @@ class GravityWalker(DirectObject.DirectObject):
         return self.__gravity
 
     def initializeCollisions(self, collisionTraverser, avatarNodePath,
-            avatarRadius = 1.4, floorOffset = 1.0, reach = 1.0):
+                             avatarRadius=1.4, floorOffset=1.0, reach=1.0):
         """
         floorOffset is how high the avatar can reach.  I.e. if the avatar
             walks under a ledge that is <= floorOffset above the ground (a
@@ -274,7 +277,7 @@ class GravityWalker(DirectObject.DirectObject):
 
         del self.getAirborneHeight
 
-    def setCollisionsActive(self, active = 1):
+    def setCollisionsActive(self, active=1):
         assert self.notify.debugStateCall(self)
         if self.collisionsActive != active:
             self.collisionsActive = active
@@ -282,7 +285,7 @@ class GravityWalker(DirectObject.DirectObject):
             # more pass to ensure we aren't standing in a wall.
             self.oneTimeCollide()
             # make sure we have a shadow traverser
-            base.initShadowTrav()
+            base.init_shadow_trav()
             if active:
                 if 1:
                     # Please let skyler or drose know if this is causing a problem
@@ -291,7 +294,8 @@ class GravityWalker(DirectObject.DirectObject):
                     self.avatarNodePath.setR(0.0)
                 self.cTrav.addCollider(self.cWallSphereNodePath, self.pusher)
                 if self.wantFloorSphere:
-                    self.cTrav.addCollider(self.cFloorSphereNodePath, self.pusherFloor)
+                    self.cTrav.addCollider(
+                        self.cFloorSphereNodePath, self.pusherFloor)
                 # Add the lifter to the shadow traverser, which runs after
                 # our traverser. This prevents the "fall through wall and
                 # off ledge" bug. The problem was that we couldn't control
@@ -299,7 +303,7 @@ class GravityWalker(DirectObject.DirectObject):
                 # they're in the same collision traverser. If the lifter
                 # collided first, we'd start falling before getting pushed
                 # back behind the wall.
-                base.shadowTrav.addCollider(self.cRayNodePath, self.lifter)
+                base.shadow_trav.addCollider(self.cRayNodePath, self.lifter)
 
                 if self.earlyEventSphere:
                     # If we want to trigger the events at the same
@@ -308,25 +312,27 @@ class GravityWalker(DirectObject.DirectObject):
                     # sphere to the main traverser.  This allows us to
                     # hit door triggers that are just slightly behind
                     # the door itself.
-                    self.cTrav.addCollider(self.cEventSphereNodePath, self.event)
+                    self.cTrav.addCollider(
+                        self.cEventSphereNodePath, self.event)
                 else:
                     # Normally, we'd rather trigger the events after
                     # the pusher has had a chance to fix up our
                     # position, so we never trigger things that are
                     # behind other polygons.
-                    base.shadowTrav.addCollider(self.cEventSphereNodePath, self.event)
+                    base.shadow_trav.addCollider(
+                        self.cEventSphereNodePath, self.event)
 
             else:
-                if hasattr(self, 'cTrav'):
+                if hasattr(self, 'c_trav'):
                     self.cTrav.removeCollider(self.cWallSphereNodePath)
                     if self.wantFloorSphere:
                         self.cTrav.removeCollider(self.cFloorSphereNodePath)
                     self.cTrav.removeCollider(self.cEventSphereNodePath)
-                base.shadowTrav.removeCollider(self.cEventSphereNodePath)
-                base.shadowTrav.removeCollider(self.cRayNodePath)
+                base.shadow_trav.removeCollider(self.cEventSphereNodePath)
+                base.shadow_trav.removeCollider(self.cRayNodePath)
 
     def getCollisionsActive(self):
-        assert self.debugPrint("getCollisionsActive() returning=%s"%(
+        assert self.debugPrint("getCollisionsActive() returning=%s" % (
             self.collisionsActive,))
         return self.collisionsActive
 
@@ -338,7 +344,8 @@ class GravityWalker(DirectObject.DirectObject):
         """
         assert self.notify.debugStateCall(self)
         self.oneTimeCollide()
-        self.avatarNodePath.setZ(self.avatarNodePath.getZ()-self.lifter.getAirborneHeight())
+        self.avatarNodePath.setZ(
+            self.avatarNodePath.getZ()-self.lifter.getAirborneHeight())
 
     def oneTimeCollide(self):
         """
@@ -373,10 +380,10 @@ class GravityWalker(DirectObject.DirectObject):
         if self.jumpDelayTask:
             self.jumpDelayTask.remove()
         self.mayJump = 0
-        self.jumpDelayTask=taskMgr.doMethodLater(
+        self.jumpDelayTask = taskMgr.doMethodLater(
             delay,
             self.setMayJump,
-            "jumpDelay-%s"%id(self))
+            "jumpDelay-%s" % id(self))
 
     def addBlastForce(self, vector):
         self.lifter.addVelocity(vector.length())
@@ -390,9 +397,10 @@ class GravityWalker(DirectObject.DirectObject):
         onScreenDebug.add("w airborneHeight", self.lifter.getAirborneHeight())
         onScreenDebug.add("w falling", self.falling)
         onScreenDebug.add("w isOnGround", self.lifter.isOnGround())
-        #onScreenDebug.add("w gravity", self.lifter.getGravity())
-        #onScreenDebug.add("w jumpForce", self.avatarControlJumpForce)
-        onScreenDebug.add("w contact normal", self.lifter.getContactNormal().pPrintValues())
+        # onScreenDebug.add("w gravity", self.lifter.getGravity())
+        # onScreenDebug.add("w jumpForce", self.avatarControlJumpForce)
+        onScreenDebug.add("w contact normal",
+                          self.lifter.getContactNormal().pPrintValues())
         onScreenDebug.add("w mayJump", self.mayJump)
         onScreenDebug.add("w impact", self.lifter.getImpactVelocity())
         onScreenDebug.add("w velocity", self.lifter.getVelocity())
@@ -420,30 +428,30 @@ class GravityWalker(DirectObject.DirectObject):
                 reverse = 0
 
         # Determine what the speeds are based on the buttons:
-        self.speed=(forward and self.avatarControlForwardSpeed or
-                    reverse and -self.avatarControlReverseSpeed)
+        self.speed = (forward and self.avatarControlForwardSpeed or
+                      reverse and -self.avatarControlReverseSpeed)
         # Slide speed is a scaled down version of forward speed
         # Note: you can multiply a factor in here if you want slide to
         # be slower than normal walk/run. Let's try full speed.
-        #self.slideSpeed=(slideLeft and -self.avatarControlForwardSpeed*0.75 or
+        # self.slideSpeed=(slideLeft and -self.avatarControlForwardSpeed*0.75 or
         #                 slideRight and self.avatarControlForwardSpeed*0.75)
-        self.slideSpeed=(reverse and slideLeft and -self.avatarControlReverseSpeed*0.75 or
-                         reverse and slideRight and self.avatarControlReverseSpeed*0.75 or
-                         slideLeft and -self.avatarControlForwardSpeed*0.75 or
-                         slideRight and self.avatarControlForwardSpeed*0.75)
-        self.rotationSpeed=not (slideLeft or slideRight) and (
-                (turnLeft and self.avatarControlRotateSpeed) or
-                (turnRight and -self.avatarControlRotateSpeed))
+        self.slideSpeed = (reverse and slideLeft and -self.avatarControlReverseSpeed*0.75 or
+                           reverse and slideRight and self.avatarControlReverseSpeed*0.75 or
+                           slideLeft and -self.avatarControlForwardSpeed*0.75 or
+                           slideRight and self.avatarControlForwardSpeed*0.75)
+        self.rotationSpeed = not (slideLeft or slideRight) and (
+            (turnLeft and self.avatarControlRotateSpeed) or
+            (turnRight and -self.avatarControlRotateSpeed))
 
         if self.speed and self.slideSpeed:
             self.speed *= GravityWalker.DiagonalFactor
             self.slideSpeed *= GravityWalker.DiagonalFactor
 
         debugRunning = inputState.isSet("debugRunning")
-        if(debugRunning):
-            self.speed*=base.debugRunningMultiplier
-            self.slideSpeed*=base.debugRunningMultiplier
-            self.rotationSpeed*=1.25
+        if (debugRunning):
+            self.speed *= base.debugRunningMultiplier
+            self.slideSpeed *= base.debugRunningMultiplier
+            self.rotationSpeed *= 1.25
 
         if self.needToDeltaPos:
             self.setPriorParentVector()
@@ -474,16 +482,18 @@ class GravityWalker(DirectObject.DirectObject):
                 assert self.debugPrint("isAirborne 1 due to jump")
         else:
             if self.isAirborne == 0:
-                assert self.debugPrint("isAirborne 1 due to isOnGround() false")
+                assert self.debugPrint(
+                    "isAirborne 1 due to isOnGround() false")
             self.isAirborne = 1
 
         self.__oldPosDelta = self.avatarNodePath.getPosDelta(render)
         # How far did we move based on the amount of time elapsed?
         self.__oldDt = ClockObject.getGlobalClock().getDt()
-        dt=self.__oldDt
+        dt = self.__oldDt
 
         # Check to see if we're moving at all:
-        self.moving = self.speed or self.slideSpeed or self.rotationSpeed or (self.priorParent!=Vec3.zero())
+        self.moving = self.speed or self.slideSpeed or self.rotationSpeed or (
+            self.priorParent != Vec3.zero())
         if self.moving:
             distance = dt * self.speed
             slideDistance = dt * self.slideSpeed
@@ -493,7 +503,8 @@ class GravityWalker(DirectObject.DirectObject):
             if distance or slideDistance or self.priorParent != Vec3.zero():
                 # rotMat is the rotation matrix corresponding to
                 # our previous heading.
-                rotMat=Mat3.rotateMatNormaxis(self.avatarNodePath.getH(), Vec3.up())
+                rotMat = Mat3.rotateMatNormaxis(
+                    self.avatarNodePath.getH(), Vec3.up())
                 if self.isAirborne:
                     forward = Vec3.forward()
                 else:
@@ -506,7 +517,7 @@ class GravityWalker(DirectObject.DirectObject):
                     # the slope (i.e. it is multiplied by the sign as a
                     # side effect of the cross product above).
                     forward.normalize()
-                self.vel=Vec3(forward * distance)
+                self.vel = Vec3(forward * distance)
                 if slideDistance:
                     if self.isAirborne:
                         right = Vec3.right()
@@ -514,11 +525,11 @@ class GravityWalker(DirectObject.DirectObject):
                         right = forward.cross(contact)
                         # See note above for forward.normalize()
                         right.normalize()
-                    self.vel=Vec3(self.vel + (right * slideDistance))
-                self.vel=Vec3(rotMat.xform(self.vel))
-                step=self.vel + (self.priorParent * dt)
+                    self.vel = Vec3(self.vel + (right * slideDistance))
+                self.vel = Vec3(rotMat.xform(self.vel))
+                step = self.vel + (self.priorParent * dt)
                 self.avatarNodePath.setFluidPos(Point3(
-                        self.avatarNodePath.getPos()+step))
+                    self.avatarNodePath.getPos()+step))
             self.avatarNodePath.setH(self.avatarNodePath.getH()+rotation)
         else:
             self.vel.set(0.0, 0.0, 0.0)
@@ -533,7 +544,7 @@ class GravityWalker(DirectObject.DirectObject):
     def setPriorParentVector(self):
         assert self.notify.debugStateCall(self)
         if __debug__:
-            onScreenDebug.add("__oldDt", "% 10.4f"%self.__oldDt)
+            onScreenDebug.add("__oldDt", "% 10.4f" % self.__oldDt)
             onScreenDebug.add("self.__oldPosDelta",
                               self.__oldPosDelta.pPrintValues())
         # avoid divide by zero crash - grw
@@ -544,12 +555,13 @@ class GravityWalker(DirectObject.DirectObject):
         self.priorParent = Vec3(velocity)
         if __debug__:
             if self.wantDebugIndicator:
-                onScreenDebug.add("priorParent", self.priorParent.pPrintValues())
+                onScreenDebug.add(
+                    "priorParent", self.priorParent.pPrintValues())
 
     def reset(self):
         assert self.notify.debugStateCall(self)
         self.lifter.setVelocity(0.0)
-        self.priorParent=Vec3.zero()
+        self.priorParent = Vec3.zero()
 
     def getVelocity(self):
         return self.vel
@@ -561,15 +573,16 @@ class GravityWalker(DirectObject.DirectObject):
         assert self.notify.debugStateCall(self)
         assert self.collisionsActive
 
-        #*#if __debug__:
-        #*#    self.accept("control-f3", self.spawnTest) #*#
+        # *#if __debug__:
+        # *#    self.accept("control-f3", self.spawnTest) #*#
 
         # remove any old
         if self.controlsTask:
             self.controlsTask.remove()
         # spawn the new task
-        taskName = "AvatarControls-%s"%(id(self),)
-        self.controlsTask = taskMgr.add(self.handleAvatarControls, taskName, 25)
+        taskName = "AvatarControls-%s" % (id(self),)
+        self.controlsTask = taskMgr.add(
+            self.handleAvatarControls, taskName, 25)
 
         self.isAirborne = 0
         self.mayJump = 1
@@ -579,7 +592,7 @@ class GravityWalker(DirectObject.DirectObject):
                 self.indicatorTask.remove()
             self.indicatorTask = taskMgr.add(
                 self.avatarPhysicsIndicator,
-                "AvatarControlsIndicator-%s"%(id(self),), 35)
+                "AvatarControlsIndicator-%s" % (id(self),), 35)
 
     def disableAvatarControls(self):
         """
@@ -597,22 +610,21 @@ class GravityWalker(DirectObject.DirectObject):
             self.jumpDelayTask = None
 
         if __debug__:
-            self.ignore("control-f3") #*#
-
+            self.ignore("control-f3")  # *#
 
     def flushEventHandlers(self):
-        if hasattr(self, 'cTrav'):
+        if hasattr(self, 'c_trav'):
             self.pusher.flush()
             if self.wantFloorSphere:
                 self.floorPusher.flush()
             self.event.flush()
-        self.lifter.flush() # not currently defined or needed
+        self.lifter.flush()  # not currently defined or needed
 
     if __debug__:
         def debugPrint(self, message):
             """for debugging"""
             return self.notify.debug(
-                    str(id(self))+' '+message)
+                str(id(self))+' '+message)
 
     # There are sometimes issues if the collision ray height is
     # so tall that it collides with multiple levels of floors.

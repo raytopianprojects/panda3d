@@ -149,12 +149,14 @@ class DistributedNode(DistributedObject.DistributedObject, NodePath):
     def setXY(self, x, y):
         self.setX(x)
         self.setY(y)
+
     def d_setXY(self, x, y):
         self.sendUpdate("setXY", [x, y])
 
     def setXZ(self, x, z):
         self.setX(x)
         self.setZ(z)
+
     def d_setXZ(self, x, z):
         self.sendUpdate("setXZ", [x, z])
 
@@ -170,12 +172,14 @@ class DistributedNode(DistributedObject.DistributedObject, NodePath):
         self.setX(x)
         self.setY(y)
         self.setH(h)
+
     def d_setXYH(self, x, y, h):
         self.sendUpdate("setXYH", [x, y, h])
 
     def setXYZH(self, x, y, z, h):
         self.setPos(x, y, z)
         self.setH(h)
+
     def d_setXYZH(self, x, y, z, h):
         self.sendUpdate("setXYZH", [x, y, z, h])
 

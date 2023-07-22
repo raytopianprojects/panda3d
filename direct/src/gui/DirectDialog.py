@@ -90,7 +90,8 @@ class DirectDialog(DirectFrame):
         # Inherits from DirectFrame
         optiondefs = (
             # Define type of DirectGuiWidget
-            ('dialogName',        'DirectDialog_' + repr(DirectDialog.PanelIndex),  DGG.INITOPT),
+            ('dialogName',        'DirectDialog_' + \
+             repr(DirectDialog.PanelIndex),  DGG.INITOPT),
             # Default position is slightly forward in Y, so as not to
             # intersect the near plane, which is incorrectly set to 0
             # in DX for some reason.
@@ -121,14 +122,14 @@ class DirectDialog(DirectFrame):
             ('command',           None,          None),
             ('extraArgs',         [],            None),
             ('sortOrder',    DGG.NO_FADE_SORT_INDEX, None),
-            )
+        )
         # Merge keyword options with default options
-        self.defineoptions(kw, optiondefs, dynamicGroups = ("button",))
+        self.defineoptions(kw, optiondefs, dynamicGroups=("button",))
 
         # Initialize superclasses
         DirectFrame.__init__(self, parent)
 
-        #if not self['dialogName']:
+        # if not self['dialogName']:
         #    self['dialogName'] = 'DirectDialog_' + repr(DirectDialog.PanelIndex)
 
         # Clean up any previously existing panel with the same unique
@@ -173,13 +174,13 @@ class DirectDialog(DirectFrame):
             button = self.createcomponent(
                 name, (), "button",
                 DirectButton, (self,),
-                text = text,
-                geom = geom,
-                image = image,
-                suppressKeys = self['suppressKeys'],
-                frameSize = self['buttonSize'],
-                command = lambda s = self, v = value: s.buttonCommand(v)
-                )
+                text=text,
+                geom=geom,
+                image=image,
+                suppressKeys=self['suppressKeys'],
+                frameSize=self['buttonSize'],
+                command=lambda s=self, v=value: s.buttonCommand(v)
+            )
             self.buttonList.append(button)
 
         # Update dialog when everything has been initialised
@@ -192,18 +193,18 @@ class DirectDialog(DirectFrame):
                        self['buttonValueList'])
         for button, hotKey, value in bindList:
             if ((type(hotKey) == list) or
-                (type(hotKey) == tuple)):
+                    (type(hotKey) == tuple)):
                 for key in hotKey:
                     button.bind('press-' + key + '-', self.buttonCommand,
-                                extraArgs = [value])
+                                extraArgs=[value])
                     self.bind('press-' + key + '-', self.buttonCommand,
-                              extraArgs = [value])
+                              extraArgs=[value])
 
             else:
                 button.bind('press-' + hotKey + '-', self.buttonCommand,
-                            extraArgs = [value])
+                            extraArgs=[value])
                 self.bind('press-' + hotKey + '-', self.buttonCommand,
-                          extraArgs = [value])
+                          extraArgs=[value])
         # Position buttons and text
         pad = self['pad']
         if self.hascomponent('image0'):
@@ -280,7 +281,7 @@ class DirectDialog(DirectFrame):
             # Can either be a Vec3 or a tuple of 3 values
             if (isinstance(scale, Vec3) or
                 (type(scale) == list) or
-                (type(scale) == tuple)):
+                    (type(scale) == tuple)):
                 sx = scale[0]
                 sz = scale[2]
             elif ((type(scale) == int) or
@@ -339,7 +340,7 @@ class DirectDialog(DirectFrame):
             base.transitions.noTransitions()
         NodePath.hide(self)
 
-    def buttonCommand(self, value, event = None):
+    def buttonCommand(self, value, event=None):
         if self['command']:
             self['command'](value, *self['extraArgs'])
 
@@ -361,69 +362,75 @@ class DirectDialog(DirectFrame):
             button.destroy()
         DirectFrame.destroy(self)
 
+
 class OkDialog(DirectDialog):
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         # Inherits from DirectFrame
         optiondefs = (
             # Define type of DirectGuiWidget
             ('buttonTextList',  ['OK'],       DGG.INITOPT),
             ('buttonValueList', [DGG.DIALOG_OK],          DGG.INITOPT),
-            )
+        )
         # Merge keyword options with default options
         self.defineoptions(kw, optiondefs)
         DirectDialog.__init__(self, parent)
         self.initialiseoptions(OkDialog)
 
+
 class OkCancelDialog(DirectDialog):
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         # Inherits from DirectFrame
         optiondefs = (
             # Define type of DirectGuiWidget
-            ('buttonTextList',  ['OK','Cancel'],       DGG.INITOPT),
-            ('buttonValueList', [DGG.DIALOG_OK, DGG.DIALOG_CANCEL], DGG.INITOPT),
-            )
+            ('buttonTextList',  ['OK', 'Cancel'],       DGG.INITOPT),
+            ('buttonValueList', [DGG.DIALOG_OK,
+             DGG.DIALOG_CANCEL], DGG.INITOPT),
+        )
         # Merge keyword options with default options
         self.defineoptions(kw, optiondefs)
         DirectDialog.__init__(self, parent)
         self.initialiseoptions(OkCancelDialog)
 
+
 class YesNoDialog(DirectDialog):
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         # Inherits from DirectFrame
         optiondefs = (
             # Define type of DirectGuiWidget
             ('buttonTextList',  ['Yes', 'No'],       DGG.INITOPT),
             ('buttonValueList', [DGG.DIALOG_YES, DGG.DIALOG_NO], DGG.INITOPT),
-            )
+        )
         # Merge keyword options with default options
         self.defineoptions(kw, optiondefs)
         DirectDialog.__init__(self, parent)
         self.initialiseoptions(YesNoDialog)
 
+
 class YesNoCancelDialog(DirectDialog):
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         # Inherits from DirectFrame
         optiondefs = (
             # Define type of DirectGuiWidget
             ('buttonTextList',  ['Yes', 'No', 'Cancel'],  DGG.INITOPT),
             ('buttonValueList', [DGG.DIALOG_YES, DGG.DIALOG_NO, DGG.DIALOG_CANCEL],
              DGG.INITOPT),
-            )
+        )
         # Merge keyword options with default options
         self.defineoptions(kw, optiondefs)
         DirectDialog.__init__(self, parent)
         self.initialiseoptions(YesNoCancelDialog)
 
+
 class RetryCancelDialog(DirectDialog):
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         # Inherits from DirectFrame
         optiondefs = (
             # Define type of DirectGuiWidget
-            ('buttonTextList',  ['Retry','Cancel'],   DGG.INITOPT),
-            ('buttonValueList', [DGG.DIALOG_RETRY, DGG.DIALOG_CANCEL], DGG.INITOPT),
-            )
+            ('buttonTextList',  ['Retry', 'Cancel'],   DGG.INITOPT),
+            ('buttonValueList', [DGG.DIALOG_RETRY,
+             DGG.DIALOG_CANCEL], DGG.INITOPT),
+        )
         # Merge keyword options with default options
         self.defineoptions(kw, optiondefs)
         DirectDialog.__init__(self, parent)
         self.initialiseoptions(RetryCancelDialog)
-

@@ -5,6 +5,7 @@ DirectNotify module: this module contains the DirectNotify class
 from . import Notifier
 from . import Logger
 
+
 class DirectNotify:
     """
     DirectNotify class: this class contains methods for creating
@@ -15,7 +16,7 @@ class DirectNotify:
         """
         DirectNotify class keeps a dictionary of Notfiers
         """
-        self.__categories = { }
+        self.__categories = {}
         # create a default log file
         self.logger = Logger.Logger()
 
@@ -30,7 +31,7 @@ class DirectNotify:
         """
         return "DirectNotify categories: %s" % (self.__categories)
 
-    #getters and setters
+    # getters and setters
     def getCategories(self):
         """
         Return list of category dictionary keys
@@ -49,7 +50,8 @@ class DirectNotify:
         if no such category exists, else return existing category
         """
         if (categoryName not in self.__categories):
-            self.__categories[categoryName] = Notifier.Notifier(categoryName, logger)
+            self.__categories[categoryName] = Notifier.Notifier(
+                categoryName, logger)
             self.setDconfigLevel(categoryName)
         return (self.getCategory(categoryName))
 
@@ -98,8 +100,7 @@ class DirectNotify:
             category.setDebug(1)
         else:
             print("DirectNotify: unknown notify level: " + str(level)
-                   + " for category: " + str(categoryName))
-
+                  + " for category: " + str(categoryName))
 
     def setDconfigLevels(self):
         for categoryName in self.getCategories():
@@ -112,12 +113,12 @@ class DirectNotify:
             category.setInfo(1)
             category.setDebug(1)
 
-    def popupControls(self, tl = None):
+    def popupControls(self, tl=None):
         # Don't use a regular import, to prevent ModuleFinder from picking
         # it up as a dependency when building a .p3d package.
         import importlib
         NotifyPanel = importlib.import_module('direct.tkpanels.NotifyPanel')
         NotifyPanel.NotifyPanel(self, tl)
 
-    def giveNotify(self,cls):
+    def giveNotify(self, cls):
         cls.notify = self.newCategory(cls.__name__)

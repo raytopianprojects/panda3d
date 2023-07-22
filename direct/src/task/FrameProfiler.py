@@ -3,6 +3,7 @@ from direct.fsm.StatePush import FunctionCall
 from direct.showbase.PythonUtil import formatTimeExact, normalDistrib
 from direct.task import Task
 
+
 class FrameProfiler:
     notify = directNotify.newCategory('FrameProfiler')
 
@@ -23,19 +24,19 @@ class FrameProfiler:
         # when to log output
         # each entry must be an integer multiple of all previous entries
         # as well as an integer multiple of the period
-        self._logSchedule = [ 1 * FrameProfiler.Hour,
-                              4 * FrameProfiler.Hour,
+        self._logSchedule = [1 * FrameProfiler.Hour,
+                             4 * FrameProfiler.Hour,
                              12 * FrameProfiler.Hour,
-                              1 * FrameProfiler.Day,
-                              ] # day schedule proceeds as 1, 2, 4, 8 days, etc.
+                             1 * FrameProfiler.Day,
+                             ]  # day schedule proceeds as 1, 2, 4, 8 days, etc.
         if config.GetBool('frequent-frame-profiles', 0):
-            self._logSchedule = [ 1  * FrameProfiler.Minute,
-                                  4  * FrameProfiler.Minute,
-                                  12 * FrameProfiler.Minute,
-                                  24 * FrameProfiler.Minute,
-                                  ]
+            self._logSchedule = [1 * FrameProfiler.Minute,
+                                 4 * FrameProfiler.Minute,
+                                 12 * FrameProfiler.Minute,
+                                 24 * FrameProfiler.Minute,
+                                 ]
         for t in self._logSchedule:
-            #assert isInteger(t)
+            # assert isInteger(t)
             # make sure the period is evenly divisible into each element of the log schedule
             assert (t % self._period) == 0
         # make sure each element of the schedule is evenly divisible into each subsequent element
@@ -43,8 +44,9 @@ class FrameProfiler:
             e = self._logSchedule[i]
             for j in range(i, len(self._logSchedule)):
                 assert (self._logSchedule[j] % e) == 0
-        #assert isInteger(self._period)
-        self._enableFC = FunctionCall(self._setEnabled, taskMgr.getProfileFramesSV())
+        # assert isInteger(self._period)
+        self._enableFC = FunctionCall(
+            self._setEnabled, taskMgr.getProfileFramesSV())
         self._enableFC.pushCurrentState()
 
     def destroy(self):
@@ -84,14 +86,15 @@ class FrameProfiler:
     def _scheduleNextProfile(self):
         self._profileCounter += 1
         self._timeElapsed = self._profileCounter * self._period
-        #assert isInteger(self._timeElapsed)
+        # assert isInteger(self._timeElapsed)
         time = self._startTime + self._timeElapsed
 
         # vary the actual delay between profiles by a random amount to prevent interaction
         # with periodic events
         jitter = self._jitter
         if jitter is None:
-            jitter = normalDistrib(-self._jitterMagnitude, self._jitterMagnitude)
+            jitter = normalDistrib(-self._jitterMagnitude,
+                                   self._jitterMagnitude)
             time += jitter
         else:
             time -= jitter

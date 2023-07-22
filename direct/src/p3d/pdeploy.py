@@ -1,5 +1,10 @@
 #! /usr/bin/env python
 
+from panda3d.core import Filename, PandaSystem
+from direct.p3d.DeploymentTools import Standalone, Installer, Icon
+import getopt
+import os
+import sys
 usageText = """
 
 This command will help you to distribute your Panda application,
@@ -143,17 +148,13 @@ Options:
 
 DEPLOY_MODES = ["standalone", "installer", "html"]
 
-import sys
-import os
-import getopt
-from direct.p3d.DeploymentTools import Standalone, Installer, Icon
-from panda3d.core import Filename, PandaSystem
 
-def usage(code, msg = ''):
+def usage(code, msg=''):
     if not msg:
-        sys.stderr.write(usageText % {'prog' : os.path.split(sys.argv[0])[1]})
+        sys.stderr.write(usageText % {'prog': os.path.split(sys.argv[0])[1]})
     sys.stderr.write(msg + '\n')
     sys.exit(code)
+
 
 shortname = ""
 fullname = ""
@@ -266,14 +267,15 @@ if deploy_mode == 'standalone':
     else:
         for platform in platforms:
             if platform.startswith("win"):
-                s.build(Filename(outputDir, platform + "/" + shortname + ".exe"), platform)
+                s.build(Filename(outputDir, platform +
+                        "/" + shortname + ".exe"), platform)
             else:
                 s.build(Filename(outputDir, platform + "/" + shortname), platform)
 
 elif deploy_mode == 'installer':
     if includeRequires:
         tokens["verify_contents"] = "never"
-    i = Installer(appFilename, shortname, fullname, version, tokens = tokens)
+    i = Installer(appFilename, shortname, fullname, version, tokens=tokens)
     i.includeRequires = includeRequires
     if omitDefaultCheckboxes:
         i.offerRun = False
@@ -287,8 +289,8 @@ elif deploy_mode == 'installer':
     if authoremail:
         i.authoremail = authoremail
     if not authorname or not authoremail or not authorid:
-        print("Using author \"%s\" <%s> with ID %s" % \
-            (i.authorname, i.authoremail, i.authorid))
+        print("Using author \"%s\" <%s> with ID %s" %
+              (i.authorname, i.authoremail, i.authorid))
 
     # Add the supplied icon images
     if len(iconFiles) > 0:
@@ -329,9 +331,11 @@ elif deploy_mode == 'html':
     html.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n")
     html.write("  <head>\n")
     html.write("    <title>%s</title>\n" % fullname)
-    html.write("    <meta http-equiv=\"Content-type\" content=\"text/html;charset=UTF-8\" />\n")
+    html.write(
+        "    <meta http-equiv=\"Content-type\" content=\"text/html;charset=UTF-8\" />\n")
     if authorname:
-        html.write("    <meta name=\"Author\" content=\"%s\" />\n" % authorname.replace('"', '\\"'))
+        html.write("    <meta name=\"Author\" content=\"%s\" />\n" %
+                   authorname.replace('"', '\\"'))
     html.write("  </head>\n")
     html.write("  <body>\n")
     html.write("    <object")
@@ -342,9 +346,11 @@ elif deploy_mode == 'html':
     if "height" not in tokens:
         html.write(" height=\"%s\"" % h)
     html.write(" type=\"application/x-panda3d\">")
-    html.write("      <object width=\"%s\" height=\"%s\" classid=\"CLSID:924B4927-D3BA-41EA-9F7E-8A89194AB3AC\">\n" % (w, h))
+    html.write(
+        "      <object width=\"%s\" height=\"%s\" classid=\"CLSID:924B4927-D3BA-41EA-9F7E-8A89194AB3AC\">\n" % (w, h))
     for key, value in tokens.items():
-        html.write("        <param name=\"%s\" value=\"%s\" />\n" % (key, value.replace('"', '\\"')))
+        html.write("        <param name=\"%s\" value=\"%s\" />\n" %
+                   (key, value.replace('"', '\\"')))
     html.write("      </object>\n")
     html.write("    </object>\n")
     html.write("  </body>\n")
@@ -356,4 +362,3 @@ else:
 # An explicit call to exit() is required to exit the program, when
 # this module is packaged in a p3d file.
 sys.exit(0)
-

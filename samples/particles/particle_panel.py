@@ -28,7 +28,7 @@ base = ShowBase()
 from direct.tkpanels.ParticlePanel import ParticlePanel
 
 pp = ParticlePanel()             # Create the panel
-base.disableMouse()              # Disable camera control to place it
+base.disable_mouse()              # Disable camera control to place it
 base.camera.setY(-10)            # Place the camera
-base.setBackgroundColor(0, 0, 0) # Most particle systems show up better on black backgrounds
+base.set_background_color(0, 0, 0) # Most particle systems show up better on black backgrounds
 base.run()

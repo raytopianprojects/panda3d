@@ -3,7 +3,7 @@
 __all__ = ['FourState']
 
 from direct.directnotify import DirectNotifyGlobal
-#import DistributedObject
+# import DistributedObject
 from . import ClassicFSM
 from . import State
 
@@ -42,7 +42,7 @@ class FourState:
     """
     notify = DirectNotifyGlobal.directNotify.newCategory('FourState')
 
-    def __init__(self, names, durations = [0, 1, None, 1, 1]):
+    def __init__(self, names, durations=[0, 1, None, 1, 1]):
         """
         Names is a list of state names.  Some examples are::
 
@@ -86,7 +86,7 @@ class FourState:
         oposite of 'on').
         """
         self.stateIndex = 0
-        assert self.__debugPrint("FourState(names=%s)"%(names))
+        assert self.__debugPrint("FourState(names=%s)" % (names))
         self.track = None
         self.stateTime = 0.0
         self.names = names
@@ -115,18 +115,18 @@ class FourState:
                            self.enterState4,
                            self.exitState4,
                            [names[1]]),
-            }
+        }
         self.fsm = ClassicFSM.ClassicFSM('FourState',
-                           list(self.states.values()),
-                           # Initial State
-                           names[0],
-                           # Final State
-                           names[0],
-                          )
+                                         list(self.states.values()),
+                                         # Initial State
+                                         names[0],
+                                         # Final State
+                                         names[0],
+                                         )
         self.fsm.enterInitialState()
 
     def setTrack(self, track):
-        assert self.__debugPrint("setTrack(track=%s)"%(track,))
+        assert self.__debugPrint("setTrack(track=%s)" % (track,))
         if self.track is not None:
             self.track.pause()
             self.track = None
@@ -141,19 +141,20 @@ class FourState:
     # The AI is the authority on setting the On value.
     # If the client wants the state changed it needs to
     # send a request to the AI.
-    #def setIsOn(self, isOn):
+    # def setIsOn(self, isOn):
     #    assert self.__debugPrint("setIsOn(isOn=%s)"%(isOn,))
     #    pass
 
     def isOn(self):
-        assert self.__debugPrint("isOn() returning %s (stateIndex=%s)"%(self.stateIndex==4, self.stateIndex))
-        return self.stateIndex==4
+        assert self.__debugPrint("isOn() returning %s (stateIndex=%s)" % (
+            self.stateIndex == 4, self.stateIndex))
+        return self.stateIndex == 4
 
     def changedOnState(self, isOn):
         """
         Allow derived classes to overide this.
         """
-        assert self.__debugPrint("changedOnState(isOn=%s)"%(isOn,))
+        assert self.__debugPrint("changedOnState(isOn=%s)" % (isOn,))
 
     ##### state 0 #####
 
@@ -210,6 +211,5 @@ class FourState:
     if __debug__:
         def __debugPrint(self, message):
             """for debugging"""
-            return self.notify.debug("%d (%d) %s"%(
-                    id(self), self.stateIndex==4, message))
-
+            return self.notify.debug("%d (%d) %s" % (
+                id(self), self.stateIndex == 4, message))

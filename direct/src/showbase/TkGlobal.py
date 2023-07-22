@@ -1,6 +1,7 @@
 """ This module is now vestigial.  """
 
-import sys, Pmw
+import sys
+import Pmw
 
 if sys.version_info >= (3, 0):
     from tkinter import *
@@ -13,6 +14,8 @@ if '_Pmw' in sys.modules:
     sys.modules['_Pmw'].__name__ = '_Pmw'
 
 # Hack to workaround broken Pmw.NoteBook in Python 3
+
+
 def bordercolors(root, colorName):
     lightRGB = []
     darkRGB = []
@@ -20,7 +23,7 @@ def bordercolors(root, colorName):
         value40pc = (14 * value) // 10
         if value40pc > int(Pmw.Color._MAX_RGB):
             value40pc = int(Pmw.Color._MAX_RGB)
-        valueHalfWhite = (int(Pmw.Color._MAX_RGB) + value) // 2;
+        valueHalfWhite = (int(Pmw.Color._MAX_RGB) + value) // 2
         lightRGB.append(max(value40pc, valueHalfWhite))
 
         darkValue = (60 * value) // 100
@@ -31,10 +34,11 @@ def bordercolors(root, colorName):
         '#%04x%04x%04x' % (darkRGB[0], darkRGB[1], darkRGB[2])
     )
 
+
 Pmw.Color.bordercolors = bordercolors
 del bordercolors
 
 
 def spawnTkLoop():
-    """Alias for :meth:`base.spawnTkLoop() <.ShowBase.spawnTkLoop>`."""
-    base.spawnTkLoop()
+    """Alias for :meth:`base.spawn_tk_loop() <.ShowBase.spawn_tk_loop>`."""
+    base.spawn_tk_loop()

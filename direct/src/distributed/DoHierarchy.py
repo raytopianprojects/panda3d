@@ -1,5 +1,6 @@
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
+
 class DoHierarchy:
     """
     This table has been a source of memory leaks, with DoIds getting left in the table indefinitely.
@@ -38,7 +39,7 @@ class DoHierarchy:
         If dclassName is None then all objects in the zone are returned;
         otherwise the list is filtered to only include objects of that type.
         """
-        parent=self._table.get(parentId)
+        parent = self._table.get(parentId)
         if parent is None:
             return []
         if zoneId is None:
@@ -62,7 +63,7 @@ class DoHierarchy:
         if doId in self._allDoIds:
             self.notify.error(
                 'storeObjectLocation(%s %s) already in _allDoIds; duplicate generate()? or didn\'t clean up previous instance of DO?' % (
-                do.__class__.__name__, do.doId))
+                    do.__class__.__name__, do.doId))
         parentZoneDict = self._table.setdefault(parentId, {})
         zoneDoSet = parentZoneDict.setdefault(zoneId, set())
         zoneDoSet.add(doId)
@@ -75,7 +76,7 @@ class DoHierarchy:
         if doId not in self._allDoIds:
             self.notify.error(
                 'deleteObjectLocation(%s %s) not in _allDoIds; duplicate delete()? or invalid previous location on a new object?' % (
-                do.__class__.__name__, do.doId))
+                    do.__class__.__name__, do.doId))
         # jbutler: temp hack to get by the assert, this will be fixed soon
         if (doId not in self._allDoIds):
             return

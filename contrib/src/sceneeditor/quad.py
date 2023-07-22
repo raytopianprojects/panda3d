@@ -56,7 +56,7 @@ class ViewPort:
 
         if(projection=="ortho"):
             self.lens=OrthographicLens()
-            self.lens.setAspectRatio((self.VP_X2-self.VP_X1)/(self.VP_Y2-self.VP_Y1))
+            self.lens.set_aspect_ratio((self.VP_X2 - self.VP_X1) / (self.VP_Y2 - self.VP_Y1))
             self.lens.setFilmSize(self.VP_width*200,self.VP_height*200)
             #lens.setFilmOffset((self.VP_X2 + self.VP_X1) * 0.5, (self.VP_Y2 + self.VP_Y1) * 0.5)
             self.lens.setNearFar(-1000, 1000)
@@ -64,7 +64,7 @@ class ViewPort:
             self.cam.node().setScene(scene)
         elif(projection=="perspective"):
             self.lens=base.cam.node().getLens()
-            self.lens.setAspectRatio((self.VP_X2-self.VP_X1)/(self.VP_Y2-self.VP_Y1))
+            self.lens.set_aspect_ratio((self.VP_X2 - self.VP_X1) / (self.VP_Y2 - self.VP_Y1))
             self.cam.node().setLens(self.lens)
             self.cam.node().setScene(scene)
 
@@ -85,7 +85,7 @@ class ViewPort:
     def AdjustAspect(self,x,y):
         if (y==0):
             y=1
-        self.lens.setAspectRatio(x/y)
+        self.lens.set_aspect_ratio(x / y)
         self.cam.node().setLens(self.lens)
 
     def resize(self,x,y):
@@ -96,7 +96,7 @@ class ViewPort:
             h=abs(y-self.VP_Y1)
             if(h==0):
                 h=1
-            self.lens.setAspectRatio(w/h)
+            self.lens.set_aspect_ratio(w / h)
             self.cam.node().setLens(self.lens)
         if(self.VPType=="top"):
             self.the_viewport.setDimensions(0,x,y,1)
@@ -104,7 +104,7 @@ class ViewPort:
             h=abs(self.VP_Y2-y)
             if(h==0):
                 h=1
-            self.lens.setAspectRatio(w/h)
+            self.lens.set_aspect_ratio(w / h)
             self.cam.node().setLens(self.lens)
         if(self.VPType=="front"):
             self.the_viewport.setDimensions(x,1,y,1)
@@ -112,7 +112,7 @@ class ViewPort:
             h=abs(self.VP_Y2-y)
             if(h==0):
                 h=1
-            self.lens.setAspectRatio(w/h)
+            self.lens.set_aspect_ratio(w / h)
             self.cam.node().setLens(self.lens)
         if(self.VPType=="perspective"):
             self.the_viewport.setDimensions(x,1,0,y)
@@ -120,7 +120,7 @@ class ViewPort:
             h=abs(y-self.VP_Y1)
             if(h==0):
                 h=1
-            self.lens.setAspectRatio(w/h)
+            self.lens.set_aspect_ratio(w / h)
             self.cam.node().setLens(self.lens)
 
     def setScene(self,scene):
@@ -133,9 +133,9 @@ class ViewPort:
     def setCam(self):
         #base.cam=self.cam
         #base.cam.node().setLens(self.cam.node().getLens())
-        base.camNode=self.cam.node()
-        #base.camNode.setLens(self.cam.node().getLens())
-        #base.camLens=self.cam.node().getLens()
+        base.cam_node=self.cam.node()
+        #base.cam_node.setLens(self.cam.node().getLens())
+        #base.cam_lens=self.cam.node().getLens()
 
     def getCam(self):
         return self.cam
@@ -167,7 +167,7 @@ class QuadView(DirectObject):
         self.CurrentQuad=4
         self.HorizontalAxis=0.0
         self.VerticalAxis=0.0
-        #base.disableMouse()
+        #base.disable_mouse()
         self.MouseDragging=0
         self.currX= 0
         self.oldX=self.currX
@@ -260,14 +260,14 @@ class QuadView(DirectObject):
         #self.raycaster = RayCaster( camera )
         #self.lastPickPoint = None
 
-        #base.useTrackball()
+        #base.use_trackball()
 
-        #self.dataRoot = NodePath('dataRoot')
+        #self.data_root = NodePath('data_root')
         # Cache the node so we do not ask for it every frame
-        #self.dataRootNode = self.dataRoot.node()
+        #self.data_root_node = self.data_root.node()
         #self.dataUnused = NodePath('dataUnused')
         #self.mak=None
-        #self.mak = self.dataRoot.attachNewNode(MouseAndKeyboard(base.win, 0, 'mak'))
+        #self.mak = self.data_root.attachNewNode(MouseAndKeyboard(base.win, 0, 'mak'))
         #self.mak.node().setSource(base.win, 0)
         self.mouseWatcherNode = MouseWatcher('mouseWatcher')
 
@@ -278,7 +278,7 @@ class QuadView(DirectObject):
 
 
         #ddr=DisplayRegionContext(self.Perspective.getCam())
-        #base.setMouseOnNode(self.smiley.node()) # Let Mouse Control Perspective View for now
+        #base.set_mouse_on_node(self.smiley.node()) # Let Mouse Control Perspective View for now
         #base.enableSoftwareMousePointer()
 
         # Message Handlers
@@ -333,7 +333,7 @@ class QuadView(DirectObject):
                 self.FrontWire=0
             else:
                 self.FrontScene.clearRenderMode()
-                #self.FrontScene.setTwoSided(not self.backfaceCullingEnabled)
+                #self.FrontScene.setTwoSided(not self.backface_culling_enabled)
                 if(self.FrontTexture):
                     self.FrontScene.clearTexture()
                 self.FrontWire=1
@@ -345,7 +345,7 @@ class QuadView(DirectObject):
                 self.TopWire=0
             else:
                 self.TopScene.clearRenderMode()
-                #self.TopScene.setTwoSided(not self.backfaceCullingEnabled)
+                #self.TopScene.setTwoSided(not self.backface_culling_enabled)
                 if(self.TopTexture):
                     self.TopScene.clearTexture()
                 self.TopWire=1
@@ -357,7 +357,7 @@ class QuadView(DirectObject):
                 self.LeftWire=0
             else:
                 self.LeftScene.clearRenderMode()
-                #self.LeftScene.setTwoSided(not self.backfaceCullingEnabled)
+                #self.LeftScene.setTwoSided(not self.backface_culling_enabled)
                 if(self.LeftTexture):
                     self.LeftScene.clearTexture()
                 self.LeftWire=1
@@ -369,7 +369,7 @@ class QuadView(DirectObject):
                 self.PerspectiveWire=0
             else:
                 self.PerspectiveScene.clearRenderMode()
-                #self.PerspectiveScene.setTwoSided(not self.backfaceCullingEnabled)
+                #self.PerspectiveScene.setTwoSided(not self.backface_culling_enabled)
                 if(self.PerspectiveTexture):
                          self.PerspectiveScene.clearTexture()
                 self.PerspectiveWire=1

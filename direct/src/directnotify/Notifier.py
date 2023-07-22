@@ -32,7 +32,7 @@ class Notifier:
         """
         self.__name = name
 
-        if (logger==None):
+        if (logger == None):
             self.__logger = defaultLogger
         else:
             self.__logger = logger
@@ -59,7 +59,8 @@ class Notifier:
         # from Python-level notify messages.
         NotifyCategory.setServerDelta(self.serverDelta)
 
-        self.info("Notify clock adjusted by %s (and timezone adjusted by %s hours) to synchronize with server." % (PythonUtil.formatElapsedSeconds(delta), (time.timezone - timezone) / 3600))
+        self.info("Notify clock adjusted by %s (and timezone adjusted by %s hours) to synchronize with server." % (
+            PythonUtil.formatElapsedSeconds(delta), (time.timezone - timezone) / 3600))
 
     def getTime(self):
         """
@@ -82,7 +83,8 @@ class Notifier:
         Print handling routine
         """
         return "%s: info = %d, warning = %d, debug = %d, logging = %d" % \
-               (self.__name, self.__info, self.__warning, self.__debug, self.__logging)
+               (self.__name, self.__info, self.__warning,
+                self.__debug, self.__logging)
 
     # Severity funcs
     def setSeverity(self, severity):
@@ -123,9 +125,11 @@ class Notifier:
         """
         message = str(errorString)
         if Notifier.showTime.getValue():
-            string = (self.getTime() + str(exception) + ": " + self.__name + "(error): " + message)
+            string = (self.getTime() + str(exception) + ": " +
+                      self.__name + "(error): " + message)
         else:
-            string = (str(exception) + ": " + self.__name + "(error): " + message)
+            string = (str(exception) + ": " +
+                      self.__name + "(error): " + message)
         self.__log(string)
         raise exception(errorString)
 
@@ -137,12 +141,13 @@ class Notifier:
         if self.__warning:
             message = str(warningString)
             if Notifier.showTime.getValue():
-                string = (self.getTime() + self.__name + '(warning): ' + message)
+                string = (self.getTime() + self.__name +
+                          '(warning): ' + message)
             else:
                 string = (":" + self.__name + '(warning): ' + message)
             self.__log(string)
             self.__print(string)
-        return 1 # to allow assert myNotify.warning("blah")
+        return 1  # to allow assert myNotify.warning("blah")
 
     def setWarning(self, bool):
         """
@@ -154,7 +159,7 @@ class Notifier:
         """
         Return whether the printing of warning messages is on or off
         """
-        return(self.__warning)
+        return (self.__warning)
 
     # debug funcs
     def debug(self, debugString):
@@ -169,7 +174,7 @@ class Notifier:
                 string = (':' + self.__name + '(debug): ' + message)
             self.__log(string)
             self.__print(string)
-        return 1 # to allow assert myNotify.debug("blah")
+        return 1  # to allow assert myNotify.debug("blah")
 
     def setDebug(self, bool):
         """
@@ -196,7 +201,7 @@ class Notifier:
                 string = (':' + self.__name + ': ' + message)
             self.__log(string)
             self.__print(string)
-        return 1 # to allow assert myNotify.info("blah")
+        return 1  # to allow assert myNotify.info("blah")
 
     def getInfo(self):
         """
@@ -240,37 +245,37 @@ class Notifier:
             sys.stderr.write(string + '\n')
 
     def debugStateCall(self, obj=None, fsmMemberName='fsm',
-            secondaryFsm='secondaryFSM'):
+                       secondaryFsm='secondaryFSM'):
         """
         If this notify is in debug mode, print the time of the
         call followed by the [fsm state] notifier category and
         the function call (with parameters).
         """
-        #f.f_locals['self'].__init__.im_class.__name__
+        # f.f_locals['self'].__init__.im_class.__name__
         if self.__debug:
             state = ''
             doId = ''
             if obj is not None:
 
-                fsm=obj.__dict__.get(fsmMemberName)
+                fsm = obj.__dict__.get(fsmMemberName)
                 if fsm is not None:
                     stateObj = fsm.getCurrentState()
                     if stateObj is not None:
-                        #state = "%s=%s"%(fsmMemberName, stateObj.getName())
+                        # state = "%s=%s"%(fsmMemberName, stateObj.getName())
                         state = stateObj.getName()
 
-                fsm=obj.__dict__.get(secondaryFsm)
+                fsm = obj.__dict__.get(secondaryFsm)
                 if fsm is not None:
                     stateObj = fsm.getCurrentState()
                     if stateObj is not None:
-                        #state = "%s=%s"%(fsmMemberName, stateObj.getName())
-                        state = "%s, %s"%(state, stateObj.getName())
+                        # state = "%s=%s"%(fsmMemberName, stateObj.getName())
+                        state = "%s, %s" % (state, stateObj.getName())
 
                 if hasattr(obj, 'doId'):
-                    doId = " doId:%s"%(obj.doId,)
-            #if type(obj) == types.ClassType:
+                    doId = " doId:%s" % (obj.doId,)
+            # if type(obj) == types.ClassType:
             #    name = "%s."%(obj.__class__.__name__,)
-            string = ":%s:%s [%-7s] id(%s)%s %s"%(
+            string = ":%s:%s [%-7s] id(%s)%s %s" % (
                 self.getOnlyTime(),
                 self.__name,
                 state,
@@ -279,7 +284,7 @@ class Notifier:
                 PythonUtil.traceParentCall())
             self.__log(string)
             self.__print(string)
-        return 1 # to allow assert self.notify.debugStateCall(self)
+        return 1  # to allow assert self.notify.debugStateCall(self)
 
     def debugCall(self, debugString=''):
         """
@@ -289,12 +294,11 @@ class Notifier:
         """
         if self.__debug:
             message = str(debugString)
-            string = ":%s:%s \"%s\" %s"%(
+            string = ":%s:%s \"%s\" %s" % (
                 self.getOnlyTime(),
                 self.__name,
                 message,
                 PythonUtil.traceParentCall())
             self.__log(string)
             self.__print(string)
-        return 1 # to allow assert self.notify.debugCall("blah")
-
+        return 1  # to allow assert self.notify.debugCall("blah")

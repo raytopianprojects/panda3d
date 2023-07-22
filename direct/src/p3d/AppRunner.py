@@ -44,14 +44,17 @@ from direct.p3d.InstalledPackageData import InstalledPackageData
 # These imports are read by the C++ wrapper in p3dPythonRun.cxx.
 from direct.p3d.JavaScript import Undefined, ConcreteStruct
 
+
 class ArgumentError(AttributeError):
     pass
+
 
 class ScriptAttributes:
     """ This dummy class serves as the root object for the scripting
     interface.  The Python code can store objects and functions here
     for direct inspection by the browser's JavaScript code. """
     pass
+
 
 class AppRunner(DirectObject):
 
@@ -266,10 +269,7 @@ class AppRunner(DirectObject):
             value = bool(value)
         return value
 
-
-
-    def installPackage(self, packageName, version = None, hostUrl = None):
-
+    def installPackage(self, packageName, version=None, hostUrl=None):
         """ Installs the named package, downloading it first if
         necessary.  Returns true on success, false on failure.  This
         method runs synchronously, and will block until it is
@@ -305,7 +305,8 @@ class AppRunner(DirectObject):
             if host.downloadContentsFile(self.http):
                 p2 = host.getPackage(packageName, version)
                 if not p2:
-                    self.notify.warning("Couldn't find %s %s on %s" % (packageName, version, host.hostUrl))
+                    self.notify.warning("Couldn't find %s %s on %s" % (
+                        packageName, version, host.hostUrl))
                 else:
                     if p2 not in nested:
                         self.__rInstallPackage(p2, nested)
@@ -357,7 +358,7 @@ class AppRunner(DirectObject):
         # No shenanigans, just return the requested host.
         return host
 
-    def getHost(self, hostUrl, hostDir = None):
+    def getHost(self, hostUrl, hostDir=None):
         """ Returns a new HostInfo object corresponding to the
         indicated host URL.  If we have already seen this URL
         previously, returns the same object.
@@ -371,7 +372,7 @@ class AppRunner(DirectObject):
 
         host = self.hosts.get(hostUrl, None)
         if not host:
-            host = HostInfo(hostUrl, appRunner = self, hostDir = hostDir)
+            host = HostInfo(hostUrl, appRunner=self, hostDir=hostDir)
             self.hosts[hostUrl] = host
         return host
 
@@ -383,7 +384,7 @@ class AppRunner(DirectObject):
         a Filename.  Returns None if the contents.xml in the indicated
         host directory cannot be read or doesn't seem consistent. """
 
-        host = HostInfo(None, hostDir = hostDir, appRunner = self)
+        host = HostInfo(None, hostDir=hostDir, appRunner=self)
         if not host.hasContentsFile:
             if not host.readContentsFile():
                 # Couldn't read the contents.xml file
@@ -435,7 +436,6 @@ class AppRunner(DirectObject):
 
         self.sendRequest('forget_package', host.hostUrl, '', '')
 
-
     def freshenFile(self, host, fileSpec, localPathname):
         """ Ensures that the localPathname is the most current version
         of the file defined by fileSpec, as offered by host.  If not,
@@ -458,7 +458,7 @@ class AppRunner(DirectObject):
             hostData = InstalledHostData(host, dirnode)
 
             if host:
-                for package in host.getAllPackages(includeAllPlatforms = True):
+                for package in host.getAllPackages(includeAllPlatforms=True):
                     packageDir = package.getPackageDir()
                     if not packageDir.exists():
                         continue
@@ -524,7 +524,6 @@ class AppRunner(DirectObject):
         tfile = Filename.temporary(str(self.rootDir), '.xml')
         if doc.SaveFile(tfile.toOsSpecific()):
             tfile.renameTo(filename)
-
 
     def checkDiskUsage(self):
         """ Checks the total disk space used by all packages, and
@@ -654,7 +653,8 @@ class AppRunner(DirectObject):
 
         # Make sure that $MAIN_DIR is set to the p3d root before we
         # start executing the code in this file.
-        ExecutionEnvironment.setEnvironmentVariable("MAIN_DIR", Filename(self.multifileRoot).toOsSpecific())
+        ExecutionEnvironment.setEnvironmentVariable(
+            "MAIN_DIR", Filename(self.multifileRoot).toOsSpecific())
 
         # Put our root directory on the model-path, too.
         getModelPath().appendDirectory(self.multifileRoot)
@@ -755,8 +755,8 @@ class AppRunner(DirectObject):
 
         # Now evaluate any deferred expressions.
         for expression in self.deferredEvals:
-            self.scriptRequest('eval', self.dom, value = expression,
-                               needsResponse = False)
+            self.scriptRequest('eval', self.dom, value=expression,
+                               needsResponse=False)
         self.deferredEvals = []
 
     def setInstanceInfo(self, rootDir, logDirectory, superMirrorUrl,
@@ -787,20 +787,19 @@ class AppRunner(DirectObject):
             self.main = main
 
         self.respectPerPlatform = respectPerPlatform
-        #self.notify.info("respectPerPlatform = %s" % (self.respectPerPlatform))
+        # self.notify.info("respectPerPlatform = %s" % (self.respectPerPlatform))
 
         # Now that we have rootDir, we can read the config file.
         self.readConfigXml()
 
-
-    def addPackageInfo(self, name, platform, version, hostUrl, hostDir = None,
-                       recurse = False):
+    def addPackageInfo(self, name, platform, version, hostUrl, hostDir=None,
+                       recurse=False):
         """ Called by the browser for each one of the "required"
         packages that were preloaded before starting the application.
         If for some reason the package isn't already downloaded, this
         will download it on the spot.  Raises OSError on failure. """
 
-        host = self.getHost(hostUrl, hostDir = hostDir)
+        host = self.getHost(hostUrl, hostDir=hostDir)
 
         if not host.hasContentsFile:
             # Always pre-read these hosts' contents.xml files, even if
@@ -812,7 +811,8 @@ class AppRunner(DirectObject):
             # Couldn't download?  Must have failed to download in the
             # plugin as well.  But since we launched, we probably have
             # a copy already local; let's use it.
-            message = "Host %s cannot be downloaded, cannot preload %s." % (hostUrl, name)
+            message = "Host %s cannot be downloaded, cannot preload %s." % (
+                hostUrl, name)
             if not host.hasContentsFile:
                 # This is weird.  How did we launch without having
                 # this file at all?
@@ -829,12 +829,12 @@ class AppRunner(DirectObject):
 
         if not platform:
             platform = None
-        package = host.getPackage(name, version, platform = platform)
+        package = host.getPackage(name, version, platform=platform)
         if not package:
             if not recurse:
                 # Maybe the contents.xml file isn't current.  Re-fetch it.
                 if host.redownloadContentsFile(self.http):
-                    return self.addPackageInfo(name, platform, version, hostUrl, hostDir = hostDir, recurse = True)
+                    return self.addPackageInfo(name, platform, version, hostUrl, hostDir=hostDir, recurse=True)
 
             message = "Couldn't find %s %s on %s" % (name, version, hostUrl)
             raise OSError(message)
@@ -857,7 +857,7 @@ class AppRunner(DirectObject):
             init_app_for_gui()
 
     def setP3DFilename(self, p3dFilename, tokens, argv, instanceId,
-                       interactiveConsole, p3dOffset = 0, p3dUrl = None):
+                       interactiveConsole, p3dOffset=0, p3dUrl=None):
         """ Called by the browser to specify the p3d file that
         contains the application itself, along with the web tokens
         and/or command-line arguments.  Once this method has been
@@ -902,10 +902,12 @@ class AppRunner(DirectObject):
         mf = Multifile()
         if p3dOffset == 0:
             if not mf.openRead(fname):
-                raise ArgumentError("Not a Panda3D application: %s" % (p3dFilename))
+                raise ArgumentError(
+                    "Not a Panda3D application: %s" % (p3dFilename))
         else:
             if not mf.openRead(fname, p3dOffset):
-                raise ArgumentError("Not a Panda3D application: %s at offset: %s" % (p3dFilename, p3dOffset))
+                raise ArgumentError(
+                    "Not a Panda3D application: %s at offset: %s" % (p3dFilename, p3dOffset))
 
         # Now load the p3dInfo file.
         self.p3dInfo = None
@@ -943,13 +945,15 @@ class AppRunner(DirectObject):
         # The interactiveConsole flag can only be set true if the
         # application has allow_python_dev set.
         if not self.allowPythonDev and interactiveConsole:
-            raise Exception("Impossible, interactive_console set without allow_python_dev.")
+            raise Exception(
+                "Impossible, interactive_console set without allow_python_dev.")
         self.interactiveConsole = interactiveConsole
 
         if self.allowPythonDev:
             # Set the fps text to remind the user that
             # allow_python_dev is enabled.
-            ConfigVariableString('frame-rate-meter-text-pattern').setValue('allow_python_dev %0.1f fps')
+            ConfigVariableString(
+                'frame-rate-meter-text-pattern').setValue('allow_python_dev %0.1f fps')
 
         if self.guiApp:
             init_app_for_gui()
@@ -972,7 +976,7 @@ class AppRunner(DirectObject):
             self.p3dUrl = core.URLSpec(p3dUrl)
 
         # Send this call to the main thread; don't call it directly.
-        messenger.send('AppRunner_startIfReady', taskChain = 'default')
+        messenger.send('AppRunner_startIfReady', taskChain='default')
 
     def __readHostXml(self, xhost):
         """ Reads the data in the indicated <host> entry. """
@@ -1023,7 +1027,6 @@ class AppRunner(DirectObject):
                     cp = loadPrcFileData(pathname, data)
                     # Set it to sort value 20, behind the implicit pages.
                     cp.setSort(20)
-
 
     def __clearWindowProperties(self):
         """ Clears the windowPrc file that was created in a previous
@@ -1097,7 +1100,7 @@ class AppRunner(DirectObject):
         self.gotWindow = True
 
         # Send this call to the main thread; don't call it directly.
-        messenger.send('AppRunner_startIfReady', taskChain = 'default')
+        messenger.send('AppRunner_startIfReady', taskChain='default')
 
     def setRequestFunc(self, func):
         """ This method is called by the browser at startup to supply a
@@ -1138,7 +1141,7 @@ class AppRunner(DirectObject):
 
         self.sendRequest('notify', message.lower())
 
-    def evalScript(self, expression, needsResponse = False):
+    def evalScript(self, expression, needsResponse=False):
         """ Evaluates an arbitrary JavaScript expression in the global
         DOM space.  This may be deferred if necessary if needsResponse
         is False and self.dom has not yet been assigned.  If
@@ -1151,11 +1154,11 @@ class AppRunner(DirectObject):
             self.deferredEvals.append(expression)
         else:
             # Evaluate it now.
-            return self.scriptRequest('eval', self.dom, value = expression,
-                                      needsResponse = needsResponse)
+            return self.scriptRequest('eval', self.dom, value=expression,
+                                      needsResponse=needsResponse)
 
-    def scriptRequest(self, operation, object, propertyName = '',
-                      value = None, needsResponse = True):
+    def scriptRequest(self, operation, object, propertyName='',
+                      value=None, needsResponse=True):
         """ Issues a new script request to the browser.  This queries
         or modifies one of the browser's DOM properties.  This is a
         low-level method that user code should not call directly;
@@ -1197,7 +1200,8 @@ class AppRunner(DirectObject):
 
         self.sendRequest('drop_p3dobj', objectId)
 
-def dummyAppRunner(tokens = [], argv = None):
+
+def dummyAppRunner(tokens=[], argv=None):
     """ This function creates a dummy global AppRunner object, which
     is useful for testing running in a packaged environment without
     actually bothering to package up the application.  Call this at
@@ -1224,7 +1228,8 @@ def dummyAppRunner(tokens = [], argv = None):
     if platform.startswith('win'):
         rootDir = Filename(Filename.getUserAppdataDirectory(), 'Panda3D')
     elif platform.startswith('osx'):
-        rootDir = Filename(Filename.getHomeDirectory(), 'Library/Caches/Panda3D')
+        rootDir = Filename(Filename.getHomeDirectory(),
+                           'Library/Caches/Panda3D')
     else:
         rootDir = Filename(Filename.getHomeDirectory(), '.panda3d')
 
@@ -1253,4 +1258,3 @@ def dummyAppRunner(tokens = [], argv = None):
     appRunner.initPackedAppEnvironment()
 
     return appRunner
-

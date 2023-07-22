@@ -8,10 +8,11 @@ __all__ = ["ScanDirectoryNode"]
 from panda3d.core import VirtualFileSystem, VirtualFileMountSystem, Filename, TiXmlDocument
 vfs = VirtualFileSystem.getGlobalPtr()
 
+
 class ScanDirectoryNode:
     """ This class is used to scan a list of files on disk. """
 
-    def __init__(self, pathname, ignoreUsageXml = False):
+    def __init__(self, pathname, ignoreUsageXml=False):
         self.pathname = pathname
         self.filenames = []
         self.fileSize = 0
@@ -48,7 +49,8 @@ class ScanDirectoryNode:
 
             if vfile.isDirectory():
                 # A nested directory.
-                subdir = ScanDirectoryNode(vfile.getFilename(), ignoreUsageXml = ignoreUsageXml)
+                subdir = ScanDirectoryNode(
+                    vfile.getFilename(), ignoreUsageXml=ignoreUsageXml)
                 self.nested.append(subdir)
                 self.nestedSize += subdir.getTotalSize()
 
@@ -96,5 +98,3 @@ class ScanDirectoryNode:
                 return result
 
         return None
-
-

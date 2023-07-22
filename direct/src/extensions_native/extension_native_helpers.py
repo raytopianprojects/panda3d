@@ -2,8 +2,10 @@ __all__ = ["Dtool_ObjectToDict", "Dtool_funcToMethod"]
 
 import sys
 
+
 def Dtool_ObjectToDict(cls, name, obj):
     cls.DtoolClassDict[name] = obj
+
 
 def Dtool_funcToMethod(func, cls, method_name=None):
     """Adds func to class so it is an accessible method; use method_name to specify the name to be used for calling the method.

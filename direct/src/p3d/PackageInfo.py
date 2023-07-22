@@ -18,6 +18,7 @@ import random
 import time
 import copy
 
+
 class PackageInfo:
 
     """ This class represents a downloadable Panda3D package file that
@@ -48,13 +49,15 @@ class PackageInfo:
         represents a single atomic piece of the installation step, and
         the relative effort of that piece.  When the plan is executed,
         it will call the saved function pointer here. """
+
         def __init__(self, func, bytes, factor, stepType):
             self.__funcPtr = func
             self.bytesNeeded = bytes
             self.bytesDone = 0
             self.bytesFactor = factor
             self.stepType = stepType
-            self.pStatCol = PStatCollector(':App:PackageInstaller:%s' % (stepType))
+            self.pStatCol = PStatCollector(
+                ':App:PackageInstaller:%s' % (stepType))
 
         def func(self):
             """ self.__funcPtr(self) will return a generator of
@@ -83,8 +86,8 @@ class PackageInfo:
                 return 1
             return min(float(self.bytesDone) / float(self.bytesNeeded), 1)
 
-    def __init__(self, host, packageName, packageVersion, platform = None,
-                 solo = False, asMirror = False, perPlatform = False):
+    def __init__(self, host, packageName, packageVersion, platform=None,
+                 solo=False, asMirror=False, perPlatform=False):
         self.host = host
         self.packageName = packageName
         self.packageVersion = packageVersion
@@ -148,7 +151,8 @@ class PackageInfo:
             # Derive the packageDir from the hostDir.
             self.packageDir = Filename(self.host.hostDir, self.packageName)
             if self.packageVersion:
-                self.packageDir = Filename(self.packageDir, self.packageVersion)
+                self.packageDir = Filename(
+                    self.packageDir, self.packageVersion)
 
             if self.host.perPlatform:
                 # If we're running on a special host that wants us to
@@ -216,7 +220,6 @@ class PackageInfo:
 
         return name
 
-
     def setupFilenames(self):
         """ This is called by the HostInfo when the package is read
         from contents.xml, to set up the internal filenames and such
@@ -235,7 +238,7 @@ class PackageInfo:
 
         if not self.hasDescFile:
             filename = Filename(self.getPackageDir(), self.descFileBasename)
-            if self.descFile.quickVerify(self.getPackageDir(), pathname = filename, notify = self.notify):
+            if self.descFile.quickVerify(self.getPackageDir(), pathname=filename, notify=self.notify):
                 if self.__readDescFile():
                     # Successfully read.  We don't need to call
                     # checkArchiveStatus again, since readDescFile()
@@ -280,17 +283,19 @@ class PackageInfo:
 
         if self.hasDescFile:
             # We've already got one.
-            yield self.stepComplete; return
+            yield self.stepComplete
+            return
 
         if not self.host.appRunner or self.host.appRunner.verifyContents != self.host.appRunner.P3DVCNever:
             # We're allowed to download it.
             self.http = http
 
-            func = lambda step, self = self: self.__downloadFile(
+            def func(step, self=self): return self.__downloadFile(
                 None, self.descFile,
-                urlbase = self.descFile.filename,
-                filename = self.descFileBasename)
-            step = self.InstallStep(func, self.descFile.size, self.downloadFactor, 'downloadDesc')
+                urlbase=self.descFile.filename,
+                filename=self.descFileBasename)
+            step = self.InstallStep(
+                func, self.descFile.size, self.downloadFactor, 'downloadDesc')
 
             for token in step.func():
                 if token == self.stepContinue:
@@ -300,11 +305,12 @@ class PackageInfo:
 
             while token == self.restartDownload:
                 # Try again.
-                func = lambda step, self = self: self.__downloadFile(
+                def func(step, self=self): return self.__downloadFile(
                     None, self.descFile,
-                    urlbase = self.descFile.filename,
-                    filename = self.descFileBasename)
-                step = self.InstallStep(func, self.descFile.size, self.downloadFactor, 'downloadDesc')
+                    urlbase=self.descFile.filename,
+                    filename=self.descFileBasename)
+                step = self.InstallStep(
+                    func, self.descFile.size, self.downloadFactor, 'downloadDesc')
                 for token in step.func():
                     if token == self.stepContinue:
                         yield token
@@ -313,7 +319,8 @@ class PackageInfo:
 
             if token == self.stepFailed:
                 # Couldn't download the desc file.
-                yield self.stepFailed; return
+                yield self.stepFailed
+                return
 
             assert token == self.stepComplete
 
@@ -326,9 +333,11 @@ class PackageInfo:
             # it.
             filename = Filename(self.getPackageDir(), self.descFileBasename)
             self.notify.warning("Failure reading %s" % (filename))
-            yield self.stepFailed; return
+            yield self.stepFailed
+            return
 
-        yield self.stepComplete; return
+        yield self.stepComplete
+        return
 
     def __readDescFile(self):
         """ Reads the desc xml file for this particular package,
@@ -369,7 +378,8 @@ class PackageInfo:
         except ValueError:
             perPlatform = False
         if perPlatform != self.perPlatform:
-            self.notify.warning("per_platform disagreement on package %s" % (self.packageName))
+            self.notify.warning(
+                "per_platform disagreement on package %s" % (self.packageName))
 
         self.displayName = None
         xconfig = xpackage.FirstChildElement('config')
@@ -384,7 +394,8 @@ class PackageInfo:
 
         # The uncompressed archive, which will be mounted directly,
         # and also used for patching.
-        xuncompressedArchive = xpackage.FirstChildElement('uncompressed_archive')
+        xuncompressedArchive = xpackage.FirstChildElement(
+            'uncompressed_archive')
         if xuncompressedArchive:
             self.uncompressedArchive = FileSpec()
             self.uncompressedArchive.loadXml(xuncompressedArchive)
@@ -452,9 +463,11 @@ class PackageInfo:
             # Build a one-item install plan to download the compressed
             # archive.
             downloadSize = self.compressedArchive.size
-            func = lambda step, fileSpec = self.compressedArchive: self.__downloadFile(step, fileSpec, allowPartial = True)
+            def func(step, fileSpec=self.compressedArchive): return self.__downloadFile(
+                step, fileSpec, allowPartial=True)
 
-            step = self.InstallStep(func, downloadSize, self.downloadFactor, 'download')
+            step = self.InstallStep(
+                func, downloadSize, self.downloadFactor, 'download')
             installPlan = [step]
             self.installPlans = [installPlan]
             pc.stop()
@@ -469,21 +482,23 @@ class PackageInfo:
         unpackSize = 0
         for file in self.extracts:
             unpackSize += file.size
-        step = self.InstallStep(self.__unpackArchive, unpackSize, self.unpackFactor, 'unpack')
+        step = self.InstallStep(self.__unpackArchive,
+                                unpackSize, self.unpackFactor, 'unpack')
         planA = [step]
 
         # If the uncompressed archive file is good, that's all we'll
         # need to do.
         self.uncompressedArchive.actualFile = None
-        if self.uncompressedArchive.quickVerify(self.getPackageDir(), notify = self.notify):
+        if self.uncompressedArchive.quickVerify(self.getPackageDir(), notify=self.notify):
             self.installPlans = [planA]
             pc.stop()
             return
 
         # Maybe the compressed archive file is good.
-        if self.compressedArchive.quickVerify(self.getPackageDir(), notify = self.notify):
+        if self.compressedArchive.quickVerify(self.getPackageDir(), notify=self.notify):
             uncompressSize = self.uncompressedArchive.size
-            step = self.InstallStep(self.__uncompressArchive, uncompressSize, self.uncompressFactor, 'uncompress')
+            step = self.InstallStep(
+                self.__uncompressArchive, uncompressSize, self.uncompressFactor, 'uncompress')
             planA = [step] + planA
             self.installPlans = [planA]
             pc.stop()
@@ -495,23 +510,28 @@ class PackageInfo:
         planB = planA[:]
 
         uncompressSize = self.uncompressedArchive.size
-        step = self.InstallStep(self.__uncompressArchive, uncompressSize, self.uncompressFactor, 'uncompress')
+        step = self.InstallStep(
+            self.__uncompressArchive, uncompressSize, self.uncompressFactor, 'uncompress')
         planB = [step] + planB
 
         downloadSize = self.compressedArchive.size
-        func = lambda step, fileSpec = self.compressedArchive: self.__downloadFile(step, fileSpec, allowPartial = True)
+        def func(step, fileSpec=self.compressedArchive): return self.__downloadFile(
+            step, fileSpec, allowPartial=True)
 
-        step = self.InstallStep(func, downloadSize, self.downloadFactor, 'download')
+        step = self.InstallStep(
+            func, downloadSize, self.downloadFactor, 'download')
         planB = [step] + planB
 
         # Now look for patches.  Start with the md5 hash from the
         # uncompressedArchive file we have on disk, and see if we can
         # find a patch chain from this file to our target.
-        pathname = Filename(self.getPackageDir(), self.uncompressedArchive.filename)
+        pathname = Filename(self.getPackageDir(),
+                            self.uncompressedArchive.filename)
         fileSpec = self.uncompressedArchive.actualFile
         if fileSpec is None and pathname.exists():
             fileSpec = FileSpec()
-            fileSpec.fromFile(self.getPackageDir(), self.uncompressedArchive.filename)
+            fileSpec.fromFile(self.getPackageDir(),
+                              self.uncompressedArchive.filename)
         plan = None
         if fileSpec:
             plan = self.__findPatchChain(fileSpec)
@@ -528,7 +548,8 @@ class PackageInfo:
 
         # In case of unexpected failures on the internet, we will retry
         # the full download instead of just giving up.
-        retries = core.ConfigVariableInt('package-full-dl-retries', 1).getValue()
+        retries = core.ConfigVariableInt(
+            'package-full-dl-retries', 1).getValue()
         for retry in range(retries):
             self.installPlans.append(planB[:])
 
@@ -572,7 +593,8 @@ class PackageInfo:
         self.__removeFileFromList(contents, self.compressedArchive.filename)
         self.__removeFileFromList(contents, self.UsageBasename)
         if not self.asMirror:
-            self.__removeFileFromList(contents, self.uncompressedArchive.filename)
+            self.__removeFileFromList(
+                contents, self.uncompressedArchive.filename)
             for file in self.extracts:
                 self.__removeFileFromList(contents, file.filename)
 
@@ -588,22 +610,25 @@ class PackageInfo:
             self.updated = True
 
         if self.asMirror:
-            return self.compressedArchive.quickVerify(self.getPackageDir(), notify = self.notify)
+            return self.compressedArchive.quickVerify(self.getPackageDir(), notify=self.notify)
 
         allExtractsOk = True
-        if not self.uncompressedArchive.quickVerify(self.getPackageDir(), notify = self.notify):
-            self.notify.debug("File is incorrect: %s" % (self.uncompressedArchive.filename))
+        if not self.uncompressedArchive.quickVerify(self.getPackageDir(), notify=self.notify):
+            self.notify.debug("File is incorrect: %s" %
+                              (self.uncompressedArchive.filename))
             allExtractsOk = False
 
         if allExtractsOk:
             # OK, the uncompressed archive is good; that means there
             # shouldn't be a compressed archive file here.
-            pathname = Filename(self.getPackageDir(), self.compressedArchive.filename)
+            pathname = Filename(self.getPackageDir(),
+                                self.compressedArchive.filename)
             pathname.unlink()
 
             for file in self.extracts:
-                if not file.quickVerify(self.getPackageDir(), notify = self.notify):
-                    self.notify.debug("File is incorrect: %s" % (file.filename))
+                if not file.quickVerify(self.getPackageDir(), notify=self.notify):
+                    self.notify.debug("File is incorrect: %s" %
+                                      (file.filename))
                     allExtractsOk = False
                     break
 
@@ -647,11 +672,13 @@ class PackageInfo:
 
         if self.hasPackage:
             # We've already got one.
-            yield self.stepComplete; return
+            yield self.stepComplete
+            return
 
         if self.host.appRunner and self.host.appRunner.verifyContents == self.host.appRunner.P3DVCNever:
             # We're not allowed to download anything. Assume it's already downloaded.
-            yield self.stepComplete; return
+            yield self.stepComplete
+            return
 
         # We should have an install plan by the time we get here.
         assert self.installPlans
@@ -678,11 +705,12 @@ class PackageInfo:
                         break
 
         if token == self.stepFailed:
-            yield self.stepFailed; return
+            yield self.stepFailed
+            return
 
         assert token == self.stepComplete
-        yield self.stepComplete; return
-
+        yield self.stepComplete
+        return
 
     def __followInstallPlans(self):
         """ Performs all of the steps in self.installPlans.  Yields
@@ -720,13 +748,16 @@ class PackageInfo:
 
             if not planFailed:
                 # Successfully downloaded!
-                yield self.stepComplete; return
+                yield self.stepComplete
+                return
 
             if taskMgr.destroyed:
-                yield self.stepFailed; return
+                yield self.stepFailed
+                return
 
         # All plans failed.
-        yield self.stepFailed; return
+        yield self.stepFailed
+        return
 
     def __findPatchChain(self, fileSpec):
         """ Finds the chain of patches that leads from the indicated
@@ -737,7 +768,8 @@ class PackageInfo:
         from direct.p3d.PatchMaker import PatchMaker
 
         patchMaker = PatchMaker(self.getPackageDir())
-        patchChain = patchMaker.getPatchChainToCurrent(self.descFileBasename, fileSpec)
+        patchChain = patchMaker.getPatchChainToCurrent(
+            self.descFileBasename, fileSpec)
         if patchChain is None:
             # No path.
             patchMaker.cleanup()
@@ -746,27 +778,33 @@ class PackageInfo:
         plan = []
         for patchfile in patchChain:
             downloadSize = patchfile.file.size
-            func = lambda step, fileSpec = patchfile.file: self.__downloadFile(step, fileSpec, allowPartial = True)
-            step = self.InstallStep(func, downloadSize, self.downloadFactor, 'download')
+
+            def func(step, fileSpec=patchfile.file): return self.__downloadFile(
+                step, fileSpec, allowPartial=True)
+            step = self.InstallStep(
+                func, downloadSize, self.downloadFactor, 'download')
             plan.append(step)
 
             patchSize = patchfile.targetFile.size
-            func = lambda step, patchfile = patchfile: self.__applyPatch(step, patchfile)
+
+            def func(step, patchfile=patchfile): return self.__applyPatch(
+                step, patchfile)
             step = self.InstallStep(func, patchSize, self.patchFactor, 'patch')
             plan.append(step)
 
         patchMaker.cleanup()
         return plan
 
-    def __downloadFile(self, step, fileSpec, urlbase = None, filename = None,
-                       allowPartial = False):
+    def __downloadFile(self, step, fileSpec, urlbase=None, filename=None,
+                       allowPartial=False):
         """ Downloads the indicated file from the host into
         packageDir.  Yields one of stepComplete, stepFailed,
         restartDownload, or stepContinue. """
 
         if self.host.appRunner and self.host.appRunner.verifyContents == self.host.appRunner.P3DVCNever:
             # We're not allowed to download anything.
-            yield self.stepFailed; return
+            yield self.stepFailed
+            return
 
         self.updated = True
 
@@ -837,7 +875,8 @@ class PackageInfo:
                 bytesStarted = 0
 
             if bytesStarted:
-                self.notify.info("Resuming %s after %s bytes already downloaded" % (url, bytesStarted))
+                self.notify.info(
+                    "Resuming %s after %s bytes already downloaded" % (url, bytesStarted))
                 # Make sure the file is writable.
                 os.chmod(targetPathname.toOsSpecific(), 0o644)
                 channel.beginGetSubdocument(request, bytesStarted, 0)
@@ -854,7 +893,8 @@ class PackageInfo:
                     if step.bytesDone > step.bytesNeeded:
                         # Oops, too much data.  Might as well abort;
                         # it's the wrong file.
-                        self.notify.warning("Got more data than expected for download %s" % (url))
+                        self.notify.warning(
+                            "Got more data than expected for download %s" % (url))
                         break
 
                     self.__updateStepProgress(step)
@@ -862,8 +902,10 @@ class PackageInfo:
                 if taskMgr.destroyed:
                     # If the task manager has been destroyed, we must
                     # be shutting down.  Get out of here.
-                    self.notify.warning("Task Manager destroyed, aborting %s" % (url))
-                    yield self.stepFailed; return
+                    self.notify.warning(
+                        "Task Manager destroyed, aborting %s" % (url))
+                    yield self.stepFailed
+                    return
 
                 yield self.stepContinue
 
@@ -874,19 +916,22 @@ class PackageInfo:
             if not channel.isValid():
                 self.notify.warning("Failed to download %s" % (url))
 
-            elif not fileSpec.fullVerify(self.getPackageDir(), pathname = targetPathname, notify = self.notify):
-                self.notify.warning("After downloading, %s incorrect" % (Filename(fileSpec.filename).getBasename()))
+            elif not fileSpec.fullVerify(self.getPackageDir(), pathname=targetPathname, notify=self.notify):
+                self.notify.warning("After downloading, %s incorrect" % (
+                    Filename(fileSpec.filename).getBasename()))
 
                 # This attempt failed.  Maybe the original contents.xml
                 # file is stale.  Try re-downloading it now, just to be
                 # sure.
                 if self.host.redownloadContentsFile(self.http):
                     # Yes!  Go back and start over from the beginning.
-                    yield self.restartDownload; return
+                    yield self.restartDownload
+                    return
 
             else:
                 # Success!
-                yield self.stepComplete; return
+                yield self.stepComplete
+                return
 
             # Maybe the mirror is bad.  Go back and try the next
             # mirror.
@@ -895,11 +940,13 @@ class PackageInfo:
         # is stale.  Try re-downloading it now, just to be sure.
         if self.host.redownloadContentsFile(self.http):
             # Yes!  Go back and start over from the beginning.
-            yield self.restartDownload; return
+            yield self.restartDownload
+            return
 
         # All mirrors failed; the server (or the internet connection)
         # must be just fubar.
-        yield self.stepFailed; return
+        yield self.stepFailed
+        return
 
     def __applyPatch(self, step, patchfile):
         """ Applies the indicated patching in-place to the current
@@ -909,7 +956,8 @@ class PackageInfo:
 
         self.updated = True
 
-        origPathname = Filename(self.getPackageDir(), self.uncompressedArchive.filename)
+        origPathname = Filename(self.getPackageDir(),
+                                self.uncompressedArchive.filename)
         patchPathname = Filename(self.getPackageDir(), patchfile.file.filename)
         result = Filename.temporary('', 'patch_')
         self.notify.info("Patching %s with %s" % (origPathname, patchPathname))
@@ -925,8 +973,10 @@ class PackageInfo:
             if taskMgr.destroyed:
                 # If the task manager has been destroyed, we must
                 # be shutting down.  Get out of here.
-                self.notify.warning("Task Manager destroyed, aborting patch %s" % (origPathname))
-                yield self.stepFailed; return
+                self.notify.warning(
+                    "Task Manager destroyed, aborting patch %s" % (origPathname))
+                yield self.stepFailed
+                return
 
             yield self.stepContinue
             ret = p.run()
@@ -936,13 +986,17 @@ class PackageInfo:
         if ret < 0:
             self.notify.warning("Patching of %s failed." % (origPathname))
             result.unlink()
-            yield self.stepFailed; return
+            yield self.stepFailed
+            return
 
         if not result.renameTo(origPathname):
-            self.notify.warning("Couldn't rename %s to %s" % (result, origPathname))
-            yield self.stepFailed; return
+            self.notify.warning("Couldn't rename %s to %s" %
+                                (result, origPathname))
+            yield self.stepFailed
+            return
 
-        yield self.stepComplete; return
+        yield self.stepComplete
+        return
 
     def __uncompressArchive(self, step):
         """ Turns the compressed archive into the uncompressed
@@ -951,14 +1005,18 @@ class PackageInfo:
 
         if self.host.appRunner and self.host.appRunner.verifyContents == self.host.appRunner.P3DVCNever:
             # We're not allowed to!
-            yield self.stepFailed; return
+            yield self.stepFailed
+            return
 
         self.updated = True
 
-        sourcePathname = Filename(self.getPackageDir(), self.compressedArchive.filename)
-        targetPathname = Filename(self.getPackageDir(), self.uncompressedArchive.filename)
+        sourcePathname = Filename(
+            self.getPackageDir(), self.compressedArchive.filename)
+        targetPathname = Filename(
+            self.getPackageDir(), self.uncompressedArchive.filename)
         targetPathname.unlink()
-        self.notify.info("Uncompressing %s to %s" % (sourcePathname, targetPathname))
+        self.notify.info("Uncompressing %s to %s" %
+                         (sourcePathname, targetPathname))
         decompressor = Decompressor()
         decompressor.initiate(sourcePathname, targetPathname)
         totalBytes = self.uncompressedArchive.size
@@ -970,28 +1028,33 @@ class PackageInfo:
             if taskMgr.destroyed:
                 # If the task manager has been destroyed, we must
                 # be shutting down.  Get out of here.
-                self.notify.warning("Task Manager destroyed, aborting decompresss %s" % (sourcePathname))
-                yield self.stepFailed; return
+                self.notify.warning(
+                    "Task Manager destroyed, aborting decompresss %s" % (sourcePathname))
+                yield self.stepFailed
+                return
 
             yield self.stepContinue
 
         if result != EUSuccess:
-            yield self.stepFailed; return
+            yield self.stepFailed
+            return
 
         step.bytesDone = totalBytes
         self.__updateStepProgress(step)
 
-        if not self.uncompressedArchive.quickVerify(self.getPackageDir(), notify= self.notify):
+        if not self.uncompressedArchive.quickVerify(self.getPackageDir(), notify=self.notify):
             self.notify.warning("after uncompressing, %s still incorrect" % (
                 self.uncompressedArchive.filename))
-            yield self.stepFailed; return
+            yield self.stepFailed
+            return
 
         # Now that we've verified the archive, make it read-only.
         os.chmod(targetPathname.toOsSpecific(), 0o444)
 
         # Now we can safely remove the compressed archive.
         sourcePathname.unlink()
-        yield self.stepComplete; return
+        yield self.stepComplete
+        return
 
     def __unpackArchive(self, step):
         """ Unpacks any files in the archive that want to be unpacked
@@ -1001,20 +1064,24 @@ class PackageInfo:
         if not self.extracts:
             # Nothing to extract.
             self.hasPackage = True
-            yield self.stepComplete; return
+            yield self.stepComplete
+            return
 
         if self.host.appRunner and self.host.appRunner.verifyContents == self.host.appRunner.P3DVCNever:
             # We're not allowed to!
-            yield self.stepFailed; return
+            yield self.stepFailed
+            return
 
         self.updated = True
 
-        mfPathname = Filename(self.getPackageDir(), self.uncompressedArchive.filename)
+        mfPathname = Filename(self.getPackageDir(),
+                              self.uncompressedArchive.filename)
         self.notify.info("Unpacking %s" % (mfPathname))
         mf = Multifile()
         if not mf.openRead(mfPathname):
             self.notify.warning("Couldn't open %s" % (mfPathname))
-            yield self.stepFailed; return
+            yield self.stepFailed
+            return
 
         allExtractsOk = True
         step.bytesDone = 0
@@ -1033,8 +1100,9 @@ class PackageInfo:
                 allExtractsOk = False
                 continue
 
-            if not file.quickVerify(self.getPackageDir(), notify = self.notify):
-                self.notify.warning("After extracting, still incorrect: %s" % (file.filename))
+            if not file.quickVerify(self.getPackageDir(), notify=self.notify):
+                self.notify.warning(
+                    "After extracting, still incorrect: %s" % (file.filename))
                 allExtractsOk = False
                 continue
 
@@ -1046,16 +1114,20 @@ class PackageInfo:
             if taskMgr.destroyed:
                 # If the task manager has been destroyed, we must
                 # be shutting down.  Get out of here.
-                self.notify.warning("Task Manager destroyed, aborting unpacking %s" % (mfPathname))
-                yield self.stepFailed; return
+                self.notify.warning(
+                    "Task Manager destroyed, aborting unpacking %s" % (mfPathname))
+                yield self.stepFailed
+                return
 
             yield self.stepContinue
 
         if not allExtractsOk:
-            yield self.stepFailed; return
+            yield self.stepFailed
+            return
 
         self.hasPackage = True
-        yield self.stepComplete; return
+        yield self.stepComplete
+        return
 
     def installPackage(self, appRunner):
         """ Mounts the package and sets up system paths so it becomes
@@ -1067,7 +1139,8 @@ class PackageInfo:
             return True
         assert self not in appRunner.installedPackages
 
-        mfPathname = Filename(self.getPackageDir(), self.uncompressedArchive.filename)
+        mfPathname = Filename(self.getPackageDir(),
+                              self.uncompressedArchive.filename)
         mf = Multifile()
         if not mf.openRead(mfPathname):
             self.notify.warning("Couldn't open %s" % (mfPathname))
@@ -1154,7 +1227,7 @@ class PackageInfo:
         bytes, as determined by examining the actual contents of the
         package directory and its subdirectories. """
 
-        thisDir = ScanDirectoryNode(self.getPackageDir(), ignoreUsageXml = True)
+        thisDir = ScanDirectoryNode(self.getPackageDir(), ignoreUsageXml=True)
         diskSpace = thisDir.getTotalSize()
         self.notify.info("Package %s uses %s MB" % (
             self.packageName, (diskSpace + 524288) // 1048576))
@@ -1239,4 +1312,3 @@ class PackageInfo:
             return None
 
         return copy.copy(xusage)
-

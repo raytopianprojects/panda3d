@@ -48,7 +48,12 @@
 #
 ########################################################################
 
-import os, sys, parser, symbol, token, re
+import os
+import sys
+import parser
+import symbol
+import token
+import re
 
 ########################################################################
 #
@@ -61,7 +66,7 @@ JUNKHEADER = re.compile("^((Function)|(Access))\\s*:")
 IMPORTSTAR = re.compile("^from\\s+([a-zA-Z0-9_.]+)\\s+import\\s+[*]\\s*$")
 IDENTIFIER = re.compile("[a-zA-Z0-9_]+")
 FILEHEADER = re.compile(
-r"""^// Filename: [a-zA-Z.]+
+    r"""^// Filename: [a-zA-Z.]+
 // Created by:  [a-zA-Z. ()0-9]+(
 //)?
 ////////////////////////////////////////////////////////////////////
@@ -75,6 +80,7 @@ r"""^// Filename: [a-zA-Z.]+
 //
 ////////////////////////////////////////////////////////////////////""")
 
+
 def readFile(fn):
     try:
         srchandle = open(fn, "r")
@@ -84,6 +90,7 @@ def readFile(fn):
     except:
         sys.exit("Cannot read "+fn)
 
+
 def writeFile(wfile, data):
     try:
         dsthandle = open(wfile, "wb")
@@ -91,6 +98,7 @@ def writeFile(wfile, data):
         dsthandle.close()
     except:
         sys.exit("Cannot write "+wfile)
+
 
 def writeFileLines(wfile, lines):
     try:
@@ -101,6 +109,7 @@ def writeFileLines(wfile, lines):
         dsthandle.close()
     except:
         sys.exit("Cannot write "+wfile)
+
 
 def findFiles(dirlist, ext, ign, list):
     if isinstance(dirlist, str):
@@ -115,20 +124,24 @@ def findFiles(dirlist, ext, ign, list):
                 elif (os.path.isdir(full)):
                     findFiles(full, ext, ign, list)
 
+
 def pathToModule(result):
-    if (result[-3:]==".py"): result=result[:-3]
-    result = result.replace("/src/","/")
-    result = result.replace("/",".")
+    if (result[-3:] == ".py"):
+        result = result[:-3]
+    result = result.replace("/src/", "/")
+    result = result.replace("/", ".")
     return result
+
 
 def textToHTML(comment, sep, delsection=None):
     sections = [""]
     included = {}
     for line in comment.split("\n"):
-        line = line.lstrip(" ").lstrip(sep).lstrip(" ").rstrip("\r").rstrip(" ")
+        line = line.lstrip(" ").lstrip(sep).lstrip(
+            " ").rstrip("\r").rstrip(" ")
         if (line == ""):
             sections.append("")
-        elif (line[0]=="*") or (line[0]=="-"):
+        elif (line[0] == "*") or (line[0] == "-"):
             sections.append(line)
             sections.append("")
         elif (SECHEADER.match(line)):
@@ -138,11 +151,11 @@ def textToHTML(comment, sep, delsection=None):
     total = ""
     for sec in sections:
         if (sec != ""):
-            sec = sec.replace("&","&amp;")
-            sec = sec.replace("<","&lt;")
-            sec = sec.replace(">","&gt;")
-            sec = sec.replace("  "," ")
-            sec = sec.replace("  "," ")
+            sec = sec.replace("&", "&amp;")
+            sec = sec.replace("<", "&lt;")
+            sec = sec.replace(">", "&gt;")
+            sec = sec.replace("  ", " ")
+            sec = sec.replace("  ", " ")
             if (delsection != None) and (delsection.match(sec)):
                 included[sec] = 1
             if sec not in included:
@@ -150,20 +163,23 @@ def textToHTML(comment, sep, delsection=None):
                 total = total + sec + "<br>\n"
     return total
 
+
 def linkTo(link, text):
     return '<a href="' + link + '">' + text + '</a>'
+
 
 def convertToPythonFn(fn):
     result = ""
     lastc = 0
     for c in fn:
-        if (c!="_"):
-            if (lastc=="_"):
+        if (c != "_"):
+            if (lastc == "_"):
                 result = result + c.upper()
             else:
                 result = result + c
         lastc = c
     return result
+
 
 def removeFileLicense(content):
     # Removes the license part at the top of a file.
@@ -174,6 +190,7 @@ def removeFileLicense(content):
 # Interrogate Database Tokenizer
 #
 ########################################################################
+
 
 class InterrogateTokenizer:
     """
@@ -194,7 +211,7 @@ class InterrogateTokenizer:
         if (self.data[self.pos] == "-"):
             neg = 1
             self.pos += 1
-        if (self.data[self.pos].isdigit()==0):
+        if (self.data[self.pos].isdigit() == 0):
             print("File position " + str(self.pos))
             print("Text: " + self.data[self.pos:self.pos+50])
             sys.exit("Syntax error in interrogate file format 0")
@@ -202,12 +219,13 @@ class InterrogateTokenizer:
         while (self.data[self.pos].isdigit()):
             value = value*10 + int(self.data[self.pos])
             self.pos += 1
-        if (neg): value = -value
+        if (neg):
+            value = -value
         return value
 
     def readstring(self):
         length = self.readint()
-        if (self.data[self.pos].isspace()==0):
+        if (self.data[self.pos].isspace() == 0):
             sys.exit("Syntax error in interrogate file format 1")
         self.pos += 1
         body = self.data[self.pos:self.pos+length]
@@ -222,12 +240,14 @@ class InterrogateTokenizer:
 #
 ########################################################################
 
+
 def parseInterrogateIntVec(tokzr):
     length = tokzr.readint()
     result = []
     for i in range(length):
         result.append(tokzr.readint())
     return result
+
 
 class InterrogateFunction:
     def __init__(self, tokzr, db):
@@ -242,11 +262,13 @@ class InterrogateFunction:
         self.comment = tokzr.readstring()
         self.prototype = tokzr.readstring()
 
+
 class InterrogateEnumValue:
     def __init__(self, tokzr):
         self.name = tokzr.readstring()
         self.scopedname = tokzr.readstring()
         self.value = tokzr.readint()
+
 
 class InterrogateDerivation:
     def __init__(self, tokzr):
@@ -254,6 +276,7 @@ class InterrogateDerivation:
         self.base = tokzr.readint()
         self.upcast = tokzr.readint()
         self.downcast = tokzr.readint()
+
 
 class InterrogateType:
     def __init__(self, tokzr, db):
@@ -282,11 +305,13 @@ class InterrogateType:
         self.nested = parseInterrogateIntVec(tokzr)
         self.comment = tokzr.readstring()
 
+
 class InterrogateParameter:
     def __init__(self, tokzr):
         self.name = tokzr.readstring()
         self.parameterflags = tokzr.readint()
         self.type = tokzr.readint()
+
 
 class InterrogateWrapper:
     def __init__(self, tokzr, db):
@@ -302,6 +327,7 @@ class InterrogateWrapper:
         nparameters = tokzr.readint()
         for i in range(nparameters):
             self.parameters.append(InterrogateParameter(tokzr))
+
 
 class InterrogateDatabase:
     def __init__(self, tokzr):
@@ -338,18 +364,22 @@ class InterrogateDatabase:
 #
 ########################################################################
 
+
 def printTree(tree, indent):
-    spacing = "                                                        "[:indent]
+    spacing = "                                                        "[
+        :indent]
     if isinstance(tree, tuple) and isinstance(tree[0], int):
         if tree[0] in symbol.sym_name:
             for i in range(len(tree)):
-                if (i==0):
-                    print(spacing + "(symbol." + symbol.sym_name[tree[0]] + ",")
+                if (i == 0):
+                    print(spacing + "(symbol." +
+                          symbol.sym_name[tree[0]] + ",")
                 else:
                     printTree(tree[i], indent+1)
             print(spacing + "),")
         elif tree[0] in token.tok_name:
-            print(spacing + "(token." + token.tok_name[tree[0]] + ", '" + tree[1] + "'),")
+            print(spacing + "(token." +
+                  token.tok_name[tree[0]] + ", '" + tree[1] + "'),")
         else:
             print(spacing + str(tree))
     else:
@@ -359,7 +389,7 @@ def printTree(tree, indent):
 COMPOUND_STMT_PATTERN = (
     symbol.stmt,
     (symbol.compound_stmt, ['compound'])
-    )
+)
 
 
 DOCSTRING_STMT_PATTERN = (
@@ -370,20 +400,20 @@ DOCSTRING_STMT_PATTERN = (
        (symbol.testlist,
         (symbol.test,
          (symbol.or_test,
-           (symbol.and_test,
-            (symbol.not_test,
-             (symbol.comparison,
-              (symbol.expr,
-               (symbol.xor_expr,
-                (symbol.and_expr,
-                 (symbol.shift_expr,
-                  (symbol.arith_expr,
-                   (symbol.term,
-                    (symbol.factor,
-                     (symbol.power,
-                      (symbol.atom,
-                       (token.STRING, ['docstring'])
-                       ))))))))))))))))),
+          (symbol.and_test,
+           (symbol.not_test,
+            (symbol.comparison,
+             (symbol.expr,
+              (symbol.xor_expr,
+               (symbol.and_expr,
+                (symbol.shift_expr,
+                 (symbol.arith_expr,
+                  (symbol.term,
+                   (symbol.factor,
+                    (symbol.power,
+                     (symbol.atom,
+                      (token.STRING, ['docstring'])
+                      ))))))))))))))))),
      (token.NEWLINE, '')
      ))
 
@@ -403,7 +433,7 @@ DERIVATION_PATTERN = (
                (symbol.power,
                 (symbol.atom,
                  (token.NAME, ['classname'])
-   ))))))))))))))
+                 ))))))))))))))
 
 ASSIGNMENT_STMT_PATTERN = (
     symbol.stmt,
@@ -413,24 +443,25 @@ ASSIGNMENT_STMT_PATTERN = (
        (symbol.testlist,
         (symbol.test,
          (symbol.or_test,
-           (symbol.and_test,
-            (symbol.not_test,
-             (symbol.comparison,
-              (symbol.expr,
-               (symbol.xor_expr,
-                (symbol.and_expr,
-                 (symbol.shift_expr,
-                  (symbol.arith_expr,
-                   (symbol.term,
-                    (symbol.factor,
-                     (symbol.power,
-                      (symbol.atom,
-                       (token.NAME, ['varname']),
-       ))))))))))))))),
+          (symbol.and_test,
+           (symbol.not_test,
+            (symbol.comparison,
+             (symbol.expr,
+              (symbol.xor_expr,
+               (symbol.and_expr,
+                (symbol.shift_expr,
+                 (symbol.arith_expr,
+                  (symbol.term,
+                   (symbol.factor,
+                    (symbol.power,
+                     (symbol.atom,
+                      (token.NAME, ['varname']),
+                      ))))))))))))))),
        (token.EQUAL, '='),
        (symbol.testlist, ['rhs']))),
      (token.NEWLINE, ''),
-   ))
+     ))
+
 
 class ParseTreeInfo:
     docstring = ''
@@ -515,18 +546,23 @@ class ParseTreeInfo:
                     # Workaround for a weird issue with static and classmethods
                     if name == "def":
                         name = cstmt[3][1]
-                        self.function_info[name] = ParseTreeInfo(cstmt and cstmt[-1] or None, name, self.file)
-                        self.function_info[name].prototype = self.extract_tokens("", cstmt[4])
+                        self.function_info[name] = ParseTreeInfo(
+                            cstmt and cstmt[-1] or None, name, self.file)
+                        self.function_info[name].prototype = self.extract_tokens(
+                            "", cstmt[4])
                     else:
-                        self.function_info[name] = ParseTreeInfo(cstmt and cstmt[-1] or None, name, self.file)
-                        self.function_info[name].prototype = self.extract_tokens("", cstmt[3])
+                        self.function_info[name] = ParseTreeInfo(
+                            cstmt and cstmt[-1] or None, name, self.file)
+                        self.function_info[name].prototype = self.extract_tokens(
+                            "", cstmt[3])
                 elif cstmt[0] == symbol.classdef:
                     name = cstmt[2][1]
-                    self.class_info[name] = ParseTreeInfo(cstmt and cstmt[-1] or None, name, self.file)
+                    self.class_info[name] = ParseTreeInfo(
+                        cstmt and cstmt[-1] or None, name, self.file)
                     self.extract_derivs(self.class_info[name], cstmt)
 
     def extract_derivs(self, classinfo, tree):
-        if (len(tree)==8):
+        if (len(tree) == 8):
             derivs = tree[4]
             for deriv in derivs[1:]:
                 found, vars = self.match(DERIVATION_PATTERN, deriv)
@@ -537,7 +573,8 @@ class ParseTreeInfo:
         if (isinstance(tree, tuple)):
             if tree[0] in token.tok_name:
                 str = str + tree[1]
-                if (tree[1]==","): str=str+" "
+                if (tree[1] == ","):
+                    str = str+" "
             elif tree[0] in symbol.sym_name:
                 for sub in tree[1:]:
                     str = self.extract_tokens(str, sub)
@@ -553,6 +590,7 @@ class ParseTreeInfo:
 # Collectively, these make up all the data about all the code.
 #
 ########################################################################
+
 
 class CodeDatabase:
     def __init__(self, cxxlist, pylist):
@@ -571,16 +609,18 @@ class CodeDatabase:
             for type in idb.types.values():
                 if (type.flags & 8192) or type.scopedname not in self.types:
                     self.types[type.scopedname] = type
-                if (type.flags & 8192) and (type.atomictype == 0) and (type.scopedname.count(" ")==0) and (type.scopedname.count(":")==0):
+                if (type.flags & 8192) and (type.atomictype == 0) and (type.scopedname.count(" ") == 0) and (type.scopedname.count(":") == 0):
                     self.goodtypes[type.scopedname] = type
-                    self.typeExports.setdefault("pandac.PandaModules", []).append(type.scopedname)
+                    self.typeExports.setdefault(
+                        "pandac.PandaModules", []).append(type.scopedname)
             for func in idb.functions.values():
                 type = idb.types.get(func.classindex)
                 func.pyname = convertToPythonFn(func.componentname)
                 if (type == None):
                     self.funcs["GLOBAL."+func.pyname] = func
                     self.globalfn.append("GLOBAL."+func.pyname)
-                    self.funcExports.setdefault("pandac.PandaModules", []).append(func.pyname)
+                    self.funcExports.setdefault(
+                        "pandac.PandaModules", []).append(func.pyname)
                 else:
                     self.funcs[type.scopedname+"."+func.pyname] = func
         print("Reading Python sources files")
@@ -610,9 +650,9 @@ class CodeDatabase:
     def getClassComment(self, cn):
         type = self.types.get(cn)
         if (isinstance(type, InterrogateType)):
-            return textToHTML(type.comment,"/")
+            return textToHTML(type.comment, "/")
         elif (isinstance(type, ParseTreeInfo)):
-            return textToHTML(type.docstring,"#")
+            return textToHTML(type.docstring, "#")
         else:
             return ""
 
@@ -639,7 +679,7 @@ class CodeDatabase:
                     for enumvalue in enumtype.enumvalues:
                         name = convertToPythonFn(enumvalue.name)
                         result.append((name, "("+enumtype.componentname+")"))
-                    result.append(("",""))
+                    result.append(("", ""))
             return result
         else:
             return []
@@ -710,18 +750,20 @@ class CodeDatabase:
                 proto = self.formattedprotos[fn]
             else:
                 proto = func.prototype
-                proto = proto.replace(" inline "," ")
-                if (proto.startswith("inline ")): proto = proto[7:]
+                proto = proto.replace(" inline ", " ")
+                if (proto.startswith("inline ")):
+                    proto = proto[7:]
                 proto = proto.replace("basic_string< char >", "string")
-                proto = textToHTML(proto,"")
+                proto = textToHTML(proto, "")
                 if "." in fn:
                     for c in self.goodtypes.keys():
                         if c != fn.split(".")[0] and (c in proto):
-                            proto = re.sub("\\b%s\\b" % c, linkTo(urlprefix+c+urlsuffix, c), proto)
+                            proto = re.sub("\\b%s\\b" % c, linkTo(
+                                urlprefix+c+urlsuffix, c), proto)
                 self.formattedprotos[fn] = proto
             return proto
         elif (isinstance(func, ParseTreeInfo)):
-            return textToHTML("def "+func.name+func.prototype,"")
+            return textToHTML("def "+func.name+func.prototype, "")
         return fn
 
     def getFunctionComment(self, fn):
@@ -755,6 +797,7 @@ class CodeDatabase:
 #
 ########################################################################
 
+
 CLASS_RENAME_DICT = {
     # No longer used, now empty.
 }
@@ -783,17 +826,20 @@ def makeCodeDatabase(indirlist, directdirlist):
     findFiles(directdirlist, ".py", ignore, pyfiles)
     return CodeDatabase(cxxfiles, pyfiles)
 
+
 def generateFunctionDocs(code, method, urlprefix, urlsuffix):
     name = code.getFunctionName(method)
     proto = code.getFunctionPrototype(method, urlprefix, urlsuffix)
     comment = code.getFunctionComment(method)
-    if (comment == ""): comment = "Undocumented function.<br>\n"
+    if (comment == ""):
+        comment = "Undocumented function.<br>\n"
     chunk = '<table bgcolor="e8e8e8" border=0 cellspacing=0 cellpadding=5 width="100%"><tr><td>' + "\n"
     chunk = chunk + '<a name="' + name + '"><b>' + name + "</b></a><br>\n"
     chunk = chunk + proto + "<br>\n"
     chunk = chunk + comment
     chunk = chunk + "</td></tr></table><br>\n"
     return chunk
+
 
 def generateLinkTable(link, text, cols, urlprefix, urlsuffix):
     column = (len(link)+cols-1)/cols
@@ -805,15 +851,21 @@ def generateLinkTable(link, text, cols, urlprefix, urlsuffix):
             slot = i + column*j
             linkval = ""
             textval = ""
-            if (slot < len(link)): linkval = link[slot]
-            if (slot < len(text)): textval = text[slot]
-            if (i==0):
-                line = line + '<td width="' + str(percent) + '%">' + linkTo(urlprefix+linkval+urlsuffix, textval) + "</td>"
+            if (slot < len(link)):
+                linkval = link[slot]
+            if (slot < len(text)):
+                textval = text[slot]
+            if (i == 0):
+                line = line + '<td width="' + \
+                    str(percent) + '%">' + linkTo(urlprefix +
+                                                  linkval+urlsuffix, textval) + "</td>"
             else:
-                line = line + '<td>' + linkTo(urlprefix+linkval+urlsuffix, textval) + "</td>"
+                line = line + '<td>' + \
+                    linkTo(urlprefix+linkval+urlsuffix, textval) + "</td>"
         result = result + "<tr>" + line + "</tr>\n"
     result = result + "</table>\n"
     return result
+
 
 def generate(pversion, indirlist, directdirlist, docdir, header, footer, urlprefix, urlsuffix):
     code = makeCodeDatabase(indirlist, directdirlist)
@@ -824,7 +876,8 @@ def generate(pversion, indirlist, directdirlist, docdir, header, footer, urlpref
     for type in classes:
         body = "<h1>" + type + "</h1>\n"
         comment = code.getClassComment(type)
-        body = body + "<ul>\nfrom " + code.getClassImport(type) + " import " + type + "</ul>\n\n"
+        body = body + "<ul>\nfrom " + \
+            code.getClassImport(type) + " import " + type + "</ul>\n\n"
         body = body + "<ul>\n" + comment + "</ul>\n\n"
         inheritance = code.getInheritance(type)
         body = body + "<h2>Inheritance:</h2>\n<ul>\n"
@@ -842,7 +895,8 @@ def generate(pversion, indirlist, directdirlist, docdir, header, footer, urlpref
                 body = body + "<h2>Methods of "+sclass+":</h2>\n<ul>\n"
                 if len(constructors) > 0:
                     fn = code.getFunctionName(constructors[0])
-                    body = body + '<a href="#' + fn + '">' + fn + " (Constructor)</a><br>\n"
+                    body = body + '<a href="#' + fn + '">' + \
+                        fn + " (Constructor)</a><br>\n"
                 for method in methods:
                     fn = code.getFunctionName(method)
                     body = body + '<a href="#' + fn + '">' + fn + "</a><br>\n"
@@ -857,11 +911,14 @@ def generate(pversion, indirlist, directdirlist, docdir, header, footer, urlpref
         for sclass in inheritance:
             constructors = code.getClassConstructors(sclass)
             for constructor in constructors:
-                body = body + generateFunctionDocs(code, constructor, urlprefix, urlsuffix)
+                body = body + \
+                    generateFunctionDocs(
+                        code, constructor, urlprefix, urlsuffix)
             methods = code.getClassMethods(sclass)[:]
             methods.sort(None, str.lower)
             for method in methods:
-                body = body + generateFunctionDocs(code, method, urlprefix, urlsuffix)
+                body = body + \
+                    generateFunctionDocs(code, method, urlprefix, urlsuffix)
         body = header + body + footer
         writeFile(docdir + "/" + type + ".html", body)
         if type in CLASS_RENAME_DICT:
@@ -871,7 +928,8 @@ def generate(pversion, indirlist, directdirlist, docdir, header, footer, urlpref
     xclasses.sort(None, str.lower)
 
     index = "<h1>List of Classes - Panda " + pversion + "</h1>\n"
-    index = index + generateLinkTable(xclasses, xclasses, 3, urlprefix, urlsuffix)
+    index = index + \
+        generateLinkTable(xclasses, xclasses, 3, urlprefix, urlsuffix)
     fnlist = code.getGlobalFunctionList()[:]
     fnlist.sort(None, str.lower)
     fnnames = []
@@ -881,7 +939,7 @@ def generate(pversion, indirlist, directdirlist, docdir, header, footer, urlpref
     writeFile(docdir + "/classes.html", index)
 
     index = "<h1>List of Global Functions - Panda " + pversion + "</h1>\n"
-    index = index + generateLinkTable(fnnames, fnnames, 3,"#","")
+    index = index + generateLinkTable(fnnames, fnnames, 3, "#", "")
     for func in fnlist:
         index = index + generateFunctionDocs(code, func, urlprefix, urlsuffix)
     index = header + index + footer
@@ -914,7 +972,8 @@ def generate(pversion, indirlist, directdirlist, docdir, header, footer, urlpref
             ctypes = table[prefix][name]
             ctypes.sort(None, str.lower)
             for type in ctypes:
-                line = line + "<li>" + linkTo(urlprefix+type+urlsuffix+"#"+name, type) + "\n"
+                line = line + "<li>" + \
+                    linkTo(urlprefix+type+urlsuffix+"#"+name, type) + "\n"
             line = line + "</ul>\n"
             index = index + line + "\n"
     index = header + index + footer
@@ -922,13 +981,18 @@ def generate(pversion, indirlist, directdirlist, docdir, header, footer, urlpref
 
     index = "<h1>Panda " + pversion + "</h1>\n"
     index = index + "<ul>\n"
-    index = index + "<li>" + linkTo(urlprefix+"classes"+urlsuffix, "List of all Classes") + "\n"
+    index = index + "<li>" + \
+        linkTo(urlprefix+"classes"+urlsuffix, "List of all Classes") + "\n"
     index = index + "</ul>\n"
     index = index + "<ul>\n"
-    index = index + "<li>" + linkTo(urlprefix+"functions"+urlsuffix, "List of all Global Functions") + "\n"
+    index = index + "<li>" + \
+        linkTo(urlprefix+"functions"+urlsuffix,
+               "List of all Global Functions") + "\n"
     index = index + "</ul>\n"
     index = index + "<ul>\n"
-    index = index + "<li>" + linkTo(urlprefix+"methods"+urlsuffix, "List of all Methods (very long)") + "\n"
+    index = index + "<li>" + \
+        linkTo(urlprefix+"methods"+urlsuffix,
+               "List of all Methods (very long)") + "\n"
     index = index + "</ul>\n"
     writeFile(docdir + "/index.html", index)
 
@@ -949,7 +1013,7 @@ def expandImports(indirlist, directdirlist, fixdirlist):
         else:
             text = readFile(fixfile)
             writeFile(fixfile+".orig", text)
-        text = text.replace("\r","")
+        text = text.replace("\r", "")
         lines = text.split("\n")
         used = {}
         for id in IDENTIFIER.findall(text):
@@ -959,14 +1023,14 @@ def expandImports(indirlist, directdirlist, fixdirlist):
             mat = IMPORTSTAR.match(line)
             if (mat):
                 module = mat.group(1)
-                if (fixfile.count("/")!=0) and (module.count(".")==0):
+                if (fixfile.count("/") != 0) and (module.count(".") == 0):
                     modfile = os.path.dirname(fixfile)+"/"+module+".py"
                     if (os.path.isfile(modfile)):
                         module = pathToModule(modfile)
                 typeExports = code.getTypeExports(module)
                 funcExports = code.getFuncExports(module)
                 varExports = code.getVarExports(module)
-                if (len(typeExports)+len(funcExports)+len(varExports)==0):
+                if (len(typeExports)+len(funcExports)+len(varExports) == 0):
                     result.append(line)
                     print(fixfile + " : " + module + " : no exports")
                 else:

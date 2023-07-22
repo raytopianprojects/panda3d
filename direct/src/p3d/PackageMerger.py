@@ -12,8 +12,10 @@ from panda3d.core import *
 import shutil
 import os
 
+
 class PackageMergerError(Exception):
     pass
+
 
 class PackageMerger:
     """ This class will combine two or more separately-built stage
@@ -55,7 +57,8 @@ class PackageMerger:
 
             self.validatePackageContents()
 
-            self.descFile.quickVerify(packageDir = self.sourceDir, notify = PackageMerger.notify, correctSelf = True)
+            self.descFile.quickVerify(
+                packageDir=self.sourceDir, notify=PackageMerger.notify, correctSelf=True)
 
             self.packageSeq = SeqValue()
             self.packageSeq.loadXml(xpackage, 'seq')
@@ -67,7 +70,8 @@ class PackageMerger:
             if ximport:
                 self.importDescFile = FileSpec()
                 self.importDescFile.loadXml(ximport)
-                self.importDescFile.quickVerify(packageDir = self.sourceDir, notify = PackageMerger.notify, correctSelf = True)
+                self.importDescFile.quickVerify(
+                    packageDir=self.sourceDir, notify=PackageMerger.notify, correctSelf=True)
 
         def makeXml(self):
             """ Returns a new TiXmlElement. """
@@ -102,23 +106,26 @@ class PackageMerger:
                 return
 
             needsChange = False
-            packageDescFullpath = Filename(self.sourceDir, self.descFile.filename)
+            packageDescFullpath = Filename(
+                self.sourceDir, self.descFile.filename)
             packageDir = Filename(packageDescFullpath.getDirname())
             doc = TiXmlDocument(packageDescFullpath.toOsSpecific())
             if not doc.LoadFile():
-                message = "Could not read XML file: %s" % (self.descFile.filename)
+                message = "Could not read XML file: %s" % (
+                    self.descFile.filename)
                 raise OSError(message)
 
             xpackage = doc.FirstChildElement('package')
             if not xpackage:
-                message = "No package definition: %s" % (self.descFile.filename)
+                message = "No package definition: %s" % (
+                    self.descFile.filename)
                 raise OSError(message)
 
             xcompressed = xpackage.FirstChildElement('compressed_archive')
             if xcompressed:
                 spec = FileSpec()
                 spec.loadXml(xcompressed)
-                if not spec.quickVerify(packageDir = packageDir, notify = PackageMerger.notify, correctSelf = True):
+                if not spec.quickVerify(packageDir=packageDir, notify=PackageMerger.notify, correctSelf=True):
                     spec.storeXml(xcompressed)
                     needsChange = True
 
@@ -126,16 +133,18 @@ class PackageMerger:
             while xpatch:
                 spec = FileSpec()
                 spec.loadXml(xpatch)
-                if not spec.quickVerify(packageDir = packageDir, notify = PackageMerger.notify, correctSelf = True):
+                if not spec.quickVerify(packageDir=packageDir, notify=PackageMerger.notify, correctSelf=True):
                     spec.storeXml(xpatch)
                     needsChange = True
 
                 xpatch = xpatch.NextSiblingElement('patch')
 
             if needsChange:
-                PackageMerger.notify.info("Rewriting %s" % (self.descFile.filename))
+                PackageMerger.notify.info(
+                    "Rewriting %s" % (self.descFile.filename))
                 doc.SaveFile()
-                self.descFile.quickVerify(packageDir = self.sourceDir, notify = PackageMerger.notify, correctSelf = True)
+                self.descFile.quickVerify(
+                    packageDir=self.sourceDir, notify=PackageMerger.notify, correctSelf=True)
 
     # PackageMerger constructor
     def __init__(self, installDir):
@@ -279,11 +288,12 @@ class PackageMerger:
             # if it doesn't work.
             try:
                 st = os.stat(sourceFilename.toOsSpecific())
-                os.utime(targetFilename.toOsSpecific(), (st.st_atime, st.st_mtime))
+                os.utime(targetFilename.toOsSpecific(),
+                         (st.st_atime, st.st_mtime))
             except OSError:
                 pass
 
-    def merge(self, sourceDir, packageNames = None):
+    def merge(self, sourceDir, packageNames=None):
         """ Adds the contents of the indicated source directory into
         the current pool.  If packageNames is not None, it is a list
         of package names that we wish to include from the source;
@@ -308,4 +318,3 @@ class PackageMerger:
 
         self.contentsSeq += 1
         self.__writeContentsFile()
-

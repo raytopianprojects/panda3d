@@ -3,7 +3,8 @@ This module defines the various "meta intervals", which execute other
 intervals either in parallel or in a specified sequential order.
 """
 
-__all__ = ['MetaInterval', 'Sequence', 'Parallel', 'ParallelEndTogether', 'Track']
+__all__ = ['MetaInterval', 'Sequence',
+           'Parallel', 'ParallelEndTogether', 'Track']
 
 from panda3d.core import *
 from panda3d.direct import *
@@ -11,12 +12,13 @@ from direct.directnotify.DirectNotifyGlobal import *
 from .IntervalManager import ivalMgr
 from . import Interval
 from direct.task.Task import TaskManager
-#if __debug__:
+# if __debug__:
 #    import direct.showbase.PythonUtil as PythonUtil
 
 PREVIOUS_END = CMetaInterval.RSPreviousEnd
 PREVIOUS_START = CMetaInterval.RSPreviousBegin
 TRACK_START = CMetaInterval.RSLevelBegin
+
 
 class MetaInterval(CMetaInterval):
     # This is a Python-C++ hybrid class.  MetaInterval is a Python
@@ -28,17 +30,18 @@ class MetaInterval(CMetaInterval):
     notify = directNotify.newCategory("MetaInterval")
 
     SequenceNum = 1
+
     def __init__(self, *ivals, **kw):
-        #if __debug__:
+        # if __debug__:
         #    self.debugInitTraceback = PythonUtil.StackTrace(
         #        "create interval", 1, 10)
 
         name = None
-        #if len(ivals) == 2 and isinstance(ivals[1], str):
+        # if len(ivals) == 2 and isinstance(ivals[1], str):
         #    # If the second parameter is a string, it's the name.
         #    name = ivals[1]
         #    ivals = ivals[0]
-        #else:
+        # else:
 
         # Look for the name in the keyword params.
         if 'name' in kw:
@@ -71,7 +74,8 @@ class MetaInterval(CMetaInterval):
             del kw['duration']
 
         if kw:
-            self.notify.error("Unexpected keyword parameters: %s" % (list(kw.keys())))
+            self.notify.error(
+                "Unexpected keyword parameters: %s" % (list(kw.keys())))
 
         # We must allow the old style: Track([ival0, ival1, ...]) as
         # well as the new style: Track(ival0, ival1, ...)
@@ -81,11 +85,11 @@ class MetaInterval(CMetaInterval):
         # this case, but for now I prefer just to document it as a
         # bug, since it will go away when we eventually remove support
         # for the old interface.
-        #if len(ivals) == 1 and \
+        # if len(ivals) == 1 and \
         #   (isinstance(ivals[0], tuple) or \
         #    isinstance(ivals[0], list)):
         #    self.ivals = ivals[0]
-        #else:
+        # else:
 
         self.ivals = ivals
 
@@ -106,7 +110,8 @@ class MetaInterval(CMetaInterval):
         self.pstats = None
         if __debug__ and TaskManager.taskTimerVerbose:
             self.pname = name.split('-', 1)[0]
-            self.pstats = PStatCollector("App:Show code:ivalLoop:%s" % (self.pname))
+            self.pstats = PStatCollector(
+                "App:Show code:ivalLoop:%s" % (self.pname))
 
         self.pythonIvals = []
 
@@ -115,8 +120,6 @@ class MetaInterval(CMetaInterval):
         # except that it makes it easier for the programmer to detect
         # when a MetaInterval is misdefined at creation time.
         assert self.validateComponents(self.ivals)
-
-
 
     # Functions to make the MetaInterval object act just like a Python
     # list of intervals:
@@ -149,7 +152,7 @@ class MetaInterval(CMetaInterval):
         self.__ivalsDirty = 1
         assert self.validateComponent(ival)
 
-    def pop(self, index = None):
+    def pop(self, index=None):
         # Returns element index (or the last element) and removes it
         # from the list.
         if isinstance(self.ivals, tuple):
@@ -174,7 +177,7 @@ class MetaInterval(CMetaInterval):
         self.ivals.reverse()
         self.__ivalsDirty = 1
 
-    def sort(self, cmpfunc = None):
+    def sort(self, cmpfunc=None):
         # Sorts the intervals. (?)
         if isinstance(self.ivals, tuple):
             self.ivals = list(self.ivals)
@@ -268,7 +271,8 @@ class MetaInterval(CMetaInterval):
 
         self.pushLevel(name, relTime, relTo)
         for ival in list:
-            self.addInterval(ival, maxDuration - ival.getDuration(), TRACK_START)
+            self.addInterval(ival, maxDuration -
+                             ival.getDuration(), TRACK_START)
         self.popLevel(duration)
 
     def addTrack(self, trackList, name, relTime, relTo, duration):
@@ -356,12 +360,12 @@ class MetaInterval(CMetaInterval):
 
     t = property(CMetaInterval.getT, setT)
 
-    def start(self, startT = 0.0, endT = -1.0, playRate = 1.0):
+    def start(self, startT=0.0, endT=-1.0, playRate=1.0):
         self.__updateIvals()
         self.setupPlay(startT, endT, playRate, 0)
         self.__manager.addInterval(self)
 
-    def loop(self, startT = 0.0, endT = -1.0, playRate = 1.0):
+    def loop(self, startT=0.0, endT=-1.0, playRate=1.0):
         self.__updateIvals()
         self.setupPlay(startT, endT, playRate, 1)
         self.__manager.addInterval(self)
@@ -373,7 +377,7 @@ class MetaInterval(CMetaInterval):
         self.privPostEvent()
         return self.getT()
 
-    def resume(self, startT = None):
+    def resume(self, startT=None):
         self.__updateIvals()
         if startT != None:
             self.setT(startT)
@@ -411,7 +415,7 @@ class MetaInterval(CMetaInterval):
         # this is the same as asking that the component is itself an
         # Interval.
         return isinstance(component, CInterval) or \
-               isinstance(component, Interval.Interval)
+            isinstance(component, Interval.Interval)
 
     def validateComponents(self, components):
         # This is called only in debug mode to verify that all the
@@ -504,9 +508,11 @@ class MetaInterval(CMetaInterval):
                 ival = None
         except:
             if ival != None:
-                print("Exception occurred while processing %s of %s:" % (ival.getName(), self.getName()))
+                print("Exception occurred while processing %s of %s:" %
+                      (ival.getName(), self.getName()))
             else:
-                print("Exception occurred while processing %s:" % (self.getName()))
+                print("Exception occurred while processing %s:" %
+                      (self.getName()))
             print(self)
             raise
 
@@ -547,7 +553,6 @@ class MetaInterval(CMetaInterval):
         self.__updateIvals()
         return CMetaInterval.getIntervalStartTime(self, *args, **kw)
 
-
     def getDuration(self):
         # This function overrides from the parent level to force it to
         # update the interval list first, if necessary.
@@ -571,8 +576,7 @@ class MetaInterval(CMetaInterval):
         self.__updateIvals()
         return CMetaInterval.__str__(self, *args, **kw)
 
-
-    def timeline(self, out = None):
+    def timeline(self, out=None):
         # This function overrides from the parent level to force it to
         # update the interval list first, if necessary.
 
@@ -604,15 +608,19 @@ class Sequence(MetaInterval):
     def applyIvals(self, meta, relTime, relTo):
         meta.addSequence(self.ivals, self.getName(),
                          relTime, relTo, self.phonyDuration)
+
+
 class Parallel(MetaInterval):
     def applyIvals(self, meta, relTime, relTo):
         meta.addParallel(self.ivals, self.getName(),
                          relTime, relTo, self.phonyDuration)
 
+
 class ParallelEndTogether(MetaInterval):
     def applyIvals(self, meta, relTime, relTo):
         meta.addParallelEndTogether(self.ivals, self.getName(),
-                         relTime, relTo, self.phonyDuration)
+                                    relTime, relTo, self.phonyDuration)
+
 
 class Track(MetaInterval):
     def applyIvals(self, meta, relTime, relTo):
@@ -626,7 +634,7 @@ class Track(MetaInterval):
         # this is the same as asking that the component is itself an
         # Interval.
 
-        if not (isinstance(tupleObj, tuple) or \
+        if not (isinstance(tupleObj, tuple) or
                 isinstance(tupleObj, list)):
             # It's not a tuple.
             return 0
@@ -638,7 +646,7 @@ class Track(MetaInterval):
         else:
             relTo = TRACK_START
 
-        if not (isinstance(relTime, float) or \
+        if not (isinstance(relTime, float) or
                 isinstance(relTime, int)):
             # First parameter is not a number.
             return 0

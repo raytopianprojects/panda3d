@@ -1,12 +1,12 @@
-## import wx
-## import os
-## from wx.lib.agw import fourwaysplitter as FWS
+# import wx
+# import os
+# from wx.lib.agw import fourwaysplitter as FWS
 
 from pandac.PandaModules import *
 from direct.wxwidgets.WxPandaShell import *
 from direct.directtools.DirectSelection import SelectionRay
 
-#from ViewPort import *
+# from ViewPort import *
 from .ObjectPaletteUI import *
 from .ObjectPropertyUI import *
 from .SceneGraphUI import *
@@ -17,6 +17,7 @@ from .ActionMgr import *
 from .AnimControlUI import *
 from .CurveAnimUI import *
 from .GraphEditorUI import *
+
 
 class PandaTextDropTarget(wx.TextDropTarget):
     def __init__(self, editor, view):
@@ -42,7 +43,7 @@ class PandaTextDropTarget(wx.TextDropTarget):
 
         # create ray from the camera to detect 3d position
         iRay = SelectionRay(self.view.camera)
-        iRay.collider.setFromLens(self.view.camNode, mx, my)
+        iRay.collider.setFromLens(self.view.cam_node, mx, my)
         hitPt = None
         if self.editor.objectMgr.currLiveNP:
             iRay.collideWithGeom()
@@ -94,12 +95,14 @@ class PandaTextDropTarget(wx.TextDropTarget):
 
             # transform newobj to cursor position
             obj = self.editor.objectMgr.findObjectByNodePath(newobj)
-            action = ActionTransformObj(self.editor, obj[OG.OBJ_UID], Mat4(np.getMat()))
+            action = ActionTransformObj(
+                self.editor, obj[OG.OBJ_UID], Mat4(np.getMat()))
             self.editor.actionMgr.push(action)
             np.remove()
             action()
         iRay.collisionNodePath.removeNode()
         del iRay
+
 
 ID_NEW = 101
 ID_OPEN = 102
@@ -126,32 +129,34 @@ ID_CURVE_ANIM = 603
 ID_ANIM = 701
 ID_GRAPH = 702
 
+
 class LevelEditorUIBase(WxPandaShell):
     """ Class for Panda3D LevelEditor """
+
     def __init__(self, editor):
         self.MENU_TEXTS.update({
-            ID_NEW : ("&New", "LE-NewScene"),
-            ID_OPEN : ("&Open", "LE-OpenScene"),
-            ID_SAVE : ("&Save", "LE-SaveScene"),
-            ID_SAVE_AS : ("Save &As", None),
-            ID_EXPORT_TO_MAYA : ("Export to Maya", None),
-            wx.ID_EXIT : ("&Quit", "LE-Quit"),
-            ID_DUPLICATE : ("&Duplicate", "LE-Duplicate"),
-            ID_MAKE_LIVE : ("Make &Live", "LE-MakeLive"),
-            ID_UNDO : ("&Undo", "LE-Undo"),
-            ID_REDO : ("&Redo", "LE-Redo"),
-            ID_SHOW_GRID : ("&Show Grid", None),
-            ID_GRID_SIZE : ("&Grid Size", None),
-            ID_GRID_SNAP : ("Grid S&nap", None),
-            ID_SHOW_PANDA_OBJECT : ("Show &Panda Objects", None),
-            ID_HOT_KEYS : ("&Hot Keys", None),
-            ID_PARENT_TO_SELECTED : ("&Parent To Selected", None),
-            ID_CREATE_CURVE : ("&Create Curve", None),
-            ID_EDIT_CURVE : ("&Edit Curve", None),
-            ID_CURVE_ANIM : ("&Curve Animation", None),
-            ID_ANIM : ("&Edit Animation", None),
-            ID_GRAPH : ("&Graph Editor", None)
-            })
+            ID_NEW: ("&New", "LE-NewScene"),
+            ID_OPEN: ("&Open", "LE-OpenScene"),
+            ID_SAVE: ("&Save", "LE-SaveScene"),
+            ID_SAVE_AS: ("Save &As", None),
+            ID_EXPORT_TO_MAYA: ("Export to Maya", None),
+            wx.ID_EXIT: ("&Quit", "LE-Quit"),
+            ID_DUPLICATE: ("&Duplicate", "LE-Duplicate"),
+            ID_MAKE_LIVE: ("Make &Live", "LE-MakeLive"),
+            ID_UNDO: ("&Undo", "LE-Undo"),
+            ID_REDO: ("&Redo", "LE-Redo"),
+            ID_SHOW_GRID: ("&Show Grid", None),
+            ID_GRID_SIZE: ("&Grid Size", None),
+            ID_GRID_SNAP: ("Grid S&nap", None),
+            ID_SHOW_PANDA_OBJECT: ("Show &Panda Objects", None),
+            ID_HOT_KEYS: ("&Hot Keys", None),
+            ID_PARENT_TO_SELECTED: ("&Parent To Selected", None),
+            ID_CREATE_CURVE: ("&Create Curve", None),
+            ID_EDIT_CURVE: ("&Edit Curve", None),
+            ID_CURVE_ANIM: ("&Curve Animation", None),
+            ID_ANIM: ("&Edit Animation", None),
+            ID_GRAPH: ("&Graph Editor", None)
+        })
 
         self.editor = editor
         WxPandaShell.__init__(self, fStartDirect=True)
@@ -172,25 +177,31 @@ class LevelEditorUIBase(WxPandaShell):
         menuItem = self.menuFile.Insert(0, ID_NEW, self.MENU_TEXTS[ID_NEW][0])
         self.Bind(wx.EVT_MENU, self.onNew, menuItem)
 
-        menuItem = self.menuFile.Insert(1, ID_OPEN, self.MENU_TEXTS[ID_OPEN][0])
+        menuItem = self.menuFile.Insert(
+            1, ID_OPEN, self.MENU_TEXTS[ID_OPEN][0])
         self.Bind(wx.EVT_MENU, self.onOpen, menuItem)
 
-        menuItem = self.menuFile.Insert(2, ID_SAVE, self.MENU_TEXTS[ID_SAVE][0])
+        menuItem = self.menuFile.Insert(
+            2, ID_SAVE, self.MENU_TEXTS[ID_SAVE][0])
         self.Bind(wx.EVT_MENU, self.onSave, menuItem)
 
-        menuItem = self.menuFile.Insert(3, ID_SAVE_AS, self.MENU_TEXTS[ID_SAVE_AS][0])
+        menuItem = self.menuFile.Insert(
+            3, ID_SAVE_AS, self.MENU_TEXTS[ID_SAVE_AS][0])
         self.Bind(wx.EVT_MENU, self.onSaveAs, menuItem)
 
-        menuItem = self.menuFile.Insert(4, ID_EXPORT_TO_MAYA, self.MENU_TEXTS[ID_EXPORT_TO_MAYA][0])
+        menuItem = self.menuFile.Insert(
+            4, ID_EXPORT_TO_MAYA, self.MENU_TEXTS[ID_EXPORT_TO_MAYA][0])
         self.Bind(wx.EVT_MENU, self.onExportToMaya, menuItem)
 
         self.menuEdit = wx.Menu()
         self.menuBar.Insert(1, self.menuEdit, "&Edit")
 
-        menuItem = self.menuEdit.Append(ID_DUPLICATE, self.MENU_TEXTS[ID_DUPLICATE][0])
+        menuItem = self.menuEdit.Append(
+            ID_DUPLICATE, self.MENU_TEXTS[ID_DUPLICATE][0])
         self.Bind(wx.EVT_MENU, self.onDuplicate, menuItem)
 
-        menuItem = self.menuEdit.Append(ID_MAKE_LIVE, self.MENU_TEXTS[ID_MAKE_LIVE][0])
+        menuItem = self.menuEdit.Append(
+            ID_MAKE_LIVE, self.MENU_TEXTS[ID_MAKE_LIVE][0])
         self.Bind(wx.EVT_MENU, self.onMakeLive, menuItem)
 
         menuItem = self.menuEdit.Append(ID_UNDO, self.MENU_TEXTS[ID_UNDO][0])
@@ -202,59 +213,73 @@ class LevelEditorUIBase(WxPandaShell):
         self.menuOptions = wx.Menu()
         self.menuBar.Insert(2, self.menuOptions, "&Options")
 
-        self.showGridMenuItem = self.menuOptions.Append(ID_SHOW_GRID, self.MENU_TEXTS[ID_SHOW_GRID][0], kind = wx.ITEM_CHECK)
+        self.showGridMenuItem = self.menuOptions.Append(
+            ID_SHOW_GRID, self.MENU_TEXTS[ID_SHOW_GRID][0], kind=wx.ITEM_CHECK)
         self.Bind(wx.EVT_MENU, self.toggleGrid, self.showGridMenuItem)
 
-        self.gridSizeMenuItem = self.menuOptions.Append(ID_GRID_SIZE, self.MENU_TEXTS[ID_GRID_SIZE][0])
+        self.gridSizeMenuItem = self.menuOptions.Append(
+            ID_GRID_SIZE, self.MENU_TEXTS[ID_GRID_SIZE][0])
         self.Bind(wx.EVT_MENU, self.onGridSize, self.gridSizeMenuItem)
 
-        self.gridSnapMenuItem = self.menuOptions.Append(ID_GRID_SNAP, self.MENU_TEXTS[ID_GRID_SNAP][0], kind = wx.ITEM_CHECK)
+        self.gridSnapMenuItem = self.menuOptions.Append(
+            ID_GRID_SNAP, self.MENU_TEXTS[ID_GRID_SNAP][0], kind=wx.ITEM_CHECK)
         self.Bind(wx.EVT_MENU, self.toggleGridSnap, self.gridSnapMenuItem)
 
-        self.showPandaObjectsMenuItem = self.menuOptions.Append(ID_SHOW_PANDA_OBJECT, self.MENU_TEXTS[ID_SHOW_PANDA_OBJECT][0], kind = wx.ITEM_CHECK)
-        self.Bind(wx.EVT_MENU, self.onShowPandaObjects, self.showPandaObjectsMenuItem)
+        self.showPandaObjectsMenuItem = self.menuOptions.Append(
+            ID_SHOW_PANDA_OBJECT, self.MENU_TEXTS[ID_SHOW_PANDA_OBJECT][0], kind=wx.ITEM_CHECK)
+        self.Bind(wx.EVT_MENU, self.onShowPandaObjects,
+                  self.showPandaObjectsMenuItem)
 
-        self.parentToSelectedMenuItem = self.menuOptions.Append(ID_PARENT_TO_SELECTED, self.MENU_TEXTS[ID_PARENT_TO_SELECTED][0], kind = wx.ITEM_CHECK)
+        self.parentToSelectedMenuItem = self.menuOptions.Append(
+            ID_PARENT_TO_SELECTED, self.MENU_TEXTS[ID_PARENT_TO_SELECTED][0], kind=wx.ITEM_CHECK)
 
-        self.hotKeysMenuItem = self.menuOptions.Append(ID_HOT_KEYS, self.MENU_TEXTS[ID_HOT_KEYS][0])
+        self.hotKeysMenuItem = self.menuOptions.Append(
+            ID_HOT_KEYS, self.MENU_TEXTS[ID_HOT_KEYS][0])
         self.Bind(wx.EVT_MENU, self.onHotKeys, self.hotKeysMenuItem)
 
         self.menuCurve = wx.Menu()
         self.menuBar.Insert(3, self.menuCurve, "&CurveMode")
 
-        self.createCurveMenuItem = self.menuCurve.Append(ID_CREATE_CURVE, self.MENU_TEXTS[ID_CREATE_CURVE][0], kind = wx.ITEM_CHECK)
+        self.createCurveMenuItem = self.menuCurve.Append(
+            ID_CREATE_CURVE, self.MENU_TEXTS[ID_CREATE_CURVE][0], kind=wx.ITEM_CHECK)
         self.Bind(wx.EVT_MENU, self.onCreateCurve, self.createCurveMenuItem)
 
-        self.editCurveMenuItem = self.menuCurve.Append(ID_EDIT_CURVE, self.MENU_TEXTS[ID_EDIT_CURVE][0], kind = wx.ITEM_CHECK)
+        self.editCurveMenuItem = self.menuCurve.Append(
+            ID_EDIT_CURVE, self.MENU_TEXTS[ID_EDIT_CURVE][0], kind=wx.ITEM_CHECK)
         self.Bind(wx.EVT_MENU, self.onEditCurve, self.editCurveMenuItem)
 
-        self.curveAnimMenuItem = self.menuCurve.Append(ID_CURVE_ANIM, self.MENU_TEXTS[ID_CURVE_ANIM][0], kind = wx.ITEM_CHECK)
+        self.curveAnimMenuItem = self.menuCurve.Append(
+            ID_CURVE_ANIM, self.MENU_TEXTS[ID_CURVE_ANIM][0], kind=wx.ITEM_CHECK)
         self.Bind(wx.EVT_MENU, self.onCurveAnim, self.curveAnimMenuItem)
 
         self.menuAnim = wx.Menu()
         self.menuBar.Insert(4, self.menuAnim, "&AnimationMode")
 
-        self.editAnimMenuItem = self.menuAnim.Append(ID_ANIM, self.MENU_TEXTS[ID_ANIM][0], kind = wx.ITEM_CHECK)
+        self.editAnimMenuItem = self.menuAnim.Append(
+            ID_ANIM, self.MENU_TEXTS[ID_ANIM][0], kind=wx.ITEM_CHECK)
         self.Bind(wx.EVT_MENU, self.onAnimation, self.editAnimMenuItem)
 
-        self.graphEditorMenuItem = self.menuAnim.Append(ID_GRAPH, self.MENU_TEXTS[ID_GRAPH][0], kind = wx.ITEM_CHECK)
+        self.graphEditorMenuItem = self.menuAnim.Append(
+            ID_GRAPH, self.MENU_TEXTS[ID_GRAPH][0], kind=wx.ITEM_CHECK)
         self.Bind(wx.EVT_MENU, self.onGraphEditor, self.graphEditorMenuItem)
 
         WxPandaShell.createMenu(self)
 
-    def onGraphEditor(self,e):
+    def onGraphEditor(self, e):
         if base.direct.selected.last == None:
-            dlg = wx.MessageDialog(None, 'Please select a object first.', 'NOTICE', wx.OK )
+            dlg = wx.MessageDialog(
+                None, 'Please select a object first.', 'NOTICE', wx.OK)
             dlg.ShowModal()
             dlg.Destroy()
             self.graphEditorMenuItem.Check(False)
         else:
-            currentObj = self.editor.objectMgr.findObjectByNodePath(base.direct.selected.last)
+            currentObj = self.editor.objectMgr.findObjectByNodePath(
+                base.direct.selected.last)
             self.graphEditorUI = GraphEditorUI(self, self.editor, currentObj)
             self.graphEditorUI.Show()
             self.graphEditorMenuItem.Check(True)
 
-    def onAnimation(self,e):
+    def onAnimation(self, e):
         if self.editor.mode != self.editor.ANIM_MODE:
             self.animUI = AnimControlUI(self, self.editor)
             self.animUI.Show()
@@ -262,12 +287,12 @@ class LevelEditorUIBase(WxPandaShell):
         if self.editor.mode == self.editor.ANIM_MODE:
             self.editAnimMenuItem.Check(True)
 
-    def onCurveAnim(self,e):
+    def onCurveAnim(self, e):
         self.curveAnimUI = CurveAnimUI(self, self.editor)
         self.curveAnimUI.Show()
         self.curveAnimMenuItem.Check(True)
 
-    def onCreateCurve(self,e):
+    def onCreateCurve(self, e):
         """Function to invoke curve creating, need to check previous mode"""
         if self.editor.mode == self.editor.CREATE_CURVE_MODE:
             self.createCurveMenuItem.Check(False)
@@ -281,20 +306,22 @@ class LevelEditorUIBase(WxPandaShell):
             else:
                 self.currentView = self.getCurrentView()
                 if self.currentView == None:
-                    dlg = wx.MessageDialog(None, 'Please select a viewport first.Do not support curve creation under four viewports.', 'NOTICE', wx.OK )
+                    dlg = wx.MessageDialog(
+                        None, 'Please select a viewport first.Do not support curve creation under four viewports.', 'NOTICE', wx.OK)
                     dlg.ShowModal()
                     dlg.Destroy()
                     self.createCurveMenuItem.Check(False)
                 else:
                     self.editor.mode = self.editor.CREATE_CURVE_MODE
-                    self.editor.updateStatusReadout('Please press ENTER to end the curve creation.')
+                    self.editor.updateStatusReadout(
+                        'Please press ENTER to end the curve creation.')
                     degreeUI = CurveDegreeUI(self, -1, 'Curve Degree')
                     degreeUI.ShowModal()
                     degreeUI.Destroy()
                     base.direct.manipulationControl.disableManipulation()
                     self.editCurveMenuItem.Check(False)
 
-    def onEditCurve(self,e):
+    def onEditCurve(self, e):
         """Function to invoke curve editing and translate global information to local information. Need to check previous mode"""
         if self.editor.mode == self.editor.EDIT_CURVE_MODE:
             self.editCurveMenuItem.Check(False)
@@ -307,25 +334,30 @@ class LevelEditorUIBase(WxPandaShell):
                 self.onEditCurve(None)
             else:
                 if base.direct.selected.last == None:
-                    dlg = wx.MessageDialog(None, 'Please select a curve first.', 'NOTICE', wx.OK )
+                    dlg = wx.MessageDialog(
+                        None, 'Please select a curve first.', 'NOTICE', wx.OK)
                     dlg.ShowModal()
                     dlg.Destroy()
                     self.editCurveMenuItem.Check(False)
-                if base.direct.selected.last != None :
+                if base.direct.selected.last != None:
                     base.direct.manipulationControl.enableManipulation()
                     self.createCurveMenuItem.Check(False)
-                    self.curveObj = self.editor.objectMgr.findObjectByNodePath(base.direct.selected.last)
+                    self.curveObj = self.editor.objectMgr.findObjectByNodePath(
+                        base.direct.selected.last)
                     if self.curveObj[OG.OBJ_DEF].name == '__Curve__':
                         self.editor.mode = self.editor.EDIT_CURVE_MODE
-                        self.editor.updateStatusReadout('Please press ENTER to end the curve editing.')
+                        self.editor.updateStatusReadout(
+                            'Please press ENTER to end the curve editing.')
                         self.editor.curveEditor.currentRope = self.curveObj[OG.OBJ_NP]
                         self.editor.curveEditor.curveControl = self.curveObj[OG.OBJ_PROP]['curveInfo']
                         self.editor.curveEditor.degree = self.curveObj[OG.OBJ_PROP]['Degree']
                         for item in self.editor.curveEditor.curveControl:
                             item[1].show()
-                            self.editor.curveEditor.curve.append((None, item[1].getPos()))
+                            self.editor.curveEditor.curve.append(
+                                (None, item[1].getPos()))
                     else:
-                        dlg = wx.MessageDialog(None, 'Please select a curve first.', 'NOTICE', wx.OK )
+                        dlg = wx.MessageDialog(
+                            None, 'Please select a curve first.', 'NOTICE', wx.OK)
                         dlg.ShowModal()
                         dlg.Destroy()
                         self.editCurveMenuItem.Check(False)
@@ -342,7 +374,7 @@ class LevelEditorUIBase(WxPandaShell):
                 menuItem = self.menuBar.FindItemById(id)
                 hotKey = hotKeyDict.get(desc[1])
                 if hotKey:
-                    menuItem.SetText(desc[0] + "\t%s"%hotKey)
+                    menuItem.SetText(desc[0] + "\t%s" % hotKey)
 
     def createInterface(self):
         WxPandaShell.createInterface(self)
@@ -370,17 +402,23 @@ class LevelEditorUIBase(WxPandaShell):
         self.rightBarDownPane0 = wx.Panel(self.rightBarDownNB, -1)
         self.rightBarDownNB.AddPage(self.rightBarDownPane0, 'Layers')
 
-        self.topView.SetDropTarget(PandaTextDropTarget(self.editor, self.topView))
-        self.frontView.SetDropTarget(PandaTextDropTarget(self.editor, self.frontView))
-        self.leftView.SetDropTarget(PandaTextDropTarget(self.editor, self.leftView))
-        self.perspView.SetDropTarget(PandaTextDropTarget(self.editor, self.perspView))
+        self.topView.SetDropTarget(
+            PandaTextDropTarget(self.editor, self.topView))
+        self.frontView.SetDropTarget(
+            PandaTextDropTarget(self.editor, self.frontView))
+        self.leftView.SetDropTarget(
+            PandaTextDropTarget(self.editor, self.leftView))
+        self.perspView.SetDropTarget(
+            PandaTextDropTarget(self.editor, self.perspView))
 
         self.rightBarDownPane.Layout()
         self.Layout()
 
-        self.objectPaletteUI = ObjectPaletteUI(self.leftBarUpPane0, self.editor)
+        self.objectPaletteUI = ObjectPaletteUI(
+            self.leftBarUpPane0, self.editor)
         self.protoPaletteUI = ProtoPaletteUI(self.leftBarUpPane1, self.editor)
-        self.objectPropertyUI = ObjectPropertyUI(self.rightBarUpPane, self.editor)
+        self.objectPropertyUI = ObjectPropertyUI(
+            self.rightBarUpPane, self.editor)
         self.sceneGraphUI = SceneGraphUI(self.leftBarDownPane0, self.editor)
         self.layerEditorUI = LayerEditorUI(self.rightBarDownPane0, self.editor)
 
@@ -443,27 +481,27 @@ class LevelEditorUIBase(WxPandaShell):
 
     def onKeyEvent(self, evt):
         input = ''
-        if evt.GetKeyCode() in range(97, 123): # for keys from a to z
-            if evt.GetModifiers() == 4: # when shift is pressed while caps lock is on
-                input = 'shift-%s'%chr(evt.GetKeyCode())
+        if evt.GetKeyCode() in range(97, 123):  # for keys from a to z
+            if evt.GetModifiers() == 4:  # when shift is pressed while caps lock is on
+                input = 'shift-%s' % chr(evt.GetKeyCode())
             else:
                 input = chr(evt.GetKeyCode())
         elif evt.GetKeyCode() in range(65, 91):
-            if evt.GetModifiers() == 4: # when shift is pressed
-                input = 'shift-%s'%chr(evt.GetKeyCode() + 32)
+            if evt.GetModifiers() == 4:  # when shift is pressed
+                input = 'shift-%s' % chr(evt.GetKeyCode() + 32)
             else:
                 input = chr(evt.GetKeyCode() + 32)
-        elif evt.GetKeyCode() in range(1, 27): # for keys from a to z with control
-            input = 'control-%s'%chr(evt.GetKeyCode()+96)
+        elif evt.GetKeyCode() in range(1, 27):  # for keys from a to z with control
+            input = 'control-%s' % chr(evt.GetKeyCode()+96)
         elif evt.GetKeyCode() == wx.WXK_DELETE:
             input = 'delete'
         elif evt.GetKeyCode() == wx.WXK_ESCAPE:
             input = 'escape'
         else:
             if evt.GetModifiers() == 4:
-                input = 'shift-%s'%chr(evt.GetKeyCode())
+                input = 'shift-%s' % chr(evt.GetKeyCode())
             elif evt.GetModifiers() == 2:
-                input = 'control-%s'%chr(evt.GetKeyCode())
+                input = 'control-%s' % chr(evt.GetKeyCode())
             elif evt.GetKeyCode() < 256:
                 input = chr(evt.GetKeyCode())
         if input in base.direct.hotKeyMap.keys():
@@ -478,7 +516,8 @@ class LevelEditorUIBase(WxPandaShell):
         self.editor.reset()
 
     def onOpen(self, evt=None):
-        dialog = wx.FileDialog(None, "Choose a file", os.getcwd(), "", "*.py", wx.OPEN)
+        dialog = wx.FileDialog(None, "Choose a file",
+                               os.getcwd(), "", "*.py", wx.OPEN)
         if dialog.ShowModal() == wx.ID_OK:
             self.editor.load(dialog.GetPath())
             self.editor.setTitleWithFilename(dialog.GetPath())
@@ -492,7 +531,8 @@ class LevelEditorUIBase(WxPandaShell):
             self.editor.save()
 
     def onSaveAs(self, evt):
-        dialog = wx.FileDialog(None, "Choose a file", os.getcwd(), "", "*.py", wx.SAVE)
+        dialog = wx.FileDialog(None, "Choose a file",
+                               os.getcwd(), "", "*.py", wx.SAVE)
         result = True
         if dialog.ShowModal() == wx.ID_OK:
             self.editor.saveAs(dialog.GetPath())
@@ -503,7 +543,8 @@ class LevelEditorUIBase(WxPandaShell):
         return result
 
     def onExportToMaya(self, evt):
-        dialog = wx.FileDialog(None, "Choose a file", os.getcwd(), "", "*.mb", wx.SAVE)
+        dialog = wx.FileDialog(None, "Choose a file",
+                               os.getcwd(), "", "*.mb", wx.SAVE)
         if dialog.ShowModal() == wx.ID_OK:
             self.editor.exportToMaya(dialog.GetPath())
         dialog.Destroy()
@@ -536,7 +577,8 @@ class LevelEditorUIBase(WxPandaShell):
                 grid.fXyzSnap = 0
 
     def onGridSize(self, evt):
-        gridSizeUI = GridSizeUI(self, -1, 'Change Grid Size', self.perspView.grid.gridSize, self.perspView.grid.gridSpacing)
+        gridSizeUI = GridSizeUI(self, -1, 'Change Grid Size',
+                                self.perspView.grid.gridSize, self.perspView.grid.gridSpacing)
         gridSizeUI.ShowModal()
         gridSizeUI.Destroy()
 
@@ -574,15 +616,16 @@ class LevelEditorUIBase(WxPandaShell):
         for menuItem in self.contextMenu.GetMenuItems():
             self.contextMenu.RemoveItem(menuItem)
 
-        self.contextMenu.addItem('Replace This', call=lambda\
-                                 p0=None, p1=False:self.replaceObject(p0, p1))
+        self.contextMenu.addItem('Replace This', call=lambda
+                                 p0=None, p1=False: self.replaceObject(p0, p1))
 
-        self.contextMenu.addItem('Replace All', call=lambda\
-                                 p0=None, p1=True:self.replaceObject(p0, p1))
+        self.contextMenu.addItem('Replace All', call=lambda
+                                 p0=None, p1=True: self.replaceObject(p0, p1))
         self.contextMenu.AppendSeparator()
 
     def replaceObject(self, evt, all=False):
-        currObj = self.editor.objectMgr.findObjectByNodePath(base.direct.selected.last)
+        currObj = self.editor.objectMgr.findObjectByNodePath(
+            base.direct.selected.last)
         if currObj is None:
             print('No valid object is selected for replacement')
             return
@@ -596,9 +639,12 @@ class LevelEditorUIBase(WxPandaShell):
             typeName = currObj[OG.OBJ_DEF].name
             objs = self.editor.objectMgr.findObjectsByTypeName(typeName)
             for obj in objs:
-                self.editor.objectMgr.replaceObjectWithTypeName(obj, targetType)
+                self.editor.objectMgr.replaceObjectWithTypeName(
+                    obj, targetType)
         else:
-            self.editor.objectMgr.replaceObjectWithTypeName(currObj, targetType)
+            self.editor.objectMgr.replaceObjectWithTypeName(
+                currObj, targetType)
+
 
 class GridSizeUI(wx.Dialog):
     def __init__(self, parent, id, title, gridSize, gridSpacing):
@@ -611,15 +657,15 @@ class GridSizeUI(wx.Dialog):
         wx.StaticBox(panel, -1, 'Grid Size', (5, 5), (235, 80))
 
         self.gridSizeSlider = WxSlider(panel, -1, float(gridSize), 10.0, 100000.0,
-                           pos = (10, 25), size=(220, -1),
-                           style=wx.SL_HORIZONTAL | wx.SL_LABELS, textSize=(80,20))
+                                       pos=(10, 25), size=(220, -1),
+                                       style=wx.SL_HORIZONTAL | wx.SL_LABELS, textSize=(80, 20))
         self.gridSizeSlider.Enable()
 
         wx.StaticBox(panel, -1, 'Grid Space', (5, 90), (235, 80))
 
         self.gridSpacingSlider = WxSlider(panel, -1, float(gridSpacing), 0.01, 2000.0,
-                           pos = (10, 115), size=(220, -1),
-                           style=wx.SL_HORIZONTAL | wx.SL_LABELS)
+                                          pos=(10, 115), size=(220, -1),
+                                          style=wx.SL_HORIZONTAL | wx.SL_LABELS)
         self.gridSpacingSlider.Enable()
 
         okButton = wx.Button(self, -1, 'Apply', size=(70, 20))
@@ -637,25 +683,32 @@ class GridSizeUI(wx.Dialog):
         base.le.ui.bindKeyEvents(True)
         self.Destroy()
 
+
 class ViewportMenu(wx.Menu):
     """Represents a menu that appears when right-clicking a viewport."""
+
     def __init__(self):
         wx.Menu.__init__(self)
 
-    def addItem(self, name, parent = None, call = None, id = None):
-        if id == None: id = wx.NewId()
-        if parent == None: parent = self
+    def addItem(self, name, parent=None, call=None, id=None):
+        if id == None:
+            id = wx.NewId()
+        if parent == None:
+            parent = self
         item = wx.MenuItem(parent, id, name)
         parent.AppendItem(item)
         if call != None:
             self.Bind(wx.EVT_MENU, call, item)
 
-    def addMenu(self, name, parent = None, id = None):
-        if id == None: id = wx.NewId()
+    def addMenu(self, name, parent=None, id=None):
+        if id == None:
+            id = wx.NewId()
         subMenu = wx.Menu()
-        if parent == None: parent = self
+        if parent == None:
+            parent = self
         parent.AppendMenu(id, name, subMenu)
         return subMenu
+
 
 class CurveDegreeUI(wx.Dialog):
     def __init__(self, parent, id, title):
@@ -665,9 +718,10 @@ class CurveDegreeUI(wx.Dialog):
         panel = wx.Panel(self, -1)
         degreeBox = wx.BoxSizer(wx.VERTICAL)
 
-        degreeList = ['2','3','4']
+        degreeList = ['2', '3', '4']
 
-        self.degree = wx.RadioBox(panel, -1, 'Curve Degree', (5, 5), wx.DefaultSize, degreeList, 3, wx.RA_SPECIFY_COLS)
+        self.degree = wx.RadioBox(
+            panel, -1, 'Curve Degree', (5, 5), wx.DefaultSize, degreeList, 3, wx.RA_SPECIFY_COLS)
         self.degree.SetToolTipString("Select the degree of the curve.")
         self.degree.SetSelection(1)
 
@@ -679,11 +733,10 @@ class CurveDegreeUI(wx.Dialog):
         self.SetSizer(degreeBox)
 
     def onApply(self, evt):
-        if(str(self.degree.GetSelection())=='0'):
+        if (str(self.degree.GetSelection()) == '0'):
             self.parent.editor.curveEditor.degree = 2
-        if(str(self.degree.GetSelection())=='1'):
+        if (str(self.degree.GetSelection()) == '1'):
             self.parent.editor.curveEditor.degree = 3
-        if(str(self.degree.GetSelection())=='2'):
+        if (str(self.degree.GetSelection()) == '2'):
             self.parent.editor.curveEditor.degree = 4
         self.Destroy()
-

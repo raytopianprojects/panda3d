@@ -22,6 +22,7 @@ from .CartesianGridBase import CartesianGridBase
 # above water level
 GRID_Z_OFFSET = 0.0
 
+
 class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
     notify = directNotify.newCategory("DistributedCartesianGrid")
     notify.setDebug(0)
@@ -60,7 +61,8 @@ class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
         self.cellWidth = width
 
     def setParentingRules(self, style, rule):
-        assert self.notify.debug("setParentingRules: style: %s, rule: %s" % (style, rule))
+        assert self.notify.debug(
+            "setParentingRules: style: %s, rule: %s" % (style, rule))
         rules = rule.split(self.RuleSeparator)
         assert len(rules) == 3
         self.style = style
@@ -104,7 +106,7 @@ class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
             child.gridParent.delete()
             child.gridParent = None
 
-    @report(types = ['deltaStamp', 'avLocation', 'args'], dConfigParam = ['connector','shipboard'])
+    @report(types=['deltaStamp', 'avLocation', 'args'], dConfigParam=['connector', 'shipboard'])
     def startProcessVisibility(self, avatar):
         if not self._onOffState:
             # if we've been told that we're OFF, don't try
@@ -118,7 +120,8 @@ class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
                 % self.doId)
             return
         taskMgr.remove(self.taskName("processVisibility"))
-        self.acceptOnce(self.cr.StopVisibilityEvent, self.stopProcessVisibility)
+        self.acceptOnce(self.cr.StopVisibilityEvent,
+                        self.stopProcessVisibility)
         self.visAvatar = avatar
         self.visZone = None
         self.visDirty = True
@@ -126,7 +129,7 @@ class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
             self.processVisibility, self.taskName("processVisibility"))
         self.processVisibility(0)
 
-    @report(types = ['deltaStamp', 'avLocation', 'args'], dConfigParam = ['connector','shipboard'])
+    @report(types=['deltaStamp', 'avLocation', 'args'], dConfigParam=['connector', 'shipboard'])
     def stopProcessVisibility(self, clearAll=False, event=None):
         self.ignore(self.cr.StopVisibilityEvent)
         taskMgr.remove(self.taskName("processVisibility"))
@@ -135,7 +138,8 @@ class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
                                     doneEvent=event)
         if self.gridVisContext is not None:
             if event is not None:
-                removeEvent = eventGroup.newEvent('%s.removeInterest' % self.doId)
+                removeEvent = eventGroup.newEvent(
+                    '%s.removeInterest' % self.doId)
             else:
                 removeEvent = None
             self.cr.removeInterest(self.gridVisContext, removeEvent)
@@ -152,19 +156,21 @@ class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
         # my parent if it is also a grid
         if (clearAll):
             if event is not None:
-                parentEvent = eventGroup.newEvent('%s.parent.removeInterest' % self.doId)
+                parentEvent = eventGroup.newEvent(
+                    '%s.parent.removeInterest' % self.doId)
             else:
                 parentEvent = None
 
-            ##HACK BANDAID FOR PVP INSTANCES
-            if(hasattr(self.cr.doId2do[self.parentId],"worldGrid")):
-                self.cr.doId2do[self.parentId].worldGrid.stopProcessVisibility(event=parentEvent)
+            # HACK BANDAID FOR PVP INSTANCES
+            if (hasattr(self.cr.doId2do[self.parentId], "worldGrid")):
+                self.cr.doId2do[self.parentId].worldGrid.stopProcessVisibility(
+                    event=parentEvent)
 
     def processVisibility(self, task):
         if self.visAvatar == None:
             # no avatar to process visibility for
             return Task.done
-        if(self.visAvatar.isDisabled()):
+        if (self.visAvatar.isDisabled()):
             self.visAvatar = None
             return Task.done
         if self.visAvatar.gameFSM.state == 'Cutscene':
@@ -180,7 +186,8 @@ class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
         assert self.notify.debug(
             "processVisibility: %s: avatar pos: %s %s" % (self.doId, x, y))
         if (row < 0) or (col < 0) or (row > self.gridSize) or (col > self.gridSize):
-            assert self.notify.debug("processVisibility: %s: not on the grid" % (self.doId))
+            assert self.notify.debug(
+                "processVisibility: %s: not on the grid" % (self.doId))
             # If we are viewingRadius away from this entire grid,
             # remove interest in any current visZone we may have
             if self.gridVisContext:
@@ -207,7 +214,7 @@ class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
                 self.gridVisContext = self.cr.addInterest(
                     self.getDoId(), self.visZone,
                     self.uniqueName("visibility"),
-                    event = self.uniqueName("visibility"))
+                    event=self.uniqueName("visibility"))
             else:
                 assert self.notify.debug(
                     "processVisibility: %s: altering interest to zoneId: %s" %
@@ -218,7 +225,7 @@ class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
                     event = self.uniqueName("visibility")
                 self.cr.alterInterest(
                     self.gridVisContext, self.getDoId(), self.visZone,
-                    event = event)
+                    event=event)
 
                 # If the visAvatar is parented to this grid, also do a
                 # setLocation
@@ -231,8 +238,9 @@ class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
                     assert self.notify.debug(
                         "processVisibility: %s: changing location" %
                         (self.doId))
-                    messenger.send("avatarZoneChanged", [self.visAvatar, self.doId, zoneId])
-                    #self.handleAvatarZoneChange(self.visAvatar, zoneId)
+                    messenger.send("avatarZoneChanged", [
+                                   self.visAvatar, self.doId, zoneId])
+                    # self.handleAvatarZoneChange(self.visAvatar, zoneId)
             self.visDirty = False
             return Task.cont
 
@@ -246,26 +254,27 @@ class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
         zoneId = self.getZoneFromXYZ(pos)
         # Do the wrtReparenting to the grid node
         messenger.send("avatarZoneChanged", [av, self.doId, zoneId])
-        #self.handleAvatarZoneChange(av, zoneId)
+        # self.handleAvatarZoneChange(av, zoneId)
 
     def removeObjectFromGrid(self, av):
         assert self.notify.debug("removeObjectFromGrid %s" % av)
         # TODO: WHAT LOCATION SHOULD WE SET THIS TO?
-        #av.reparentTo(hidden)
+        # av.reparentTo(hidden)
         if av.getParent() == self:
             # only detach if object is directly parented
             av.detachNode()
-        #av.b_setLocation(0, 0)
-
+        # av.b_setLocation(0, 0)
 
     def handleAvatarZoneChange(self, av, zoneId):
-        assert self.notify.debug("handleAvatarZoneChange(%s, %s)" % (av.doId, zoneId))
+        assert self.notify.debug(
+            "handleAvatarZoneChange(%s, %s)" % (av.doId, zoneId))
         # This method can be overridden by derived classes that
         # want to do some special management when the avatar changes
         # zones.
         # Make sure this is a valid zone
         if not self.isValidZone(zoneId):
-            assert self.notify.warning("handleAvatarZoneChange: not a valid zone (%s)" % zoneId)
+            assert self.notify.warning(
+                "handleAvatarZoneChange: not a valid zone (%s)" % zoneId)
             return
 
         # Set the location on the server
@@ -275,7 +284,7 @@ class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
         self._onOffState = False
         self.stopProcessVisibility()
 
-    def turnOn(self, av = None):
+    def turnOn(self, av=None):
         self._onOffState = True
         if av:
             self.startProcessVisibility(av)
@@ -379,13 +388,15 @@ class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
                     textNode.setTextColor(color)
                     textNode.setAlign(TextNode.ACenter)
                     genTextNode = textNode.generate()
-                    textNodePath = self.cellLabelParent.attachNewNode(genTextNode)
+                    textNodePath = self.cellLabelParent.attachNewNode(
+                        genTextNode)
                     # Place the text node in the center of the cell
-                    textNodePath.setPosHprScale((i * cw - dx) + (cw * 0.5), # x
-                                                (j * cw - dx) + (cw * 0.5), # y
-                                                GRID_Z_OFFSET+3.0, # z
+                    textNodePath.setPosHprScale((i * cw - dx) + (cw * 0.5),  # x
+                                                (j * cw - dx) + \
+                                                (cw * 0.5),  # y
+                                                GRID_Z_OFFSET+3.0,  # z
                                                 # Lay them down flat
-                                                0, -90, 0, # hpr
+                                                0, -90, 0,  # hpr
                                                 scale, scale, scale)
             self.cellLabelParent.flattenLight()
 
@@ -418,5 +429,5 @@ class DistributedCartesianGrid(DistributedNode, CartesianGridBase):
     def setWorldContext(self, worldContext):
         pass
 
-    def clearWorldContext(self, event = None):
+    def clearWorldContext(self, event=None):
         pass

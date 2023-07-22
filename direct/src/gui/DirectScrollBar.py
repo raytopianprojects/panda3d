@@ -17,12 +17,14 @@ d = DirectScrollBar(borderWidth=(0, 0))
 
 """
 
+
 class DirectScrollBar(DirectFrame):
     """
     DirectScrollBar -- a widget which represents a scroll bar the user can
     use for paging through a large document or panel.
     """
-    def __init__(self, parent = None, **kw):
+
+    def __init__(self, parent=None, **kw):
         optiondefs = (
             # Define type of DirectGuiWidget
             ('pgFunc',         PGSliderBar,        None),
@@ -40,18 +42,18 @@ class DirectScrollBar(DirectFrame):
             # Function to be called repeatedly as the bar is scrolled
             ('command',        None,               None),
             ('extraArgs',      [],                 None),
-            )
+        )
 
         if kw.get('orientation') in (DGG.VERTICAL, DGG.VERTICAL_INVERTED):
             # These are the default options for a vertical layout.
             optiondefs += (
                 ('frameSize',      (-0.04, 0.04, -0.5, 0.5),   None),
-                )
+            )
         else:
             # These are the default options for a horizontal layout.
             optiondefs += (
                 ('frameSize',      (-0.5, 0.5, -0.04, 0.04),  None),
-                )
+            )
 
         # Merge keyword options with default options
         self.defineoptions(kw, optiondefs)
@@ -62,31 +64,35 @@ class DirectScrollBar(DirectFrame):
         self.thumb = self.createcomponent(
             "thumb", (), None,
             DirectButton, (self,),
-            borderWidth = self['borderWidth'])
+            borderWidth=self['borderWidth'])
         self.incButton = self.createcomponent(
             "incButton", (), None,
             DirectButton, (self,),
-            borderWidth = self['borderWidth'])
+            borderWidth=self['borderWidth'])
         self.decButton = self.createcomponent(
             "decButton", (), None,
             DirectButton, (self,),
-            borderWidth = self['borderWidth'])
+            borderWidth=self['borderWidth'])
 
         if self.decButton['frameSize'] == None and \
            self.decButton.bounds == [0.0, 0.0, 0.0, 0.0]:
             f = self['frameSize']
             if self['orientation'] == DGG.HORIZONTAL:
-                self.decButton['frameSize'] = (f[0]*0.05, f[1]*0.05, f[2], f[3])
+                self.decButton['frameSize'] = (
+                    f[0]*0.05, f[1]*0.05, f[2], f[3])
             else:
-                self.decButton['frameSize'] = (f[0], f[1], f[2]*0.05, f[3]*0.05)
+                self.decButton['frameSize'] = (
+                    f[0], f[1], f[2]*0.05, f[3]*0.05)
 
         if self.incButton['frameSize'] == None and \
            self.incButton.bounds == [0.0, 0.0, 0.0, 0.0]:
             f = self['frameSize']
             if self['orientation'] == DGG.HORIZONTAL:
-                self.incButton['frameSize'] = (f[0]*0.05, f[1]*0.05, f[2], f[3])
+                self.incButton['frameSize'] = (
+                    f[0]*0.05, f[1]*0.05, f[2], f[3])
             else:
-                self.incButton['frameSize'] = (f[0], f[1], f[2]*0.05, f[3]*0.05)
+                self.incButton['frameSize'] = (
+                    f[0], f[1], f[2]*0.05, f[3]*0.05)
 
         self.guiItem.setThumbButton(self.thumb.guiItem)
         self.guiItem.setLeftButton(self.decButton.guiItem)
@@ -131,12 +137,14 @@ class DirectScrollBar(DirectFrame):
     def scrollStep(self, stepCount):
         """Scrolls the indicated number of steps forward.  If
         stepCount is negative, scrolls backward."""
-        self['value'] = self.guiItem.getValue() + self.guiItem.getScrollSize() * stepCount
+        self['value'] = self.guiItem.getValue(
+        ) + self.guiItem.getScrollSize() * stepCount
 
     def scrollPage(self, pageCount):
         """Scrolls the indicated number of pages forward.  If
         pageCount is negative, scrolls backward."""
-        self['value'] = self.guiItem.getValue() + self.guiItem.getPageSize() * pageCount
+        self['value'] = self.guiItem.getValue(
+        ) + self.guiItem.getPageSize() * pageCount
 
     def setOrientation(self):
         if self['orientation'] == DGG.HORIZONTAL:
@@ -146,7 +154,8 @@ class DirectScrollBar(DirectFrame):
         elif self['orientation'] == DGG.VERTICAL_INVERTED:
             self.guiItem.setAxis(Vec3(0, 0, 1))
         else:
-            raise ValueError('Invalid value for orientation: %s' % (self['orientation']))
+            raise ValueError('Invalid value for orientation: %s' %
+                             (self['orientation']))
 
     def setManageButtons(self):
         self.guiItem.setManagePieces(self['manageButtons'])
@@ -169,4 +178,3 @@ class DirectScrollBar(DirectFrame):
 
         if self['command']:
             self['command'](*self['extraArgs'])
-

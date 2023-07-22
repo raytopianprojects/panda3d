@@ -4,10 +4,12 @@ from direct.distributed import DistributedObjectAI
 from direct.directnotify import DirectNotifyGlobal
 from . import LargeBlobSenderConsts
 
+
 class DistributedLargeBlobSenderAI(DistributedObjectAI.DistributedObjectAI):
     """DistributedLargeBlobSenderAI: for sending large chunks of data through
     the DC system to a specific avatar"""
-    notify = DirectNotifyGlobal.directNotify.newCategory('DistributedLargeBlobSenderAI')
+    notify = DirectNotifyGlobal.directNotify.newCategory(
+        'DistributedLargeBlobSenderAI')
 
     def __init__(self, air, zoneId, targetAvId, data, useDisk=0):
         DistributedObjectAI.DistributedObjectAI.__init__(self, air)

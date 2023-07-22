@@ -1,5 +1,6 @@
 from .DistributedObjectUD import DistributedObjectUD
 
+
 class DistributedNodeUD(DistributedObjectUD):
     def __init__(self, air, name=None):
         # Be careful not to create multiple NodePath objects
@@ -65,6 +66,7 @@ class DistributedNodeUD(DistributedObjectUD):
     def setXY(self, x, y):
         self.setX(x)
         self.setY(y)
+
     def d_setXY(self, x, y):
         self.sendUpdate("setXY", [x, y])
 
@@ -80,12 +82,14 @@ class DistributedNodeUD(DistributedObjectUD):
         self.setX(x)
         self.setY(y)
         self.setH(h)
+
     def d_setXYH(self, x, y, h):
         self.sendUpdate("setXYH", [x, y, h])
 
     def setXYZH(self, x, y, z, h):
         self.setPos(x, y, z)
         self.setH(h)
+
     def d_setXYZH(self, x, y, z, h):
         self.sendUpdate("setXYZH", [x, y, z, h])
 

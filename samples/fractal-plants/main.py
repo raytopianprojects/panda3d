@@ -29,7 +29,7 @@ import os
 
 random.seed()
 base = ShowBase()
-base.disableMouse()
+base.disable_mouse()
 base.camera.setPos(0, -180, 30)
 numPrimitives = 0
 

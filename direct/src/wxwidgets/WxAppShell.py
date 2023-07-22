@@ -2,24 +2,26 @@
 WxAppShell provides a GUI application framework using wxPython.
 This is an wxPython version of AppShell.py
 """
-import wx, sys
+import wx
+import sys
+
 
 class WxAppShell(wx.Frame):
-    appversion      = '1.0'
-    appname         = 'Generic Application Frame'
-    copyright       = ('Copyright 2008 Walt Disney Internet Group.' +
-                       '\nAll Rights Reserved.')
-    contactname     = 'Gyedo Jeon'
-    contactemail    = 'Gyedo.Jeon@disney.com'
+    appversion = '1.0'
+    appname = 'Generic Application Frame'
+    copyright = ('Copyright 2008 Walt Disney Internet Group.' +
+                 '\nAll Rights Reserved.')
+    contactname = 'Gyedo Jeon'
+    contactemail = 'Gyedo.Jeon@disney.com'
 
-    frameWidth      = 450
-    frameHeight     = 320
-    padx            = 5
-    pady            = 5
-    usecommandarea  = 0
-    usestatusarea   = 0
-    balloonState    = 'none'
-    panelCount      = 0
+    frameWidth = 450
+    frameHeight = 320
+    padx = 5
+    pady = 5
+    usecommandarea = 0
+    usestatusarea = 0
+    balloonState = 'none'
+    panelCount = 0
 
     def __init__(self, *args, **kw):
         # Initialize the base class
@@ -54,7 +56,8 @@ class WxAppShell(wx.Frame):
             self._logWin.Destroy()
         self._logWin = wx.Frame(None)
         self._logWin.Bind(wx.EVT_CLOSE, self.__createLogWin)
-        wx.Log.SetActiveTarget(wx.LogTextCtrl(wx.TextCtrl(self._logWin, style=wx.TE_MULTILINE)))
+        wx.Log.SetActiveTarget(wx.LogTextCtrl(
+            wx.TextCtrl(self._logWin, style=wx.TE_MULTILINE)))
 
     def __createMenuBar(self):
         self.menuBar = wx.MenuBar()
@@ -63,11 +66,11 @@ class WxAppShell(wx.Frame):
     def __createAboutBox(self):
         self.about = wx.MessageDialog(None,
                                       self.appname + "\n\n" +
-                                      'Version %s'%self.appversion + "\n\n" +
+                                      'Version %s' % self.appversion + "\n\n" +
                                       self.copyright + "\n\n" +
-                                      'For more information, contact:\n%s\nEmail: %s' %\
+                                      'For more information, contact:\n%s\nEmail: %s' %
                                       (self.contactname, self.contactemail),
-                                      "About %s"%self.appname, wx.OK | wx.ICON_INFORMATION)
+                                      "About %s" % self.appname, wx.OK | wx.ICON_INFORMATION)
 
     def showAbout(self, event):
         # Create the dialog to display about and contact information.
@@ -82,7 +85,7 @@ class WxAppShell(wx.Frame):
         except NameError:
             sys.exit()
 
-        base.userExit()
+        base.user_exit()
 
     ### USER METHODS ###
     # To be overridden

@@ -1,5 +1,10 @@
 #! /usr/bin/env python
 
+from panda3d.core import Filename
+from direct.p3d.PatchMaker import PatchMaker
+import os
+import getopt
+import sys
 usageText = """
 
 This script generates the patches required to support incremental
@@ -56,17 +61,12 @@ Options:
 
 """
 
-import sys
-import getopt
-import os
 
-from direct.p3d.PatchMaker import PatchMaker
-from panda3d.core import Filename
-
-def usage(code, msg = ''):
-    sys.stderr.write(usageText % {'prog' : os.path.split(sys.argv[0])[1]})
+def usage(code, msg=''):
+    sys.stderr.write(usageText % {'prog': os.path.split(sys.argv[0])[1]})
     sys.stderr.write(msg + '\n')
     sys.exit(code)
+
 
 try:
     opts, args = getopt.getopt(sys.argv[1:], 'i:h')
@@ -94,7 +94,7 @@ if not packageNames:
     packageNames = None
 
 pm = PatchMaker(installDir)
-pm.buildPatches(packageNames = packageNames)
+pm.buildPatches(packageNames=packageNames)
 
 # An explicit call to exit() is required to exit the program, when
 # this module is packaged in a p3d file.

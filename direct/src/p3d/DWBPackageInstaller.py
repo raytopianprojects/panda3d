@@ -9,6 +9,7 @@ from direct.p3d.PackageInstaller import PackageInstaller
 from direct.gui.DirectWaitBar import DirectWaitBar
 from direct.gui import DirectGuiGlobals as DGG
 
+
 class DWBPackageInstaller(DirectWaitBar, PackageInstaller):
     """ This class presents a PackageInstaller that also inherits from
     DirectWaitBar, so it updates its own GUI as it downloads.
@@ -27,7 +28,7 @@ class DWBPackageInstaller(DirectWaitBar, PackageInstaller):
     false on failure.
     """
 
-    def __init__(self, appRunner, parent = None, **kw):
+    def __init__(self, appRunner, parent=None, **kw):
         PackageInstaller.__init__(self, appRunner)
 
         optiondefs = (
@@ -43,7 +44,7 @@ class DWBPackageInstaller(DirectWaitBar, PackageInstaller):
             ('perPackage',     False,              None),
             ('updateText',     True,               None),
             ('finished',       None,               None),
-            )
+        )
         self.defineoptions(kw, optiondefs)
         DirectWaitBar.__init__(self, parent, **kw)
         self.initialiseoptions(DWBPackageInstaller)

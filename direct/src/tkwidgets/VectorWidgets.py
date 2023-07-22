@@ -1,6 +1,7 @@
 """Undocumented Module"""
 
-__all__ = ['VectorEntry', 'Vector2Entry', 'Vector3Entry', 'Vector4Entry', 'ColorEntry']
+__all__ = ['VectorEntry', 'Vector2Entry',
+           'Vector3Entry', 'Vector4Entry', 'ColorEntry']
 
 from direct.showbase.TkGlobal import *
 from . import Valuator
@@ -14,13 +15,14 @@ else:
 
 
 class VectorEntry(Pmw.MegaWidget):
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
 
         # Default vector size
         DEFAULT_DIM = 3
         # Default value depends on *actual* vector size, test for user input
         DEFAULT_VALUE = [0.0] * kw.get('dim', DEFAULT_DIM)
-        DEFAULT_LABELS = ['v[%d]' % x for x in range(kw.get('dim', DEFAULT_DIM))]
+        DEFAULT_LABELS = ['v[%d]' %
+                          x for x in range(kw.get('dim', DEFAULT_DIM))]
 
         # Process options
         INITOPT = Pmw.INITOPT
@@ -40,7 +42,7 @@ class VectorEntry(Pmw.MegaWidget):
             ('numDigits',           2,              self._setSigDigits),
             ('type',                'floater',      None),
             ('state',               'normal',       self._setState),
-            )
+        )
         self.defineoptions(kw, optiondefs)
 
         # Initialize superclass
@@ -59,12 +61,12 @@ class VectorEntry(Pmw.MegaWidget):
         # This does double duty as a menu button
         self._label = self.createcomponent('label', (), None,
                                            Menubutton, (interior,),
-                                           text = self['text'],
-                                           activebackground = '#909090')
+                                           text=self['text'],
+                                           activebackground='#909090')
         self.menu = self._label['menu'] = Menu(self._label)
-        self.menu.add_command(label = 'Reset', command = self.reset)
-        self.menu.add_command(label = 'Popup sliders', command = self.popupSliders)
-        self._label.pack(side = LEFT, fill = X, ipadx = self['labelIpadx'])
+        self.menu.add_command(label='Reset', command=self.reset)
+        self.menu.add_command(label='Popup sliders', command=self.popupSliders)
+        self._label.pack(side=LEFT, fill=X, ipadx=self['labelIpadx'])
 
         self.variableList = []
         self.entryList = []
@@ -81,10 +83,10 @@ class VectorEntry(Pmw.MegaWidget):
                   'entryField%d_entry' % index),),
                 'Entry',
                 Pmw.EntryField, (interior,),
-                entry_justify = RIGHT,
-                entry_textvariable = var,
-                command = lambda s = self, i = index: s._entryUpdateAt(i))
-            entry.pack(side = LEFT, expand = 1, fill = X)
+                entry_justify=RIGHT,
+                entry_textvariable=var,
+                command=lambda s=self, i=index: s._entryUpdateAt(i))
+            entry.pack(side=LEFT, expand=1, fill=X)
             self.entryList.append(entry)
 
         # To configure the floaterGroup use:
@@ -100,16 +102,15 @@ class VectorEntry(Pmw.MegaWidget):
             (('fGroup', 'floaterGroup'),
              ('valuator', 'floaterGroup_valuator'),), None,
             Valuator.ValuatorGroupPanel, (self.interior(),),
-            dim = self['dim'],
-            #title = self['text'],
-            type = self['type'],
-            command = self.set)
+            dim=self['dim'],
+            # title = self['text'],
+            type=self['type'],
+            command=self.set)
         # Note: This means the 'X' on the menu bar doesn't really destroy
         # the panel, just withdraws it.  This is to avoid problems which occur
         # if the user kills the floaterGroup and then tries to pop it open again
         self._floaters.userdeletefunc(self._floaters.withdraw)
         self._floaters.withdraw()
-
 
         # Make sure entries are updated
         self.set(self['value'])
@@ -153,22 +154,22 @@ class VectorEntry(Pmw.MegaWidget):
     def _setSigDigits(self):
         sd = self['numDigits']
         self.entryFormat = '%.' + '%d' % sd + 'f'
-        self.configure(valuator_numDigits = sd)
+        self.configure(valuator_numDigits=sd)
         # And refresh value to reflect change
         for index in range(self['dim']):
             self._refreshEntry(index)
 
     def _updateValidate(self):
         # Update entry field to respect new limits
-        self.configure(Entry_validate = {
+        self.configure(Entry_validate={
             'validator': 'real',
             'min': self['min'],
             'max': self['max'],
             'minstrict': 0,
             'maxstrict': 0})
         # Reflect changes in floaters
-        self.configure(valuator_min = self['min'],
-                       valuator_max = self['max'])
+        self.configure(valuator_min=self['min'],
+                       valuator_max=self['max'])
 
     def get(self):
         return self._value
@@ -176,7 +177,7 @@ class VectorEntry(Pmw.MegaWidget):
     def getAt(self, index):
         return self._value[index]
 
-    def set(self, value, fCommand = 1):
+    def set(self, value, fCommand=1):
         if type(value) in (float, int):
             value = [value] * self['dim']
         for i in range(self['dim']):
@@ -184,7 +185,7 @@ class VectorEntry(Pmw.MegaWidget):
             self.variableList[i].set(self.entryFormat % value[i])
         self.action(fCommand)
 
-    def setAt(self, index, value, fCommand = 1):
+    def setAt(self, index, value, fCommand=1):
         self.variableList[index].set(self.entryFormat % value)
         self._value[index] = value
         self.action(fCommand)
@@ -222,7 +223,7 @@ class VectorEntry(Pmw.MegaWidget):
         if self._floaters:
             self._floaters.set(self._value, 0)
 
-    def action(self, fCommand = 1):
+    def action(self, fCommand=1):
         self._refreshFloaters()
         if fCommand and (self['command'] != None):
             self['command'](self._value)
@@ -230,8 +231,8 @@ class VectorEntry(Pmw.MegaWidget):
     def reset(self):
         self.set(self['resetValue'])
 
-    def addMenuItem(self, label = '', command = None):
-        self.menu.add_command(label = label, command = command)
+    def addMenuItem(self, label='', command=None):
+        self.menu.add_command(label=label, command=command)
 
     def popupSliders(self):
         self._floaters.set(self.get()[:])
@@ -240,91 +241,95 @@ class VectorEntry(Pmw.MegaWidget):
     def _setState(self):
         if self['state'] == 'disabled':
             # Disable entry
-            self.configure(Entry_entry_state = 'disabled')
-            self.configure(Entry_entry_background = '#C0C0C0')
+            self.configure(Entry_entry_state='disabled')
+            self.configure(Entry_entry_background='#C0C0C0')
             # Disable floater Group scale
             self.component('fGroup').configure(
-                valuator_state = 'disabled')
+                valuator_state='disabled')
             # Disable floater group entry
             self.component('fGroup').configure(
-                valuator_entry_state = 'disabled')
+                valuator_entry_state='disabled')
             self.component('fGroup').configure(
-                valuator_entry_background = '#C0C0C0')
+                valuator_entry_background='#C0C0C0')
         else:
             # Disable entry
-            self.configure(Entry_entry_state = 'normal')
-            self.configure(Entry_entry_background = self.entryBackground)
+            self.configure(Entry_entry_state='normal')
+            self.configure(Entry_entry_background=self.entryBackground)
             # Disable floater Group scale
             self.component('fGroup').configure(
-                valuator_state = 'normal')
+                valuator_state='normal')
             # Disable floater group entry
             self.component('fGroup').configure(
-                valuator_entry_state = 'normal')
+                valuator_entry_state='normal')
             self.component('fGroup').configure(
-                valuator_entry_background = self.entryBackground)
+                valuator_entry_background=self.entryBackground)
+
 
 class Vector2Entry(VectorEntry):
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         # Initialize options for the class
         optiondefs = (
             ('dim',    2,       Pmw.INITOPT),
-            ('fGroup_labels',   ('X','Y','Z'),  None),
-            )
+            ('fGroup_labels',   ('X', 'Y', 'Z'),  None),
+        )
         self.defineoptions(kw, optiondefs)
         # Initialize the superclass, make sure dim makes it to superclass
-        VectorEntry.__init__(self, parent, dim = self['dim'])
+        VectorEntry.__init__(self, parent, dim=self['dim'])
         # Needed because this method checks if self.__class__ is myClass
         # where myClass is the argument passed into inialiseoptions
         self.initialiseoptions(Vector2Entry)
 
+
 class Vector3Entry(VectorEntry):
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         # Initialize options for the class
         optiondefs = (
             ('dim',    3,       Pmw.INITOPT),
-            ('fGroup_labels',   ('X','Y','Z'),  None),
-            )
+            ('fGroup_labels',   ('X', 'Y', 'Z'),  None),
+        )
         self.defineoptions(kw, optiondefs)
         # Initialize the superclass, make sure dim makes it to superclass
-        VectorEntry.__init__(self, parent, dim = self['dim'])
+        VectorEntry.__init__(self, parent, dim=self['dim'])
         # Needed because this method checks if self.__class__ is myClass
         # where myClass is the argument passed into inialiseoptions
         self.initialiseoptions(Vector3Entry)
 
+
 class Vector4Entry(VectorEntry):
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         # Initialize options for the class
         optiondefs = (
             ('dim',     4,      Pmw.INITOPT),
-            ('fGroup_labels',   ('X','Y','Z','W'),  None),
-            )
+            ('fGroup_labels',   ('X', 'Y', 'Z', 'W'),  None),
+        )
         self.defineoptions(kw, optiondefs)
         # Initialize the superclass, make sure dim makes it to superclass
-        VectorEntry.__init__(self, parent, dim = self['dim'])
+        VectorEntry.__init__(self, parent, dim=self['dim'])
         # Needed because this method checks if self.__class__ is myClass
         # where myClass is the argument passed into inialiseoptions
         self.initialiseoptions(Vector4Entry)
 
+
 class ColorEntry(VectorEntry):
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         # Initialize options for the class (overriding some superclass options)
         optiondefs = (
             ('dim',                     4,                  Pmw.INITOPT),
             ('type',                    'slider',           Pmw.INITOPT),
-            ('fGroup_labels',           ('R','G','B','A'),  None),
+            ('fGroup_labels',           ('R', 'G', 'B', 'A'),  None),
             ('min',                     0.0,                None),
             ('max',                     255.0,              None),
             ('nuDigits',                0,                  None),
             ('valuator_resolution',     1.0,                None),
-            )
+        )
         self.defineoptions(kw, optiondefs)
 
         # Initialize the superclass, make sure dim makes it to superclass
-        VectorEntry.__init__(self, parent, dim = self['dim'])
+        VectorEntry.__init__(self, parent, dim=self['dim'])
         # Add menu item to popup color picker
         self.addMenuItem(
             'Popup color picker',
-            command = lambda s = self: s.popupColorPicker())
+            command=lambda s=self: s.popupColorPicker())
         # Needed because this method checks if self.__class__ is myClass
         # where myClass is the argument passed into inialiseoptions
         self.initialiseoptions(ColorEntry)
@@ -332,17 +337,22 @@ class ColorEntry(VectorEntry):
     def popupColorPicker(self):
         # Can pass in current color with: color = (255, 0, 0)
         color = askcolor(
-            parent = self.interior(),
+            parent=self.interior(),
             # Initialize it to current color
-            initialcolor = tuple(self.get()[:3]))[0]
+            initialcolor=tuple(self.get()[:3]))[0]
         if color:
             self.set((color[0], color[1], color[2], self.getAt(3)))
+
 
 if __name__ == '__main__':
     root = Toplevel()
     root.title('Vector Widget demo')
 
-    ve = VectorEntry(root); ve.pack()
-    v3e = Vector3Entry(root); v3e.pack()
-    v4e = Vector4Entry(root); v4e.pack()
-    ce = ColorEntry(root); ce.pack()
+    ve = VectorEntry(root)
+    ve.pack()
+    v3e = Vector3Entry(root)
+    v3e.pack()
+    v4e = Vector4Entry(root)
+    v4e.pack()
+    ce = ColorEntry(root)
+    ce.pack()

@@ -20,14 +20,14 @@ plugin.  Also see make_installer.py.
 
   %prog [opts]"""
 
-parser = OptionParser(usage = usage)
-parser.add_option('-v', '--version', dest = 'version',
-                  help = 'The product version',
-                  default = None)
-parser.add_option('-i', '--plugin_root', dest = 'plugin_root',
-                  help = 'The root of a directory hierarchy in which the Firefox plugins for various platforms can be found, to build a Firefox xpi file.  This is normally the same as the staging directory populated by the -i parameter to ppackage.  This directory should contain a directory called "plugin", which contains in turn a number of directories named for the platform, by the Panda plugin convention, e.g. linux_i386, osx_ppc, and so on.  Each platform directory should contain a Firefox plugin, e.g. nppanda3d.so.')
-parser.add_option('', '--host_url', dest = 'host_url',
-                  help = "The URL at which plugin_root will be hosted.  This is used to construct the update URL for the xpi file.  This is required if you specify --plugin_root.")
+parser = OptionParser(usage=usage)
+parser.add_option('-v', '--version', dest='version',
+                  help='The product version',
+                  default=None)
+parser.add_option('-i', '--plugin_root', dest='plugin_root',
+                  help='The root of a directory hierarchy in which the Firefox plugins for various platforms can be found, to build a Firefox xpi file.  This is normally the same as the staging directory populated by the -i parameter to ppackage.  This directory should contain a directory called "plugin", which contains in turn a number of directories named for the platform, by the Panda plugin convention, e.g. linux_i386, osx_ppc, and so on.  Each platform directory should contain a Firefox plugin, e.g. nppanda3d.so.')
+parser.add_option('', '--host_url', dest='host_url',
+                  help="The URL at which plugin_root will be hosted.  This is used to construct the update URL for the xpi file.  This is required if you specify --plugin_root.")
 
 (options, args) = parser.parse_args()
 
@@ -45,18 +45,18 @@ assert options.host_url, "The host_url must be supplied!"
 # each Linux user install their distro-specific plugin instead of
 # going through this mechanism.
 FirefoxPlatformMap = {
-    'win32' : 'WINNT_x86-msvc',
-    'win_i386' : 'WINNT_x86-msvc',
-    'win_amd64' : 'WINNT_x86_64-msvc',
-#    'linux_i386' : 'Linux_x86-gcc3',
-#    'linux_amd64' : 'Linux_x86_64-gcc3',
-#    'linux_ppc' : 'Linux_ppc-gcc3',
-    'osx_i386' : 'Darwin_x86-gcc3',
-    'osx_amd64' : 'Darwin_x86_64-gcc3',
-    'osx_ppc' : 'Darwin_ppc-gcc3',
-    'freebsd_i386' : 'FreeBSD_x86-gcc3',
-    'freebsd_amd64' : 'FreeBSD_x86_64-gcc3',
-    }
+    'win32': 'WINNT_x86-msvc',
+    'win_i386': 'WINNT_x86-msvc',
+    'win_amd64': 'WINNT_x86_64-msvc',
+    #    'linux_i386' : 'Linux_x86-gcc3',
+    #    'linux_amd64' : 'Linux_x86_64-gcc3',
+    #    'linux_ppc' : 'Linux_ppc-gcc3',
+    'osx_i386': 'Darwin_x86-gcc3',
+    'osx_amd64': 'Darwin_x86_64-gcc3',
+    'osx_ppc': 'Darwin_ppc-gcc3',
+    'freebsd_i386': 'FreeBSD_x86-gcc3',
+    'freebsd_amd64': 'FreeBSD_x86_64-gcc3',
+}
 
 ##############################################################################
 #
@@ -118,6 +118,7 @@ update_rdf = """<?xml version="1.0"?>
 </RDF:RDF>
 """
 
+
 def makeXpiFile():
     """ Creates a Firefox XPI file, based on the various platform
     version files. """
@@ -133,15 +134,15 @@ def makeXpiFile():
 
     xpi = zipfile.ZipFile('nppanda3d.xpi', 'w')
 
-    package_id = 'runtime@panda3d.org' #TODO: maybe more customizable?
+    package_id = 'runtime@panda3d.org'  # TODO: maybe more customizable?
 
     tempFile = tempfile.mktemp('.txt', 'p3d_')
     rdf = open(tempFile, 'w')
     rdf.write(install_rdf % {
-        'package_id' : package_id,
-        'version' : options.version,
-        'host_url' : options.host_url,
-        })
+        'package_id': package_id,
+        'version': options.version,
+        'host_url': options.host_url,
+    })
     rdf.close()
     xpi.write(tempFile, 'install.rdf')
     os.unlink(tempFile)
@@ -176,12 +177,13 @@ def makeXpiFile():
     # And now we can generate the update.rdf file.
     update = open('update.rdf', 'w')
     update.write(update_rdf % {
-        'package_id' : package_id,
-        'version' : options.version,
-        'host_url' : options.host_url,
-        'xpi_hash' : xpi_hash,
-        })
+        'package_id': package_id,
+        'version': options.version,
+        'host_url': options.host_url,
+        'xpi_hash': xpi_hash,
+    })
     update.close()
+
 
 def addZipTree(zip, sourceFile, zipName):
     """ Adds the sourceFile to the zip archive at the indicated name.
@@ -198,5 +200,5 @@ def addZipTree(zip, sourceFile, zipName):
         # Not a directory, just add the file.
         zip.write(sourceFile, zipName)
 
-makeXpiFile()
 
+makeXpiFile()

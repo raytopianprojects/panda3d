@@ -6,7 +6,8 @@ __all__ = ['EntryScale', 'EntryScaleGroup']
 
 from direct.showbase.TkGlobal import *
 from panda3d.core import Vec4
-import Pmw, sys
+import Pmw
+import sys
 
 if sys.version_info >= (3, 0):
     from tkinter.simpledialog import *
@@ -19,10 +20,11 @@ else:
 Change Min/Max buttons to labels, add highlight binding
 """
 
+
 class EntryScale(Pmw.MegaWidget):
     "Scale with linked and validated entry"
 
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
 
         # Define the megawidget options.
         optiondefs = (
@@ -37,7 +39,7 @@ class EntryScale(Pmw.MegaWidget):
             ('max',                 100.0,         self._updateValidate),
             ('text',                'EntryScale',  self._updateLabelText),
             ('numDigits',   2,             self._setSigDigits),
-            )
+        )
         self.defineoptions(kw, optiondefs)
 
         # Initialise superclass
@@ -52,7 +54,7 @@ class EntryScale(Pmw.MegaWidget):
 
         # Setup up container
         interior = self.interior()
-        interior.configure(relief = GROOVE, borderwidth = 2)
+        interior.configure(relief=GROOVE, borderwidth=2)
 
         # Create a label and an entry
         self.labelFrame = self.createcomponent('frame', (), None,
@@ -65,29 +67,29 @@ class EntryScale(Pmw.MegaWidget):
                                           (('entry', 'entryField_entry'),),
                                           None,
                                           Pmw.EntryField, self.labelFrame,
-                                          entry_width = 10,
-                                          validate = { 'validator': 'real',
-                                                       'min': self['min'],
-                                                       'max': self['max'],
-                                                       'minstrict': 0,
-                                                       'maxstrict': 0},
-                                          entry_justify = 'right',
-                                          entry_textvar = self.entryValue,
-                                          command = self._entryCommand)
-        self.entry.pack(side='left', padx = 4)
+                                          entry_width=10,
+                                          validate={'validator': 'real',
+                                                    'min': self['min'],
+                                                    'max': self['max'],
+                                                    'minstrict': 0,
+                                                    'maxstrict': 0},
+                                          entry_justify='right',
+                                          entry_textvar=self.entryValue,
+                                          command=self._entryCommand)
+        self.entry.pack(side='left', padx=4)
 
         # Create the EntryScale's label
         self.label = self.createcomponent('label', (), None,
                                           Label, self.labelFrame,
-                                          text = self['text'],
-                                          width = 12,
-                                          anchor = 'center',
-                                          font = "Arial 12 bold")
-        self.label.pack(side='left', expand = 1, fill = 'x')
+                                          text=self['text'],
+                                          width=12,
+                                          anchor='center',
+                                          font="Arial 12 bold")
+        self.label.pack(side='left', expand=1, fill='x')
         self.label.bind('<Button-3>', self.askForLabel)
 
         # Now pack the frame
-        self.labelFrame.pack(expand = 1, fill = 'both')
+        self.labelFrame.pack(expand=1, fill='both')
 
         # Create a label and an entry
         self.minMaxFrame = self.createcomponent('mmFrame', (), None,
@@ -95,25 +97,25 @@ class EntryScale(Pmw.MegaWidget):
         # Create the EntryScale's min max labels
         self.minLabel = self.createcomponent('minLabel', (), None,
                                              Label, self.minMaxFrame,
-                                             text = repr(self['min']),
-                                             relief = FLAT,
-                                             width = 5,
-                                             anchor = W,
-                                             font = "Arial 8")
-        self.minLabel.pack(side='left', fill = 'x')
+                                             text=repr(self['min']),
+                                             relief=FLAT,
+                                             width=5,
+                                             anchor=W,
+                                             font="Arial 8")
+        self.minLabel.pack(side='left', fill='x')
         self.minLabel.bind('<Button-3>', self.askForMin)
 
         # Create the scale component.
         self.scale = self.createcomponent('scale', (), None,
                                           Scale, self.minMaxFrame,
-                                          command = self._scaleCommand,
-                                          orient = 'horizontal',
-                                          length = 150,
-                                          from_ = self['min'],
-                                          to = self['max'],
-                                          resolution = self['resolution'],
-                                          showvalue = 0)
-        self.scale.pack(side = 'left', expand = 1, fill = 'x')
+                                          command=self._scaleCommand,
+                                          orient='horizontal',
+                                          length=150,
+                                          from_=self['min'],
+                                          to=self['max'],
+                                          resolution=self['resolution'],
+                                          showvalue=0)
+        self.scale.pack(side='left', expand=1, fill='x')
         # Set scale to the middle of its range
         self.scale.set(self['value'])
         self.scale.bind('<Button-1>', self.__onPress)
@@ -122,38 +124,40 @@ class EntryScale(Pmw.MegaWidget):
 
         self.maxLabel = self.createcomponent('maxLabel', (), None,
                                              Label, self.minMaxFrame,
-                                             text = repr(self['max']),
-                                             relief = FLAT,
-                                             width = 5,
-                                             anchor = E,
-                                             font = "Arial 8")
+                                             text=repr(self['max']),
+                                             relief=FLAT,
+                                             width=5,
+                                             anchor=E,
+                                             font="Arial 8")
         self.maxLabel.bind('<Button-3>', self.askForMax)
-        self.maxLabel.pack(side='left', fill = 'x')
-        self.minMaxFrame.pack(expand = 1, fill = 'both')
+        self.maxLabel.pack(side='left', fill='x')
+        self.minMaxFrame.pack(expand=1, fill='both')
 
         # Check keywords and initialise options based on input values.
         self.initialiseoptions(EntryScale)
 
     def label(self):
         return self.label
+
     def scale(self):
         return self.scale
+
     def entry(self):
         return self.entry
 
-    def askForLabel(self, event = None):
-        newLabel = askstring(title = self['text'],
-                             prompt = 'New label:',
-                             initialvalue = repr(self['text']),
-                             parent = self.interior())
+    def askForLabel(self, event=None):
+        newLabel = askstring(title=self['text'],
+                             prompt='New label:',
+                             initialvalue=repr(self['text']),
+                             parent=self.interior())
         if newLabel:
             self['text'] = newLabel
 
-    def askForMin(self, event = None):
-        newMin = askfloat(title = self['text'],
-                          prompt = 'New min val:',
-                          initialvalue = repr(self['min']),
-                          parent = self.interior())
+    def askForMin(self, event=None):
+        newMin = askfloat(title=self['text'],
+                          prompt='New min val:',
+                          initialvalue=repr(self['min']),
+                          parent=self.interior())
         if newMin:
             self.setMin(newMin)
 
@@ -163,11 +167,11 @@ class EntryScale(Pmw.MegaWidget):
         self.minLabel['text'] = newMin
         self.entry.checkentry()
 
-    def askForMax(self, event = None):
-        newMax = askfloat(title = self['text'],
-                          parent = self.interior(),
-                          initialvalue = self['max'],
-                          prompt = 'New max val:')
+    def askForMax(self, event=None):
+        newMax = askfloat(title=self['text'],
+                          parent=self.interior(),
+                          initialvalue=self['max'],
+                          prompt='New max val:')
         if newMax:
             self.setMax(newMax)
 
@@ -177,11 +181,11 @@ class EntryScale(Pmw.MegaWidget):
         self.maxLabel['text'] = newMax
         self.entry.checkentry()
 
-    def askForResolution(self, event = None):
-        newResolution = askfloat(title = self['text'],
-                                 parent = self.interior(),
-                                 initialvalue = self['resolution'],
-                                 prompt = 'New resolution:')
+    def askForResolution(self, event=None):
+        newResolution = askfloat(title=self['text'],
+                                 parent=self.interior(),
+                                 initialvalue=self['resolution'],
+                                 prompt='New resolution:')
         if newResolution:
             self.setResolution(newResolution)
 
@@ -194,7 +198,7 @@ class EntryScale(Pmw.MegaWidget):
         self.label['text'] = self['text']
 
     def _updateValidate(self):
-        self.configure(entryField_validate = {
+        self.configure(entryField_validate={
             'validator': 'real',
             'min': self['min'],
             'max': self['max'],
@@ -218,7 +222,7 @@ class EntryScale(Pmw.MegaWidget):
             self['command'](self.value)
         """
 
-    def _entryCommand(self, event = None):
+    def _entryCommand(self, event=None):
         try:
             val = float(self.entryValue.get())
             self.onReturn(*self['callbackData'])
@@ -236,7 +240,7 @@ class EntryScale(Pmw.MegaWidget):
     def get(self):
         return self.value
 
-    def set(self, newVal, fCommand = 1):
+    def set(self, newVal, fCommand=1):
         # Clamp value
         if self['min'] is not None:
             if newVal < self['min']:
@@ -290,16 +294,18 @@ class EntryScale(Pmw.MegaWidget):
         """ User redefinable callback executed on button release """
         pass
 
+
 class EntryScaleGroup(Pmw.MegaToplevel):
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
 
         # Default group size
         DEFAULT_DIM = 1
         # Default value depends on *actual* group size, test for user input
         DEFAULT_VALUE = [0.0] * kw.get('dim', DEFAULT_DIM)
-        DEFAULT_LABELS = ['v[%d]' % x for x in range(kw.get('dim', DEFAULT_DIM))]
+        DEFAULT_LABELS = ['v[%d]' %
+                          x for x in range(kw.get('dim', DEFAULT_DIM))]
 
-        #define the megawidget options
+        # define the megawidget options
         INITOPT = Pmw.INITOPT
         optiondefs = (
             ('dim',             DEFAULT_DIM,            INITOPT),
@@ -315,7 +321,7 @@ class EntryScaleGroup(Pmw.MegaToplevel):
             ('labels',          DEFAULT_LABELS,         self._updateLabels),
             # Destroy or withdraw
             ('fDestroy',        0,                      INITOPT)
-            )
+        )
         self.defineoptions(kw, optiondefs)
 
         # Initialize the toplevel widget
@@ -330,31 +336,31 @@ class EntryScaleGroup(Pmw.MegaToplevel):
         self.balloon = Pmw.Balloon()
         menubar = self.createcomponent('menubar', (), None,
                                        Pmw.MenuBar, (interior,),
-                                       balloon = self.balloon)
+                                       balloon=self.balloon)
         menubar.pack(fill=X)
 
         # EntryScaleGroup Menu
         menubar.addmenu('EntryScale Group', 'EntryScale Group Operations')
         menubar.addmenuitem(
             'EntryScale Group', 'command', 'Reset the EntryScale Group panel',
-            label = 'Reset',
-            command = lambda s = self: s.reset())
+            label='Reset',
+            command=lambda s=self: s.reset())
         if self['fDestroy']:
             dismissCommand = self.destroy
         else:
             dismissCommand = self.withdraw
         menubar.addmenuitem(
             'EntryScale Group', 'command', 'Dismiss EntryScale Group panel',
-            label = 'Dismiss', command = dismissCommand)
+            label='Dismiss', command=dismissCommand)
 
         menubar.addmenu('Help', 'EntryScale Group Help Operations')
         self.toggleBalloonVar = IntVar()
         self.toggleBalloonVar.set(0)
         menubar.addmenuitem('Help', 'checkbutton',
                             'Toggle balloon help',
-                            label = 'Balloon Help',
-                            variable = self.toggleBalloonVar,
-                            command = self.toggleBalloon)
+                            label='Balloon Help',
+                            variable=self.toggleBalloonVar,
+                            command=self.toggleBalloon)
 
         self.entryScaleList = []
         for index in range(self['dim']):
@@ -362,17 +368,18 @@ class EntryScaleGroup(Pmw.MegaToplevel):
             #   fg.configure(Valuator_XXX = YYY)
             f = self.createcomponent(
                 'entryScale%d' % index, (), 'Valuator', EntryScale,
-                (interior,), value = self._value[index],
-                text = self['labels'][index])
+                (interior,), value=self._value[index],
+                text=self['labels'][index])
             # Do this separately so command doesn't get executed during construction
-            f['command'] = lambda val, s=self, i=index: s._entryScaleSetAt(i, val)
+            f['command'] = lambda val, s=self, i=index: s._entryScaleSetAt(
+                i, val)
             f['callbackData'] = [self]
             # Callbacks
             f.onReturn = self.__onReturn
             f.onReturnRelease = self.__onReturnRelease
             f['preCallback'] = self.__onPress
             f['postCallback'] = self.__onRelease
-            f.pack(side = self['side'], expand = 1, fill = X)
+            f.pack(side=self['side'], expand=1, fill=X)
             self.entryScaleList.append(f)
 
         # Make sure entryScales are initialized
@@ -388,9 +395,9 @@ class EntryScaleGroup(Pmw.MegaToplevel):
 
     def toggleBalloon(self):
         if self.toggleBalloonVar.get():
-            self.balloon.configure(state = 'balloon')
+            self.balloon.configure(state='balloon')
         else:
-            self.balloon.configure(state = 'none')
+            self.balloon.configure(state='none')
 
     def get(self):
         return self._value
@@ -399,7 +406,7 @@ class EntryScaleGroup(Pmw.MegaToplevel):
         return self._value[index]
 
     # This is the command is used to set the groups value
-    def set(self, value, fCommand = 1):
+    def set(self, value, fCommand=1):
         for i in range(self['dim']):
             self._value[i] = value[i]
             # Update entryScale, but don't execute its command
@@ -454,8 +461,9 @@ class EntryScaleGroup(Pmw.MegaToplevel):
         """ User redefinable callback executed on button release """
         pass
 
-def rgbPanel(nodePath, callback = None):
-    def setNodePathColor(color, np = nodePath, cb = callback):
+
+def rgbPanel(nodePath, callback=None):
+    def setNodePathColor(color, np=nodePath, cb=callback):
         np.setColor(color[0]/255.0, color[1]/255.0,
                     color[2]/255.0, color[3]/255.0)
         # Execute callback to pass along color info
@@ -467,18 +475,18 @@ def rgbPanel(nodePath, callback = None):
     else:
         initColor = Vec4(255)
     # Create entry scale group
-    esg = EntryScaleGroup(title = 'RGBA Panel: ' + nodePath.getName(),
-                          dim = 4,
-                          labels = ['R','G','B','A'],
-                          value = [int(initColor[0]),
-                                          int(initColor[1]),
-                                          int(initColor[2]),
-                                          int(initColor[3])],
-                          Valuator_max = 255,
-                          Valuator_resolution = 1,
+    esg = EntryScaleGroup(title='RGBA Panel: ' + nodePath.getName(),
+                          dim=4,
+                          labels=['R', 'G', 'B', 'A'],
+                          value=[int(initColor[0]),
+                                 int(initColor[1]),
+                                 int(initColor[2]),
+                                 int(initColor[3])],
+                          Valuator_max=255,
+                          Valuator_resolution=1,
                           # Destroy not withdraw panel on dismiss
-                          fDestroy = 1,
-                          command = setNodePathColor)
+                          fDestroy=1,
+                          command=setNodePathColor)
     # Update menu button
     esg.component('menubar').component('EntryScale Group-button')['text'] = (
         'RGBA Panel')
@@ -502,12 +510,12 @@ def rgbPanel(nodePath, callback = None):
         command=lambda np=nodePath: np.clearTransparency())
 
     # System color picker
-    def popupColorPicker(esg = esg):
+    def popupColorPicker(esg=esg):
         # Can pass in current color with: color = (255, 0, 0)
         color = askcolor(
-            parent = esg.interior(),
+            parent=esg.interior(),
             # Initialize it to current color
-            initialcolor = tuple(esg.get()[:3]))[0]
+            initialcolor=tuple(esg.get()[:3]))[0]
         if color:
             esg.set((color[0], color[1], color[2], esg.getAt(3)))
 
@@ -533,12 +541,13 @@ def rgbPanel(nodePath, callback = None):
         label='Dismiss', command=dismissCommand)
 
     # Set callback
-    def onRelease(r, g, b, a, nodePath = nodePath):
+    def onRelease(r, g, b, a, nodePath=nodePath):
         messenger.send('RGBPanel_setColor', [nodePath, r, g, b, a])
     esg['postCallback'] = onRelease
     return esg
 
-## SAMPLE CODE
+
+# SAMPLE CODE
 if __name__ == '__main__':
     # Initialise Tkinter and Pmw.
     root = Toplevel()
@@ -549,8 +558,8 @@ if __name__ == '__main__':
         print(val)
 
     # Create and pack a EntryScale megawidget.
-    mega1 = EntryScale(root, command = printVal)
-    mega1.pack(side = 'left', expand = 1, fill = 'x')
+    mega1 = EntryScale(root, command=printVal)
+    mega1.pack(side='left', expand=1, fill='x')
 
     """
     # These are things you can set/configure
@@ -570,13 +579,13 @@ if __name__ == '__main__':
     """
 
     # To create a entryScale group to set an RGBA value:
-    group1 = EntryScaleGroup(root, dim = 4,
-                          title = 'Simple RGBA Panel',
-                          labels = ('R', 'G', 'B', 'A'),
-                          Valuator_min = 0.0,
-                          Valuator_max = 255.0,
-                          Valuator_resolution = 1.0,
-                          command = printVal)
+    group1 = EntryScaleGroup(root, dim=4,
+                             title='Simple RGBA Panel',
+                             labels=('R', 'G', 'B', 'A'),
+                             Valuator_min=0.0,
+                             Valuator_max=255.0,
+                             Valuator_resolution=1.0,
+                             command=printVal)
 
     # Uncomment this if you aren't running in IDLE
-    #root.mainloop()
+    # root.mainloop()

@@ -182,10 +182,10 @@ class Loader(DirectObject):
             cls._loadedPythonFileTypes = True
 
     # model loading funcs
-    def loadModel(self, modelPath, loaderOptions = None, noCache = None,
-                  allowInstance = False, okMissing = None,
-                  callback = None, extraArgs = [], priority = None,
-                  blocking = None):
+    def loadModel(self, modelPath, loaderOptions=None, noCache=None,
+                  allowInstance=False, okMissing=None,
+                  callback=None, extraArgs=[], priority=None,
+                  blocking=None):
         """
         Attempts to load a model or models from one or more relative
         pathnames.  If the input modelPath is a string (a single model
@@ -250,20 +250,26 @@ class Loader(DirectObject):
 
         if okMissing is not None:
             if okMissing:
-                loaderOptions.setFlags(loaderOptions.getFlags() & ~LoaderOptions.LFReportErrors)
+                loaderOptions.setFlags(
+                    loaderOptions.getFlags() & ~LoaderOptions.LFReportErrors)
             else:
-                loaderOptions.setFlags(loaderOptions.getFlags() | LoaderOptions.LFReportErrors)
+                loaderOptions.setFlags(
+                    loaderOptions.getFlags() | LoaderOptions.LFReportErrors)
         else:
-            okMissing = ((loaderOptions.getFlags() & LoaderOptions.LFReportErrors) == 0)
+            okMissing = ((loaderOptions.getFlags() &
+                         LoaderOptions.LFReportErrors) == 0)
 
         if noCache is not None:
             if noCache:
-                loaderOptions.setFlags(loaderOptions.getFlags() | LoaderOptions.LFNoCache)
+                loaderOptions.setFlags(
+                    loaderOptions.getFlags() | LoaderOptions.LFNoCache)
             else:
-                loaderOptions.setFlags(loaderOptions.getFlags() & ~LoaderOptions.LFNoCache)
+                loaderOptions.setFlags(
+                    loaderOptions.getFlags() & ~LoaderOptions.LFNoCache)
 
         if allowInstance:
-            loaderOptions.setFlags(loaderOptions.getFlags() | LoaderOptions.LFAllowInstance)
+            loaderOptions.setFlags(
+                loaderOptions.getFlags() | LoaderOptions.LFAllowInstance)
 
         if not isinstance(modelPath, (tuple, list, set)):
             # We were given a single model pathname.
@@ -308,10 +314,12 @@ class Loader(DirectObject):
             # requested models have been loaded, we'll invoke the
             # callback (passing it the models on the parameter list).
 
-            cb = Loader._Callback(self, len(modelList), gotList, callback, extraArgs)
+            cb = Loader._Callback(self, len(modelList),
+                                  gotList, callback, extraArgs)
             i = 0
             for modelPath in modelList:
-                request = self.loader.makeAsyncRequest(Filename(modelPath), loaderOptions)
+                request = self.loader.makeAsyncRequest(
+                    Filename(modelPath), loaderOptions)
                 if priority is not None:
                     request.setPriority(priority)
                 request.setDoneEvent(self.hook)
@@ -348,20 +356,22 @@ class Loader(DirectObject):
         then attempt to load it from disk. Return a nodepath to
         the model if successful or None otherwise
         """
-        Loader.notify.info("loader.loadModelOnce() is deprecated; use loader.loadModel() instead.")
+        Loader.notify.info(
+            "loader.loadModelOnce() is deprecated; use loader.loadModel() instead.")
 
-        return self.loadModel(modelPath, noCache = False)
+        return self.loadModel(modelPath, noCache=False)
 
-    def loadModelCopy(self, modelPath, loaderOptions = None):
+    def loadModelCopy(self, modelPath, loaderOptions=None):
         """loadModelCopy(self, string)
         NOTE: This method is deprecated and should not be used.
         Attempt to load a model from modelPool, if not present
         then attempt to load it from disk. Return a nodepath to
         a copy of the model if successful or None otherwise
         """
-        Loader.notify.info("loader.loadModelCopy() is deprecated; use loader.loadModel() instead.")
+        Loader.notify.info(
+            "loader.loadModelCopy() is deprecated; use loader.loadModel() instead.")
 
-        return self.loadModel(modelPath, loaderOptions = loaderOptions, noCache = False)
+        return self.loadModel(modelPath, loaderOptions=loaderOptions, noCache=False)
 
     def loadModelNode(self, modelPath):
         """
@@ -377,9 +387,10 @@ class Loader(DirectObject):
 
         However, if you're loading a font, see loadFont(), below.
         """
-        Loader.notify.info("loader.loadModelNode() is deprecated; use loader.loadModel() instead.")
+        Loader.notify.info(
+            "loader.loadModelNode() is deprecated; use loader.loadModel() instead.")
 
-        model = self.loadModel(modelPath, noCache = False)
+        model = self.loadModel(modelPath, noCache=False)
         if model is not None:
             model = model.node()
 
@@ -402,24 +413,28 @@ class Loader(DirectObject):
         elif isinstance(model, (str, Filename)):
             # If we were given a filename, we have to ask the loader
             # to resolve it for us.
-            options = LoaderOptions(LoaderOptions.LFSearch | LoaderOptions.LFNoDiskCache | LoaderOptions.LFCacheOnly)
+            options = LoaderOptions(
+                LoaderOptions.LFSearch | LoaderOptions.LFNoDiskCache | LoaderOptions.LFCacheOnly)
             modelNode = self.loader.loadSync(Filename(model), options)
             if modelNode is None:
                 # Model not found.
-                assert Loader.notify.debug("Unloading model not loaded: %s" % (model))
+                assert Loader.notify.debug(
+                    "Unloading model not loaded: %s" % (model))
                 return
 
-            assert Loader.notify.debug("%s resolves to %s" % (model, modelNode.getFullpath()))
+            assert Loader.notify.debug(
+                "%s resolves to %s" % (model, modelNode.getFullpath()))
 
         else:
             raise TypeError('Invalid parameter to unloadModel: %s' % (model))
 
-        assert Loader.notify.debug("Unloading model: %s" % (modelNode.getFullpath()))
+        assert Loader.notify.debug(
+            "Unloading model: %s" % (modelNode.getFullpath()))
         ModelPool.releaseModel(modelNode)
 
-    def saveModel(self, modelPath, node, loaderOptions = None,
-                  callback = None, extraArgs = [], priority = None,
-                  blocking = None):
+    def saveModel(self, modelPath, node, loaderOptions=None,
+                  callback=None, extraArgs=[], priority=None,
+                  blocking=None):
         """ Saves the model (a `NodePath` or `PandaNode`) to the indicated
         filename path.  Returns true on success, false on failure.  If
         a callback is used, the model is saved asynchronously, and the
@@ -444,7 +459,7 @@ class Loader(DirectObject):
             nodeList = node
             gotList = True
 
-        assert(len(modelList) == len(nodeList))
+        assert (len(modelList) == len(nodeList))
 
         # Make sure we have PandaNodes, not NodePaths.
         for i in range(len(nodeList)):
@@ -462,7 +477,8 @@ class Loader(DirectObject):
 
             result = []
             for modelPath, node in modelList:
-                thisResult = self.loader.saveSync(Filename(modelPath), loaderOptions, node)
+                thisResult = self.loader.saveSync(
+                    Filename(modelPath), loaderOptions, node)
                 result.append(thisResult)
 
             if gotList:
@@ -476,10 +492,12 @@ class Loader(DirectObject):
             # requested models have been saved, we'll invoke the
             # callback (passing it the models on the parameter list).
 
-            cb = Loader._Callback(self, len(modelList), gotList, callback, extraArgs)
+            cb = Loader._Callback(self, len(modelList),
+                                  gotList, callback, extraArgs)
             i = 0
             for modelPath, node in modelList:
-                request = self.loader.makeAsyncSaveRequest(Filename(modelPath), loaderOptions, node)
+                request = self.loader.makeAsyncSaveRequest(
+                    Filename(modelPath), loaderOptions, node)
                 if priority is not None:
                     request.setPriority(priority)
                 request.setDoneEvent(self.hook)
@@ -490,21 +508,21 @@ class Loader(DirectObject):
                 i += 1
             return cb
 
-
     # font loading funcs
+
     def loadFont(self, modelPath,
-                 spaceAdvance = None, lineHeight = None,
-                 pointSize = None,
-                 pixelsPerUnit = None, scaleFactor = None,
-                 textureMargin = None, polyMargin = None,
-                 minFilter = None, magFilter = None,
-                 anisotropicDegree = None,
-                 color = None,
-                 outlineWidth = None,
-                 outlineFeather = 0.1,
-                 outlineColor = VBase4(0, 0, 0, 1),
-                 renderMode = None,
-                 okMissing = False):
+                 spaceAdvance=None, lineHeight=None,
+                 pointSize=None,
+                 pixelsPerUnit=None, scaleFactor=None,
+                 textureMargin=None, polyMargin=None,
+                 minFilter=None, magFilter=None,
+                 anisotropicDegree=None,
+                 color=None,
+                 outlineWidth=None,
+                 outlineFeather=0.1,
+                 outlineColor=VBase4(0, 0, 0, 1),
+                 renderMode=None,
+                 okMissing=False):
         """
         modelPath is a string.
 
@@ -627,8 +645,9 @@ class Loader(DirectObject):
         assert Loader.notify.debug("Loading font: %s" % (modelPath))
         if phaseChecker:
             loaderOptions = LoaderOptions()
-            if(okMissing):
-                loaderOptions.setFlags(loaderOptions.getFlags() & ~LoaderOptions.LFReportErrors)
+            if (okMissing):
+                loaderOptions.setFlags(
+                    loaderOptions.getFlags() & ~LoaderOptions.LFReportErrors)
             phaseChecker(modelPath, loaderOptions)
 
         font = FontPool.loadFont(modelPath)
@@ -668,7 +687,8 @@ class Loader(DirectObject):
 
                 # This means we want the background to match the
                 # outline color, but transparent.
-                font.setBg(VBase4(outlineColor[0], outlineColor[1], outlineColor[2], 0.0))
+                font.setBg(
+                    VBase4(outlineColor[0], outlineColor[1], outlineColor[2], 0.0))
             if renderMode:
                 font.setRenderMode(renderMode)
 
@@ -686,11 +706,11 @@ class Loader(DirectObject):
         return font
 
     # texture loading funcs
-    def loadTexture(self, texturePath, alphaPath = None,
-                    readMipmaps = False, okMissing = False,
-                    minfilter = None, magfilter = None,
-                    anisotropicDegree = None, loaderOptions = None,
-                    multiview = None):
+    def loadTexture(self, texturePath, alphaPath=None,
+                    readMipmaps=False, okMissing=False,
+                    minfilter=None, magfilter=None,
+                    anisotropicDegree=None, loaderOptions=None,
+                    multiview=None):
         """
         texturePath is a string.
 
@@ -747,10 +767,13 @@ class Loader(DirectObject):
 
         if alphaPath is None:
             assert Loader.notify.debug("Loading texture: %s" % (texturePath))
-            texture = TexturePool.loadTexture(texturePath, 0, readMipmaps, loaderOptions)
+            texture = TexturePool.loadTexture(
+                texturePath, 0, readMipmaps, loaderOptions)
         else:
-            assert Loader.notify.debug("Loading texture: %s %s" % (texturePath, alphaPath))
-            texture = TexturePool.loadTexture(texturePath, alphaPath, 0, 0, readMipmaps, loaderOptions)
+            assert Loader.notify.debug(
+                "Loading texture: %s %s" % (texturePath, alphaPath))
+            texture = TexturePool.loadTexture(
+                texturePath, alphaPath, 0, 0, readMipmaps, loaderOptions)
         if not texture and not okMissing:
             message = 'Could not load texture: %s' % (texturePath)
             raise IOError(message)
@@ -764,9 +787,9 @@ class Loader(DirectObject):
 
         return texture
 
-    def load3DTexture(self, texturePattern, readMipmaps = False, okMissing = False,
-                      minfilter = None, magfilter = None, anisotropicDegree = None,
-                      loaderOptions = None, multiview = None, numViews = 2):
+    def load3DTexture(self, texturePattern, readMipmaps=False, okMissing=False,
+                      minfilter=None, magfilter=None, anisotropicDegree=None,
+                      loaderOptions=None, multiview=None, numViews=2):
         """
         texturePattern is a string that contains a sequence of one or
         more hash characters ('#'), which will be filled in with the
@@ -793,7 +816,8 @@ class Loader(DirectObject):
         numbered 0 - 7 will be part of the left eye view, and images
         numbered 8 - 15 will be part of the right eye view.
         """
-        assert Loader.notify.debug("Loading 3-D texture: %s" % (texturePattern))
+        assert Loader.notify.debug(
+            "Loading 3-D texture: %s" % (texturePattern))
         if loaderOptions is None:
             loaderOptions = LoaderOptions()
         else:
@@ -807,7 +831,8 @@ class Loader(DirectObject):
             loaderOptions.setTextureFlags(flags)
             loaderOptions.setTextureNumViews(numViews)
 
-        texture = TexturePool.load3dTexture(texturePattern, readMipmaps, loaderOptions)
+        texture = TexturePool.load3dTexture(
+            texturePattern, readMipmaps, loaderOptions)
         if not texture and not okMissing:
             message = 'Could not load 3-D texture: %s' % (texturePattern)
             raise IOError(message)
@@ -821,9 +846,9 @@ class Loader(DirectObject):
 
         return texture
 
-    def load2DTextureArray(self, texturePattern, readMipmaps = False, okMissing = False,
-                      minfilter = None, magfilter = None, anisotropicDegree = None,
-                      loaderOptions = None, multiview = None, numViews = 2):
+    def load2DTextureArray(self, texturePattern, readMipmaps=False, okMissing=False,
+                           minfilter=None, magfilter=None, anisotropicDegree=None,
+                           loaderOptions=None, multiview=None, numViews=2):
         """
         texturePattern is a string that contains a sequence of one or
         more hash characters ('#'), which will be filled in with the
@@ -850,7 +875,8 @@ class Loader(DirectObject):
         numbered 0 - 7 will be part of the left eye view, and images
         numbered 8 - 15 will be part of the right eye view.
         """
-        assert Loader.notify.debug("Loading 2-D texture array: %s" % (texturePattern))
+        assert Loader.notify.debug(
+            "Loading 2-D texture array: %s" % (texturePattern))
         if loaderOptions is None:
             loaderOptions = LoaderOptions()
         else:
@@ -864,7 +890,8 @@ class Loader(DirectObject):
             loaderOptions.setTextureFlags(flags)
             loaderOptions.setTextureNumViews(numViews)
 
-        texture = TexturePool.load2dTextureArray(texturePattern, readMipmaps, loaderOptions)
+        texture = TexturePool.load2dTextureArray(
+            texturePattern, readMipmaps, loaderOptions)
         if not texture and not okMissing:
             message = 'Could not load 2-D texture array: %s' % (texturePattern)
             raise IOError(message)
@@ -878,9 +905,9 @@ class Loader(DirectObject):
 
         return texture
 
-    def loadCubeMap(self, texturePattern, readMipmaps = False, okMissing = False,
-                    minfilter = None, magfilter = None, anisotropicDegree = None,
-                    loaderOptions = None, multiview = None):
+    def loadCubeMap(self, texturePattern, readMipmaps=False, okMissing=False,
+                    minfilter=None, magfilter=None, anisotropicDegree=None,
+                    loaderOptions=None, multiview=None):
         """
         texturePattern is a string that contains a sequence of one or
         more hash characters ('#'), which will be filled in with the
@@ -917,7 +944,8 @@ class Loader(DirectObject):
                 flags &= ~LoaderOptions.TFMultiview
             loaderOptions.setTextureFlags(flags)
 
-        texture = TexturePool.loadCubeMap(texturePattern, readMipmaps, loaderOptions)
+        texture = TexturePool.loadCubeMap(
+            texturePattern, readMipmaps, loaderOptions)
         if not texture and not okMissing:
             message = 'Could not load cube map: %s' % (texturePattern)
             raise IOError(message)
@@ -932,7 +960,6 @@ class Loader(DirectObject):
         return texture
 
     def unloadTexture(self, texture):
-
         """
         Removes the previously-loaded texture from the cache, so
         that when the last reference to it is gone, it will be
@@ -958,8 +985,8 @@ class Loader(DirectObject):
         independently of the other group."""
 
         # showbase-created sfxManager should always be at front of list
-        if(self.base.sfxManagerList):
-            return self.loadSound(self.base.sfxManagerList[0], *args, **kw)
+        if (self.base.sfx_manager_list):
+            return self.loadSound(self.base.sfx_manager_list[0], *args, **kw)
         return None
 
     def loadMusic(self, *args, **kw):
@@ -970,14 +997,13 @@ class Loader(DirectObject):
         to load the sound file, but this distinction allows the sound
         effects and/or the music files to be adjusted as a group,
         independently of the other group."""
-        if(self.base.musicManager):
-            return self.loadSound(self.base.musicManager, *args, **kw)
+        if (self.base.music_manager):
+            return self.loadSound(self.base.music_manager, *args, **kw)
         else:
             return None
 
-    def loadSound(self, manager, soundPath, positional = False,
-                  callback = None, extraArgs = []):
-
+    def loadSound(self, manager, soundPath, positional=False,
+                  callback=None, extraArgs=[]):
         """Loads one or more sound files, specifying the particular
         AudioManager that should be used to load them.  The soundPath
         may be either a single filename, or a list of filenames.  If a
@@ -1014,7 +1040,8 @@ class Loader(DirectObject):
             # requested sounds have been loaded, we'll invoke the
             # callback (passing it the sounds on the parameter list).
 
-            cb = Loader._Callback(self, len(soundList), gotList, callback, extraArgs)
+            cb = Loader._Callback(self, len(soundList),
+                                  gotList, callback, extraArgs)
             for i, soundPath in enumerate(soundList):
                 request = AudioLoadRequest(manager, soundPath, positional)
                 request.setDoneEvent(self.hook)
@@ -1026,20 +1053,20 @@ class Loader(DirectObject):
 
     def unloadSfx(self, sfx):
         if (sfx):
-            if(self.base.sfxManagerList):
-                self.base.sfxManagerList[0].uncacheSound (sfx.getName())
+            if (self.base.sfx_manager_list):
+                self.base.sfx_manager_list[0].uncacheSound(sfx.getName())
 
-##     def makeNodeNamesUnique(self, nodePath, nodeCount):
-##         if nodeCount == 0:
-##             Loader.modelCount += 1
-##         nodePath.setName(nodePath.getName() +
-##                          ('_%d_%d' % (Loader.modelCount, nodeCount)))
-##         for i in range(nodePath.getNumChildren()):
-##             nodeCount += 1
-##             self.makeNodeNamesUnique(nodePath.getChild(i), nodeCount)
+# def makeNodeNamesUnique(self, nodePath, nodeCount):
+# if nodeCount == 0:
+# Loader.modelCount += 1
+# nodePath.setName(nodePath.getName() +
+# ('_%d_%d' % (Loader.modelCount, nodeCount)))
+# for i in range(nodePath.getNumChildren()):
+# nodeCount += 1
+# self.makeNodeNamesUnique(nodePath.getChild(i), nodeCount)
 
-    def loadShader(self, shaderPath, okMissing = False):
-        shader = ShaderPool.loadShader (shaderPath)
+    def loadShader(self, shaderPath, okMissing=False):
+        shader = ShaderPool.loadShader(shaderPath)
         if not shader and not okMissing:
             message = 'Could not load shader file: %s' % (shaderPath)
             raise IOError(message)
@@ -1049,8 +1076,8 @@ class Loader(DirectObject):
         if shaderPath is not None:
             ShaderPool.releaseShader(shaderPath)
 
-    def asyncFlattenStrong(self, model, inPlace = True,
-                           callback = None, extraArgs = []):
+    def asyncFlattenStrong(self, model, inPlace=True,
+                           callback=None, extraArgs=[]):
         """ Performs a model.flattenStrong() operation in a sub-thread
         (if threading is compiled into Panda).  The model may be a
         single `.NodePath`, or it may be a list of NodePaths.
@@ -1079,7 +1106,8 @@ class Loader(DirectObject):
             callback = self.__asyncFlattenDone
             gotList = True
 
-        cb = Loader._Callback(self, len(modelList), gotList, callback, extraArgs)
+        cb = Loader._Callback(self, len(modelList),
+                              gotList, callback, extraArgs)
         i = 0
         for model in modelList:
             request = ModelFlattenRequest(model.node())
@@ -1096,7 +1124,7 @@ class Loader(DirectObject):
         """ The asynchronous flatten operation has completed; quietly
         drop in the new models. """
         self.notify.debug("asyncFlattenDone: %s" % (models,))
-        assert(len(models) == len(origModelList))
+        assert (len(models) == len(origModelList))
         for i in range(len(models)):
             origModelList[i].getChildren().detach()
             orig = origModelList[i].node()

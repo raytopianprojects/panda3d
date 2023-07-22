@@ -11,6 +11,7 @@ Note that you cannot directly import :data:`~builtins.base` from this module
 since ShowBase may not have been created yet; instead, ShowBase dynamically
 adds itself to this module's scope when instantiated."""
 
+import sys
 __all__ = []
 
 from .ShowBase import ShowBase, WindowControls
@@ -63,7 +64,8 @@ directNotify.setDconfigLevels()
 
 def run():
     """Deprecated alias for :meth:`base.run() <.ShowBase.run>`."""
-    assert ShowBase.notify.warning("run() is deprecated, use base.run() instead")
+    assert ShowBase.notify.warning(
+        "run() is deprecated, use base.run() instead")
     base.run()
 
 
@@ -77,7 +79,6 @@ def inspect(anObject):
     return Inspector.inspect(anObject)
 
 
-import sys
 if sys.version_info >= (3, 0):
     import builtins
 else:
@@ -86,4 +87,5 @@ builtins.inspect = inspect
 
 # this also appears in AIBaseGlobal
 if (not __debug__) and __dev__:
-    ShowBase.notify.error("You must set 'want-dev' to false in non-debug mode.")
+    ShowBase.notify.error(
+        "You must set 'want-dev' to false in non-debug mode.")

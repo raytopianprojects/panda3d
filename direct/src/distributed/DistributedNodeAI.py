@@ -28,7 +28,8 @@ class DistributedNodeAI(DistributedObjectAI.DistributedObjectAI, NodePath):
         # Redefine DistributedObject setLocation, so that when
         # location is set to the ocean grid, we can update our parenting
         # under gridParent
-        DistributedObjectAI.DistributedObjectAI.setLocation(self, parentId, zoneId)
+        DistributedObjectAI.DistributedObjectAI.setLocation(
+            self, parentId, zoneId)
         parentObj = self.air.doId2do.get(parentId)
         if parentObj:
             if parentObj.isGridParent():
@@ -42,7 +43,6 @@ class DistributedNodeAI(DistributedObjectAI.DistributedObjectAI, NodePath):
                     # NOTE: at this point the avatar has been detached from the scene
                     # graph.  Someone else needs to reparent him to something in the scene graph
             # TODO: handle DistributedNode parenting
-
 
     ### setParent ###
 
@@ -104,6 +104,7 @@ class DistributedNodeAI(DistributedObjectAI.DistributedObjectAI, NodePath):
     def setXY(self, x, y):
         self.setX(x)
         self.setY(y)
+
     def d_setXY(self, x, y):
         self.sendUpdate("setXY", [x, y])
 
@@ -119,15 +120,18 @@ class DistributedNodeAI(DistributedObjectAI.DistributedObjectAI, NodePath):
         self.setX(x)
         self.setY(y)
         self.setH(h)
+
     def d_setXYH(self, x, y, h):
         self.sendUpdate("setXYH", [x, y, h])
 
     def b_setXYZH(self, x, y, z, h):
         self.setXYZH(x, y, z, h)
         self.d_setXYZH(x, y, z, h)
+
     def setXYZH(self, x, y, z, h):
         self.setPos(x, y, z)
         self.setH(h)
+
     def getXYZH(self):
         pos = self.getPos()
         h = self.getH()
@@ -140,5 +144,6 @@ class DistributedNodeAI(DistributedObjectAI.DistributedObjectAI, NodePath):
     def b_setPosHpr(self, x, y, z, h, p, r):
         self.setPosHpr(x, y, z, h, p, r)
         self.d_setPosHpr(x, y, z, h, p, r)
+
     def d_setPosHpr(self, x, y, z, h, p, r):
         self.sendUpdate("setPosHpr", [x, y, z, h, p, r])

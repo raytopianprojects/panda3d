@@ -12,7 +12,9 @@ from direct.directtools.DirectGlobals import *
 from direct.directtools.DirectUtil import *
 from direct.directtools.DirectGeometry import *
 from direct.directtools.DirectSelection import *
-import Pmw, os, sys
+import Pmw
+import os
+import sys
 from direct.tkwidgets import Dial
 from direct.tkwidgets import Floater
 from direct.tkwidgets import Slider
@@ -32,16 +34,17 @@ PRF_UTILITIES = [
     'lambda s = self: s.playbackMarker.setZ(render, 0.0)',
     'lambda s = self: s.followTerrain(10.0)']
 
+
 class MopathRecorder(AppShell, DirectObject):
     # Override class variables here
     appname = 'Mopath Recorder Panel'
-    frameWidth      = 450
-    frameHeight     = 550
+    frameWidth = 450
+    frameHeight = 550
     usecommandarea = 0
-    usestatusarea  = 0
+    usestatusarea = 0
     count = 0
 
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         INITOPT = Pmw.INITOPT
         name = 'recorder-%d' % MopathRecorder.count
         MopathRecorder.count += 1
@@ -49,7 +52,7 @@ class MopathRecorder(AppShell, DirectObject):
             ('title',       self.appname,         None),
             ('nodePath',    None,                 None),
             ('name',        name,                 None)
-            )
+        )
         self.defineoptions(kw, optiondefs)
 
         # Call superclass initialization function
@@ -177,7 +180,7 @@ class MopathRecorder(AppShell, DirectObject):
             ('DIRECT_manipulateObjectStart', self.manipulateObjectStartHook),
             ('DIRECT_manipulateObjectCleanup',
              self.manipulateObjectCleanupHook),
-            ]
+        ]
         for event, method in self.actionEvents:
             self.accept(event, method)
 
@@ -189,73 +192,74 @@ class MopathRecorder(AppShell, DirectObject):
         fileMenu = self.menuBar.component('File-menu')
         fileMenu.insert_command(
             fileMenu.index('Quit'),
-            label = 'Load Curve',
-            command = self.loadCurveFromFile)
+            label='Load Curve',
+            command=self.loadCurveFromFile)
         fileMenu.insert_command(
             fileMenu.index('Quit'),
-            label = 'Save Curve',
-            command = self.saveCurveToFile)
+            label='Save Curve',
+            command=self.saveCurveToFile)
 
         # Add mopath recorder commands to menubar
         self.menuBar.addmenu('Recorder', 'Mopath Recorder Panel Operations')
         self.menuBar.addmenuitem(
             'Recorder', 'command',
             'Save current curve as a new point set',
-            label = 'Save Point Set',
-            command = self.extractPointSetFromCurveCollection)
+            label='Save Point Set',
+            command=self.extractPointSetFromCurveCollection)
         self.menuBar.addmenuitem(
             'Recorder', 'command',
             'Toggle widget visability',
-            label = 'Toggle Widget Vis',
-            command = base.direct.toggleWidgetVis)
+            label='Toggle Widget Vis',
+            command=base.direct.toggleWidgetVis)
         self.menuBar.addmenuitem(
             'Recorder', 'command',
             'Toggle widget manipulation mode',
-            label = 'Toggle Widget Mode',
-            command = base.direct.manipulationControl.toggleObjectHandlesMode)
+            label='Toggle Widget Mode',
+            command=base.direct.manipulationControl.toggleObjectHandlesMode)
 
         self.createComboBox(self.menuFrame, 'Mopath', 'History',
                             'Select input points to fit curve to', '',
-                            self.selectPointSetNamed, expand = 1)
+                            self.selectPointSetNamed, expand=1)
 
-        self.undoButton = Button(self.menuFrame, text = 'Undo',
-                                 command = base.direct.undo)
+        self.undoButton = Button(self.menuFrame, text='Undo',
+                                 command=base.direct.undo)
         if base.direct.undoList:
             self.undoButton['state'] = 'normal'
         else:
             self.undoButton['state'] = 'disabled'
-        self.undoButton.pack(side = LEFT, expand = 0)
+        self.undoButton.pack(side=LEFT, expand=0)
         self.bind(self.undoButton, 'Undo last operation')
 
-        self.redoButton = Button(self.menuFrame, text = 'Redo',
-                                 command = base.direct.redo)
+        self.redoButton = Button(self.menuFrame, text='Redo',
+                                 command=base.direct.redo)
         if base.direct.redoList:
             self.redoButton['state'] = 'normal'
         else:
             self.redoButton['state'] = 'disabled'
-        self.redoButton.pack(side = LEFT, expand = 0)
+        self.redoButton.pack(side=LEFT, expand=0)
         self.bind(self.redoButton, 'Redo last operation')
 
         # Record button
-        mainFrame = Frame(interior, relief = SUNKEN, borderwidth = 2)
+        mainFrame = Frame(interior, relief=SUNKEN, borderwidth=2)
         frame = Frame(mainFrame)
         # Active node path
         # Button to select active node path
         widget = self.createButton(frame, 'Recording', 'Node Path:',
                                    'Select Active Mopath Node Path',
-                                   lambda s = self: base.direct.select(s.nodePath),
-                                   side = LEFT, expand = 0)
+                                   lambda s=self: base.direct.select(
+                                       s.nodePath),
+                                   side=LEFT, expand=0)
         widget['relief'] = FLAT
         self.nodePathMenu = Pmw.ComboBox(
-            frame, entry_width = 20,
-            selectioncommand = self.selectNodePathNamed,
-            scrolledlist_items = self.nodePathNames)
+            frame, entry_width=20,
+            selectioncommand=self.selectNodePathNamed,
+            scrolledlist_items=self.nodePathNames)
         self.nodePathMenu.selectitem('camera')
         self.nodePathMenuEntry = (
             self.nodePathMenu.component('entryfield_entry'))
         self.nodePathMenuBG = (
             self.nodePathMenuEntry.configure('background')[3])
-        self.nodePathMenu.pack(side = LEFT, fill = X, expand = 1)
+        self.nodePathMenu.pack(side=LEFT, fill=X, expand=1)
         self.bind(self.nodePathMenu,
                   'Select active node path used for recording and playback')
         # Recording type
@@ -265,101 +269,101 @@ class MopathRecorder(AppShell, DirectObject):
             frame, 'left',
             'Recording', 'New Curve',
             ('Next record session records a new path'),
-            self.recordingType, 'New Curve', expand = 0)
+            self.recordingType, 'New Curve', expand=0)
         widget = self.createRadiobutton(
             frame, 'left',
             'Recording', 'Refine',
             ('Next record session refines existing path'),
-            self.recordingType, 'Refine', expand = 0)
+            self.recordingType, 'Refine', expand=0)
         widget = self.createRadiobutton(
             frame, 'left',
             'Recording', 'Extend',
             ('Next record session extends existing path'),
-            self.recordingType, 'Extend', expand = 0)
-        frame.pack(fill = X, expand = 1)
+            self.recordingType, 'Extend', expand=0)
+        frame.pack(fill=X, expand=1)
 
         frame = Frame(mainFrame)
         widget = self.createCheckbutton(
             frame, 'Recording', 'Record',
             'On: path is being recorded', self.toggleRecord, 0,
-            side = LEFT, fill = BOTH, expand = 1)
-        widget.configure(foreground = 'Red', relief = RAISED, borderwidth = 2,
-                         anchor = CENTER, width = 16)
+            side=LEFT, fill=BOTH, expand=1)
+        widget.configure(foreground='Red', relief=RAISED, borderwidth=2,
+                         anchor=CENTER, width=16)
         widget = self.createButton(frame, 'Recording', 'Add Keyframe',
                                    'Add Keyframe To Current Path',
                                    self.addKeyframe,
-                                   side = LEFT, expand = 1)
-        frame.pack(fill = X, expand = 1)
+                                   side=LEFT, expand=1)
+        frame.pack(fill=X, expand=1)
 
-        mainFrame.pack(expand = 1, fill = X, pady = 3)
+        mainFrame.pack(expand=1, fill=X, pady=3)
 
         # Playback controls
-        playbackFrame = Frame(interior, relief = SUNKEN,
-                              borderwidth = 2)
-        Label(playbackFrame, text = 'PLAYBACK CONTROLS',
-              font=('MSSansSerif', 12, 'bold')).pack(fill = X)
+        playbackFrame = Frame(interior, relief=SUNKEN,
+                              borderwidth=2)
+        Label(playbackFrame, text='PLAYBACK CONTROLS',
+              font=('MSSansSerif', 12, 'bold')).pack(fill=X)
         # Main playback control slider
         widget = self.createEntryScale(
             playbackFrame, 'Playback', 'Time', 'Set current playback time',
-            resolution = 0.01, command = self.playbackGoTo, side = TOP)
+            resolution=0.01, command=self.playbackGoTo, side=TOP)
         widget.component('hull')['relief'] = RIDGE
         # Kill playback task if drag slider
         widget['preCallback'] = self.stopPlayback
         # Jam duration entry into entry scale
         self.createLabeledEntry(widget.labelFrame, 'Resample', 'Path Duration',
                                 'Set total curve duration',
-                                command = self.setPathDuration,
-                                side = LEFT, expand = 0)
+                                command=self.setPathDuration,
+                                side=LEFT, expand=0)
         # Start stop buttons
         frame = Frame(playbackFrame)
         widget = self.createButton(frame, 'Playback', '<<',
                                    'Jump to start of playback',
                                    self.jumpToStartOfPlayback,
-                                   side = LEFT, expand = 1)
+                                   side=LEFT, expand=1)
         widget['font'] = (('MSSansSerif', 12, 'bold'))
         widget = self.createCheckbutton(frame, 'Playback', 'Play',
                                         'Start/Stop playback',
                                         self.startStopPlayback, 0,
-                                        side = LEFT, fill = BOTH, expand = 1)
-        widget.configure(anchor = 'center', justify = 'center',
-                         relief = RAISED, font = ('MSSansSerif', 12, 'bold'))
+                                        side=LEFT, fill=BOTH, expand=1)
+        widget.configure(anchor='center', justify='center',
+                         relief=RAISED, font=('MSSansSerif', 12, 'bold'))
         widget = self.createButton(frame, 'Playback', '>>',
                                    'Jump to end of playback',
                                    self.jumpToEndOfPlayback,
-                                   side = LEFT, expand = 1)
+                                   side=LEFT, expand=1)
         widget['font'] = (('MSSansSerif', 12, 'bold'))
         self.createCheckbutton(frame, 'Playback', 'Loop',
                                'On: loop playback',
                                self.setLoopPlayback, self.loopPlayback,
-                               side = LEFT, fill = BOTH, expand = 0)
-        frame.pack(fill = X, expand = 1)
+                               side=LEFT, fill=BOTH, expand=0)
+        frame.pack(fill=X, expand=1)
 
         # Speed control
         frame = Frame(playbackFrame)
-        widget = Button(frame, text = 'PB Speed Vernier', relief = FLAT,
-                        command = lambda s = self: s.setSpeedScale(1.0))
-        widget.pack(side = LEFT, expand = 0)
-        self.speedScale = Scale(frame, from_ = -1, to = 1,
-                                resolution = 0.01, showvalue = 0,
-                                width = 10, orient = 'horizontal',
-                                command = self.setPlaybackSF)
-        self.speedScale.pack(side = LEFT, fill = X, expand = 1)
+        widget = Button(frame, text='PB Speed Vernier', relief=FLAT,
+                        command=lambda s=self: s.setSpeedScale(1.0))
+        widget.pack(side=LEFT, expand=0)
+        self.speedScale = Scale(frame, from_=-1, to=1,
+                                resolution=0.01, showvalue=0,
+                                width=10, orient='horizontal',
+                                command=self.setPlaybackSF)
+        self.speedScale.pack(side=LEFT, fill=X, expand=1)
         self.speedVar = StringVar()
         self.speedVar.set("0.00")
-        self.speedEntry = Entry(frame, textvariable = self.speedVar,
-                                width = 8)
+        self.speedEntry = Entry(frame, textvariable=self.speedVar,
+                                width=8)
         self.speedEntry.bind(
             '<Return>',
-            lambda e = None, s = self: s.setSpeedScale(
-            float(s.speedVar.get())))
-        self.speedEntry.pack(side = LEFT, expand = 0)
-        frame.pack(fill = X, expand = 1)
+            lambda e=None, s=self: s.setSpeedScale(
+                float(s.speedVar.get())))
+        self.speedEntry.pack(side=LEFT, expand=0)
+        frame.pack(fill=X, expand=1)
 
-        playbackFrame.pack(fill = X, pady = 2)
+        playbackFrame.pack(fill=X, pady=2)
 
         # Create notebook pages
         self.mainNotebook = Pmw.NoteBook(interior)
-        self.mainNotebook.pack(fill = BOTH, expand = 1)
+        self.mainNotebook.pack(fill=BOTH, expand=1)
         self.resamplePage = self.mainNotebook.add('Resample')
         self.refinePage = self.mainNotebook.add('Refine')
         self.extendPage = self.mainNotebook.add('Extend')
@@ -367,20 +371,20 @@ class MopathRecorder(AppShell, DirectObject):
         self.drawPage = self.mainNotebook.add('Draw')
         self.optionsPage = self.mainNotebook.add('Options')
 
-        ## RESAMPLE PAGE
-        label = Label(self.resamplePage, text = 'RESAMPLE CURVE',
+        # RESAMPLE PAGE
+        label = Label(self.resamplePage, text='RESAMPLE CURVE',
                       font=('MSSansSerif', 12, 'bold'))
-        label.pack(fill = X)
+        label.pack(fill=X)
 
         # Resample
         resampleFrame = Frame(
-            self.resamplePage, relief = SUNKEN, borderwidth = 2)
-        label = Label(resampleFrame, text = 'RESAMPLE CURVE',
+            self.resamplePage, relief=SUNKEN, borderwidth=2)
+        label = Label(resampleFrame, text='RESAMPLE CURVE',
                       font=('MSSansSerif', 12, 'bold')).pack()
         widget = self.createSlider(
             resampleFrame, 'Resample', 'Num. Samples',
             'Number of samples in resampled curve',
-            resolution = 1, min = 2, max = 1000, command = self.setNumSamples)
+            resolution=1, min=2, max=1000, command=self.setNumSamples)
         widget.component('hull')['relief'] = RIDGE
         widget['postCallback'] = self.sampleCurve
 
@@ -388,277 +392,277 @@ class MopathRecorder(AppShell, DirectObject):
         self.createButton(
             frame, 'Resample', 'Make Even',
             'Apply timewarp so resulting path has constant velocity',
-            self.makeEven, side = LEFT, fill = X, expand = 1)
+            self.makeEven, side=LEFT, fill=X, expand=1)
         self.createButton(
             frame, 'Resample', 'Face Forward',
             'Compute HPR so resulting hpr curve faces along xyz tangent',
-            self.faceForward, side = LEFT, fill = X, expand = 1)
-        frame.pack(fill = X, expand = 0)
-        resampleFrame.pack(fill = X, expand = 0, pady = 2)
+            self.faceForward, side=LEFT, fill=X, expand=1)
+        frame.pack(fill=X, expand=0)
+        resampleFrame.pack(fill=X, expand=0, pady=2)
 
         # Desample
         desampleFrame = Frame(
-            self.resamplePage, relief = SUNKEN, borderwidth = 2)
-        Label(desampleFrame, text = 'DESAMPLE CURVE',
+            self.resamplePage, relief=SUNKEN, borderwidth=2)
+        Label(desampleFrame, text='DESAMPLE CURVE',
               font=('MSSansSerif', 12, 'bold')).pack()
         widget = self.createSlider(
             desampleFrame, 'Resample', 'Points Between Samples',
             'Specify number of points to skip between samples',
-            min = 1, max = 100, resolution = 1,
-            command = self.setDesampleFrequency)
+            min=1, max=100, resolution=1,
+            command=self.setDesampleFrequency)
         widget.component('hull')['relief'] = RIDGE
         widget['postCallback'] = self.desampleCurve
-        desampleFrame.pack(fill = X, expand = 0, pady = 2)
+        desampleFrame.pack(fill=X, expand=0, pady=2)
 
         ## REFINE PAGE ##
-        refineFrame = Frame(self.refinePage, relief = SUNKEN,
-                            borderwidth = 2)
-        label = Label(refineFrame, text = 'REFINE CURVE',
+        refineFrame = Frame(self.refinePage, relief=SUNKEN,
+                            borderwidth=2)
+        label = Label(refineFrame, text='REFINE CURVE',
                       font=('MSSansSerif', 12, 'bold'))
-        label.pack(fill = X)
+        label.pack(fill=X)
 
         widget = self.createSlider(refineFrame,
-                                       'Refine Page', 'Refine From',
-                                       'Begin time of refine pass',
-                                       resolution = 0.01,
-                                       command = self.setRecordStart)
+                                   'Refine Page', 'Refine From',
+                                   'Begin time of refine pass',
+                                   resolution=0.01,
+                                   command=self.setRecordStart)
         widget['preCallback'] = self.setRefineMode
         widget['postCallback'] = lambda s = self: s.getPrePoints('Refine')
         widget = self.createSlider(
             refineFrame, 'Refine Page',
             'Control Start',
             'Time when full control of node path is given during refine pass',
-            resolution = 0.01,
-            command = self.setControlStart)
+            resolution=0.01,
+            command=self.setControlStart)
         widget['preCallback'] = self.setRefineMode
         widget = self.createSlider(
             refineFrame, 'Refine Page',
             'Control Stop',
             'Time when node path begins transition back to original curve',
-            resolution = 0.01,
-            command = self.setControlStop)
+            resolution=0.01,
+            command=self.setControlStop)
         widget['preCallback'] = self.setRefineMode
         widget = self.createSlider(refineFrame, 'Refine Page', 'Refine To',
-                                       'Stop time of refine pass',
-                                       resolution = 0.01,
-                                       command = self.setRefineStop)
+                                   'Stop time of refine pass',
+                                   resolution=0.01,
+                                   command=self.setRefineStop)
         widget['preCallback'] = self.setRefineMode
         widget['postCallback'] = self.getPostPoints
-        refineFrame.pack(fill = X)
+        refineFrame.pack(fill=X)
 
         ## EXTEND PAGE ##
-        extendFrame = Frame(self.extendPage, relief = SUNKEN,
-                            borderwidth = 2)
-        label = Label(extendFrame, text = 'EXTEND CURVE',
+        extendFrame = Frame(self.extendPage, relief=SUNKEN,
+                            borderwidth=2)
+        label = Label(extendFrame, text='EXTEND CURVE',
                       font=('MSSansSerif', 12, 'bold'))
-        label.pack(fill = X)
+        label.pack(fill=X)
 
         widget = self.createSlider(extendFrame,
-                                       'Extend Page', 'Extend From',
-                                       'Begin time of extend pass',
-                                       resolution = 0.01,
-                                       command = self.setRecordStart)
+                                   'Extend Page', 'Extend From',
+                                   'Begin time of extend pass',
+                                   resolution=0.01,
+                                   command=self.setRecordStart)
         widget['preCallback'] = self.setExtendMode
         widget['postCallback'] = lambda s = self: s.getPrePoints('Extend')
         widget = self.createSlider(
             extendFrame, 'Extend Page',
             'Control Start',
             'Time when full control of node path is given during extend pass',
-            resolution = 0.01,
-            command = self.setControlStart)
+            resolution=0.01,
+            command=self.setControlStart)
         widget['preCallback'] = self.setExtendMode
-        extendFrame.pack(fill = X)
+        extendFrame.pack(fill=X)
 
         ## CROP PAGE ##
-        cropFrame = Frame(self.cropPage, relief = SUNKEN,
-                            borderwidth = 2)
-        label = Label(cropFrame, text = 'CROP CURVE',
+        cropFrame = Frame(self.cropPage, relief=SUNKEN,
+                          borderwidth=2)
+        label = Label(cropFrame, text='CROP CURVE',
                       font=('MSSansSerif', 12, 'bold'))
-        label.pack(fill = X)
+        label.pack(fill=X)
 
         widget = self.createSlider(
             cropFrame,
             'Crop Page', 'Crop From',
             'Delete all curve points before this time',
-            resolution = 0.01,
-            command = self.setCropFrom)
+            resolution=0.01,
+            command=self.setCropFrom)
 
         widget = self.createSlider(
             cropFrame,
             'Crop Page', 'Crop To',
             'Delete all curve points after this time',
-            resolution = 0.01,
-            command = self.setCropTo)
+            resolution=0.01,
+            command=self.setCropTo)
 
         self.createButton(cropFrame, 'Crop Page', 'Crop Curve',
                           'Crop curve to specified from to times',
-                          self.cropCurve, fill = NONE)
-        cropFrame.pack(fill = X)
+                          self.cropCurve, fill=NONE)
+        cropFrame.pack(fill=X)
 
         ## DRAW PAGE ##
-        drawFrame = Frame(self.drawPage, relief = SUNKEN,
-                           borderwidth = 2)
+        drawFrame = Frame(self.drawPage, relief=SUNKEN,
+                          borderwidth=2)
 
-        self.sf = Pmw.ScrolledFrame(self.drawPage, horizflex = 'elastic')
-        self.sf.pack(fill = 'both', expand = 1)
+        self.sf = Pmw.ScrolledFrame(self.drawPage, horizflex='elastic')
+        self.sf.pack(fill='both', expand=1)
         sfFrame = self.sf.interior()
 
-        label = Label(sfFrame, text = 'CURVE RENDERING STYLE',
+        label = Label(sfFrame, text='CURVE RENDERING STYLE',
                       font=('MSSansSerif', 12, 'bold'))
-        label.pack(fill = X)
+        label.pack(fill=X)
 
         frame = Frame(sfFrame)
-        Label(frame, text = 'SHOW:').pack(side = LEFT, expand = 0)
+        Label(frame, text='SHOW:').pack(side=LEFT, expand=0)
         widget = self.createCheckbutton(
             frame, 'Style', 'Path',
             'On: path is visible', self.setPathVis, 1,
-            side = LEFT, fill = X, expand = 1)
+            side=LEFT, fill=X, expand=1)
         widget = self.createCheckbutton(
             frame, 'Style', 'Knots',
             'On: path knots are visible', self.setKnotVis, 1,
-            side = LEFT, fill = X, expand = 1)
+            side=LEFT, fill=X, expand=1)
         widget = self.createCheckbutton(
             frame, 'Style', 'CVs',
             'On: path CVs are visible', self.setCvVis, 0,
-            side = LEFT, fill = X, expand = 1)
+            side=LEFT, fill=X, expand=1)
         widget = self.createCheckbutton(
             frame, 'Style', 'Hull',
             'On: path hull is visible', self.setHullVis, 0,
-            side = LEFT, fill = X, expand = 1)
+            side=LEFT, fill=X, expand=1)
         widget = self.createCheckbutton(
             frame, 'Style', 'Trace',
             'On: record is visible', self.setTraceVis, 0,
-            side = LEFT, fill = X, expand = 1)
+            side=LEFT, fill=X, expand=1)
         widget = self.createCheckbutton(
             frame, 'Style', 'Marker',
             'On: playback marker is visible', self.setMarkerVis, 0,
-            side = LEFT, fill = X, expand = 1)
-        frame.pack(fill = X, expand = 1)
+            side=LEFT, fill=X, expand=1)
+        frame.pack(fill=X, expand=1)
         # Sliders
         widget = self.createSlider(
             sfFrame, 'Style', 'Num Segs',
             'Set number of segments used to approximate each parametric unit',
-            min = 1.0, max = 400, resolution = 1.0,
-            value = 40,
-            command = self.setNumSegs, side = TOP)
+            min=1.0, max=400, resolution=1.0,
+            value=40,
+            command=self.setNumSegs, side=TOP)
         widget.component('hull')['relief'] = RIDGE
         widget = self.createSlider(
             sfFrame, 'Style', 'Num Ticks',
             'Set number of tick marks drawn for each unit of time',
-            min = 0.0, max = 10.0, resolution = 1.0,
-            value = 0.0,
-            command = self.setNumTicks, side = TOP)
+            min=0.0, max=10.0, resolution=1.0,
+            value=0.0,
+            command=self.setNumTicks, side=TOP)
         widget.component('hull')['relief'] = RIDGE
         widget = self.createSlider(
             sfFrame, 'Style', 'Tick Scale',
             'Set visible size of time tick marks',
-            min = 0.01, max = 100.0, resolution = 0.01,
-            value = 5.0,
-            command = self.setTickScale, side = TOP)
+            min=0.01, max=100.0, resolution=0.01,
+            value=5.0,
+            command=self.setTickScale, side=TOP)
         widget.component('hull')['relief'] = RIDGE
         self.createColorEntry(
             sfFrame, 'Style', 'Path Color',
             'Color of curve',
-            command = self.setPathColor,
-            value = [255.0, 255.0, 255.0, 255.0])
+            command=self.setPathColor,
+            value=[255.0, 255.0, 255.0, 255.0])
         self.createColorEntry(
             sfFrame, 'Style', 'Knot Color',
             'Color of knots',
-            command = self.setKnotColor,
-            value = [0, 0, 255.0, 255.0])
+            command=self.setKnotColor,
+            value=[0, 0, 255.0, 255.0])
         self.createColorEntry(
             sfFrame, 'Style', 'CV Color',
             'Color of CVs',
-            command = self.setCvColor,
-            value = [255.0, 0, 0, 255.0])
+            command=self.setCvColor,
+            value=[255.0, 0, 0, 255.0])
         self.createColorEntry(
             sfFrame, 'Style', 'Tick Color',
             'Color of Ticks',
-            command = self.setTickColor,
-            value = [255.0, 0, 0, 255.0])
+            command=self.setTickColor,
+            value=[255.0, 0, 0, 255.0])
         self.createColorEntry(
             sfFrame, 'Style', 'Hull Color',
             'Color of Hull',
-            command = self.setHullColor,
-            value = [255.0, 128.0, 128.0, 255.0])
+            command=self.setHullColor,
+            value=[255.0, 128.0, 128.0, 255.0])
 
-        #drawFrame.pack(fill = X)
+        # drawFrame.pack(fill = X)
 
         ## OPTIONS PAGE ##
-        optionsFrame = Frame(self.optionsPage, relief = SUNKEN,
-                            borderwidth = 2)
-        label = Label(optionsFrame, text = 'RECORDING OPTIONS',
+        optionsFrame = Frame(self.optionsPage, relief=SUNKEN,
+                             borderwidth=2)
+        label = Label(optionsFrame, text='RECORDING OPTIONS',
                       font=('MSSansSerif', 12, 'bold'))
-        label.pack(fill = X)
+        label.pack(fill=X)
         # Hooks
         frame = Frame(optionsFrame)
         widget = self.createLabeledEntry(
             frame, 'Recording', 'Record Hook',
             'Hook used to start/stop recording',
-            value = self.startStopHook,
-            command = self.setStartStopHook)[0]
+            value=self.startStopHook,
+            command=self.setStartStopHook)[0]
         label = self.getWidget('Recording', 'Record Hook-Label')
-        label.configure(width = 16, anchor = W)
+        label.configure(width=16, anchor=W)
         self.setStartStopHook()
         widget = self.createLabeledEntry(
             frame, 'Recording', 'Keyframe Hook',
             'Hook used to add a new keyframe',
-            value = self.keyframeHook,
-            command = self.setKeyframeHook)[0]
+            value=self.keyframeHook,
+            command=self.setKeyframeHook)[0]
         label = self.getWidget('Recording', 'Keyframe Hook-Label')
-        label.configure(width = 16, anchor = W)
+        label.configure(width=16, anchor=W)
         self.setKeyframeHook()
-        frame.pack(expand = 1, fill = X)
+        frame.pack(expand=1, fill=X)
         # PreRecordFunc
         frame = Frame(optionsFrame)
         widget = self.createComboBox(
             frame, 'Recording', 'Pre-Record Func',
             'Function called before sampling each point',
             PRF_UTILITIES, self.setPreRecordFunc,
-            history = 1, expand = 1)
-        widget.configure(label_width = 16, label_anchor = W)
-        widget.configure(entryfield_entry_state = 'normal')
+            history=1, expand=1)
+        widget.configure(label_width=16, label_anchor=W)
+        widget.configure(entryfield_entry_state='normal')
         # Initialize preRecordFunc
         self.preRecordFunc = eval(PRF_UTILITIES[0])
         self.createCheckbutton(frame, 'Recording', 'PRF Active',
                                'On: Pre Record Func enabled',
                                None, 0,
-                               side = LEFT, fill = BOTH, expand = 0)
-        frame.pack(expand = 1, fill = X)
+                               side=LEFT, fill=BOTH, expand=0)
+        frame.pack(expand=1, fill=X)
         # Pack record frame
-        optionsFrame.pack(fill = X, pady = 2)
+        optionsFrame.pack(fill=X, pady=2)
 
         self.mainNotebook.setnaturalsize()
 
-    def pushUndo(self, fResetRedo = 1):
+    def pushUndo(self, fResetRedo=1):
         base.direct.pushUndo([self.nodePath])
 
-    def undoHook(self, nodePathList = []):
+    def undoHook(self, nodePathList=[]):
         # Reflect new changes
         pass
 
     def pushUndoHook(self):
         # Make sure button is reactivated
-        self.undoButton.configure(state = 'normal')
+        self.undoButton.configure(state='normal')
 
     def undoListEmptyHook(self):
         # Make sure button is deactivated
-        self.undoButton.configure(state = 'disabled')
+        self.undoButton.configure(state='disabled')
 
     def pushRedo(self):
         base.direct.pushRedo([self.nodePath])
 
-    def redoHook(self, nodePathList = []):
+    def redoHook(self, nodePathList=[]):
         # Reflect new changes
         pass
 
     def pushRedoHook(self):
         # Make sure button is reactivated
-        self.redoButton.configure(state = 'normal')
+        self.redoButton.configure(state='normal')
 
     def redoListEmptyHook(self):
         # Make sure button is deactivated
-        self.redoButton.configure(state = 'disabled')
+        self.redoButton.configure(state='disabled')
 
     def selectedNodePathHook(self, nodePath):
         """
@@ -674,11 +678,11 @@ class MopathRecorder(AppShell, DirectObject):
         elif nodePath.id() == self.playbackMarker.id():
             self.tangentGroup.show()
             taskMgr.add(self.curveEditTask,
-                                     self.name + '-curveEditTask')
+                        self.name + '-curveEditTask')
         elif nodePath.id() == self.tangentMarker.id():
             self.tangentGroup.show()
             taskMgr.add(self.curveEditTask,
-                                     self.name + '-curveEditTask')
+                        self.name + '-curveEditTask')
         else:
             self.tangentGroup.hide()
 
@@ -695,7 +699,7 @@ class MopathRecorder(AppShell, DirectObject):
         marker if subnode selected
         """
         if ((nodePath.id() == self.playbackMarker.id()) or
-            (nodePath.id() == self.tangentMarker.id())):
+                (nodePath.id() == self.tangentMarker.id())):
             self.tangentGroup.hide()
 
     def curveEditTask(self, state):
@@ -724,7 +728,7 @@ class MopathRecorder(AppShell, DirectObject):
                 # Transform this vector to curve space
                 tan2Curve = Vec3(
                     self.playbackMarker.getMat(
-                    self.nodePathParent).xformVec(tan))
+                        self.nodePathParent).xformVec(tan))
                 # Update nurbs curve
                 self.curveCollection.getXyzCurve().adjustTangent(
                     self.playbackTime,
@@ -741,7 +745,7 @@ class MopathRecorder(AppShell, DirectObject):
                 # Transform this point to playback marker space
                 tan.assign(
                     self.nodePathParent.getMat(
-                    self.playbackMarker).xformVec(tan))
+                        self.playbackMarker).xformVec(tan))
                 self.tangentMarker.setPos(tan)
             # In either case update tangent line
             self.tangentLines.setVertex(1, tan[0], tan[1], tan[2])
@@ -755,7 +759,7 @@ class MopathRecorder(AppShell, DirectObject):
             elif base.direct.selected.last.id() == self.tangentMarker.id():
                 self.manipulandumId = self.tangentMarker.id()
 
-    def manipulateObjectCleanupHook(self, nodePathList = []):
+    def manipulateObjectCleanupHook(self, nodePathList=[]):
         # Clear flag
         self.manipulandumId = None
 
@@ -785,7 +789,7 @@ class MopathRecorder(AppShell, DirectObject):
         comboBox = self.getWidget('Mopath', 'History')
         scrolledList = comboBox.component('scrolledlist')
         listbox = scrolledList.component('listbox')
-        names = list(listbox.get(0,'end'))
+        names = list(listbox.get(0, 'end'))
         names.append(self.pointSetName)
         scrolledList.setlist(names)
         comboBox.selectitem(self.pointSetName)
@@ -810,7 +814,7 @@ class MopathRecorder(AppShell, DirectObject):
         samplesPerSegment = min(30.0, 1000.0/self.curveCollection.getMaxT())
         self.setNumSamples(self.maxT * samplesPerSegment)
         # Sample the curve but don't create a new curve collection
-        self.sampleCurve(fCompute = 0)
+        self.sampleCurve(fCompute=0)
         # Update widgets based on new data
         self.updateWidgets()
 
@@ -886,7 +890,7 @@ class MopathRecorder(AppShell, DirectObject):
         self.nurbsCurveDrawer.setHullColor(
             color[0]/255.0, color[1]/255.0, color[2]/255.0)
 
-    def setStartStopHook(self, event = None):
+    def setStartStopHook(self, event=None):
         # Clear out old hook
         self.ignore(self.startStopHook)
         # Record new one
@@ -895,7 +899,7 @@ class MopathRecorder(AppShell, DirectObject):
         # Add new one
         self.accept(self.startStopHook, self.toggleRecordVar)
 
-    def setKeyframeHook(self, event = None):
+    def setKeyframeHook(self, event=None):
         # Clear out old hook
         self.ignore(self.keyframeHook)
         # Record new one
@@ -916,6 +920,7 @@ class MopathRecorder(AppShell, DirectObject):
 
     def disableKeyframeButton(self):
         self.getWidget('Recording', 'Add Keyframe')['state'] = 'disabled'
+
     def enableKeyframeButton(self):
         self.getWidget('Recording', 'Add Keyframe')['state'] = 'normal'
 
@@ -967,7 +972,7 @@ class MopathRecorder(AppShell, DirectObject):
             # Everything else
             else:
                 if ((self.recordingType.get() == 'Refine') or
-                    (self.recordingType.get() == 'Extend')):
+                        (self.recordingType.get() == 'Extend')):
                     # Turn off looping playback
                     self.loopPlayback = 0
                     # Update widget to reflect new value
@@ -992,7 +997,7 @@ class MopathRecorder(AppShell, DirectObject):
                 # Kill old task
                 taskMgr.remove(self.name + '-recordTask')
                 if ((self.recordingType.get() == 'Refine') or
-                    (self.recordingType.get() == 'Extend')):
+                        (self.recordingType.get() == 'Extend')):
                     # Reparent node path back to parent
                     self.nodePath.wrtReparentTo(self.nodePathParent)
                     # Restore playback Node Path
@@ -1005,7 +1010,7 @@ class MopathRecorder(AppShell, DirectObject):
             self.enableKeyframeButton()
             # Clean up after refine or extend
             if ((self.recordingType.get() == 'Refine') or
-                (self.recordingType.get() == 'Extend')):
+                    (self.recordingType.get() == 'Extend')):
                 # Merge prePoints, pointSet, postPoints
                 self.mergePoints()
                 # Clear out pre and post list
@@ -1023,10 +1028,10 @@ class MopathRecorder(AppShell, DirectObject):
         self.recordPoint(time)
         return Task.cont
 
-    def addKeyframe(self, fToggleRecord = 1):
+    def addKeyframe(self, fToggleRecord=1):
         # Make sure we're in a recording mode!
         if (fToggleRecord and
-            (not self.getVariable('Recording', 'Record').get())):
+                (not self.getVariable('Recording', 'Record').get())):
             # Set sampling mode
             self.setSamplingMode('Keyframe')
             # This will automatically add the first point
@@ -1060,7 +1065,7 @@ class MopathRecorder(AppShell, DirectObject):
     def recordPoint(self, time):
         # Call user define callback before recording point
         if (self.getVariable('Recording', 'PRF Active').get() and
-            (self.preRecordFunc != None)):
+                (self.preRecordFunc != None)):
             self.preRecordFunc()
         # Get point
         pos = self.nodePath.getPos(self.nodePathParent)
@@ -1069,14 +1074,14 @@ class MopathRecorder(AppShell, DirectObject):
         qNP.setHpr(hpr)
         # Blend between recordNodePath and self.nodePath
         if ((self.recordingType.get() == 'Refine') or
-            (self.recordingType.get() == 'Extend')):
+                (self.recordingType.get() == 'Extend')):
             if ((time < self.controlStart) and
-                ((self.controlStart - self.recordStart) != 0.0)):
+                    ((self.controlStart - self.recordStart) != 0.0)):
                 rPos = self.playbackNodePath.getPos(self.nodePathParent)
                 rHpr = self.playbackNodePath.getHpr(self.nodePathParent)
                 qR = Quat()
                 qR.setHpr(rHpr)
-                t = self.easeInOut(((time - self.recordStart)/
+                t = self.easeInOut(((time - self.recordStart) /
                                     (self.controlStart - self.recordStart)))
                 # Transition between the recorded node path and the driven one
                 pos = (rPos * (1 - t)) + (pos * t)
@@ -1089,7 +1094,7 @@ class MopathRecorder(AppShell, DirectObject):
                 rHpr = self.playbackNodePath.getHpr(self.nodePathParent)
                 qR = Quat()
                 qR.setHpr(rHpr)
-                t = self.easeInOut(((time - self.controlStop)/
+                t = self.easeInOut(((time - self.controlStop) /
                                     (self.recordStop - self.controlStop)))
                 # Transition between the recorded node path and the driven one
                 pos = (pos * (1 - t)) + (rPos * t)
@@ -1138,34 +1143,34 @@ class MopathRecorder(AppShell, DirectObject):
         maxT = self.curveCollection.getMaxT()
         maxT_text = '%0.2f' % maxT
         # Playback controls
-        self.getWidget('Playback', 'Time').configure(max = maxT_text)
+        self.getWidget('Playback', 'Time').configure(max=maxT_text)
         self.getVariable('Resample', 'Path Duration').set(maxT_text)
         # Refine widgets
         widget = self.getWidget('Refine Page', 'Refine From')
-        widget.configure(max = maxT)
+        widget.configure(max=maxT)
         widget.set(0.0)
         widget = self.getWidget('Refine Page', 'Control Start')
-        widget.configure(max = maxT)
+        widget.configure(max=maxT)
         widget.set(0.0)
         widget = self.getWidget('Refine Page', 'Control Stop')
-        widget.configure(max = maxT)
+        widget.configure(max=maxT)
         widget.set(float(maxT))
         widget = self.getWidget('Refine Page', 'Refine To')
-        widget.configure(max = maxT)
+        widget.configure(max=maxT)
         widget.set(float(maxT))
         # Extend widgets
         widget = self.getWidget('Extend Page', 'Extend From')
-        widget.configure(max = maxT)
+        widget.configure(max=maxT)
         widget.set(float(0.0))
         widget = self.getWidget('Extend Page', 'Control Start')
-        widget.configure(max = maxT)
+        widget.configure(max=maxT)
         widget.set(float(0.0))
         # Crop widgets
         widget = self.getWidget('Crop Page', 'Crop From')
-        widget.configure(max = maxT)
+        widget.configure(max=maxT)
         widget.set(float(0.0))
         widget = self.getWidget('Crop Page', 'Crop To')
-        widget.configure(max = maxT)
+        widget.configure(max=maxT)
         widget.set(float(maxT))
         self.maxT = float(maxT)
         # Widgets depending on number of samples
@@ -1173,7 +1178,7 @@ class MopathRecorder(AppShell, DirectObject):
         widget = self.getWidget('Resample', 'Points Between Samples')
         widget.configure(max=numSamples)
         widget = self.getWidget('Resample', 'Num. Samples')
-        widget.configure(max = 4 * numSamples)
+        widget.configure(max=4 * numSamples)
         widget.set(numSamples, 0)
         self.fAdjustingValues = 0
 
@@ -1230,10 +1235,10 @@ class MopathRecorder(AppShell, DirectObject):
             self.curveNodePath.reparentTo(self.nodePathParent)
             # Set entry color
             self.nodePathMenuEntry.configure(
-                background = self.nodePathMenuBG)
+                background=self.nodePathMenuBG)
         else:
             # Flash entry
-            self.nodePathMenuEntry.configure(background = 'Pink')
+            self.nodePathMenuEntry.configure(background='Pink')
 
     def setPlaybackNodePath(self, nodePath):
         self.playbackNodePath = nodePath
@@ -1305,7 +1310,7 @@ class MopathRecorder(AppShell, DirectObject):
         # Stop task if not looping and at end of curve
         # Or if refining curve and past recordStop
         if ((self.recordingType.get() == 'Refine') and
-              (cTime > self.recordStop)):
+                (cTime > self.recordStop)):
             # Go to recordStop
             self.getWidget('Playback', 'Time').set(self.recordStop)
             # Then stop playback
@@ -1367,7 +1372,7 @@ class MopathRecorder(AppShell, DirectObject):
     def setNumSamples(self, numSamples):
         self.numSamples = int(numSamples)
 
-    def sampleCurve(self, fCompute = 1):
+    def sampleCurve(self, fCompute=1):
         if self.curveCollection == None:
             print('MopathRecorder.sampleCurve: Must define curve first')
             return
@@ -1419,7 +1424,7 @@ class MopathRecorder(AppShell, DirectObject):
         # Update widgets
         self.updateWidgets()
         # Compute curve
-        #self.computeCurves()
+        # self.computeCurves()
 
     def setRecordStart(self, value):
         self.recordStart = value
@@ -1448,7 +1453,7 @@ class MopathRecorder(AppShell, DirectObject):
         self.getWidget('Playback', 'Time').set(value)
         self.fAdjustingValues = 0
 
-    def getPrePoints(self, type = 'Refine'):
+    def getPrePoints(self, type='Refine'):
         # Switch to appropriate recording type
         self.setRecordingType(type)
         # Reset prePoints
@@ -1602,7 +1607,7 @@ class MopathRecorder(AppShell, DirectObject):
         for time, pos, hpr in oldPoints:
             # Is it within the time?
             if ((time > self.cropFrom) and
-                (time < self.cropTo)):
+                    (time < self.cropTo)):
                 # Add it to the curve fitters
                 t = time - self.cropFrom
                 self.curveFitter.addXyzHpr(t, pos, hpr)
@@ -1631,13 +1636,13 @@ class MopathRecorder(AppShell, DirectObject):
             print('Using current directory')
             path = '.'
         mopathFilename = askopenfilename(
-            defaultextension = '.egg',
-            filetypes = (('Egg Files', '*.egg'),
-                         ('Bam Files', '*.bam'),
-                         ('All files', '*')),
-            initialdir = path,
-            title = 'Load Nurbs Curve',
-            parent = self.parent)
+            defaultextension='.egg',
+            filetypes=(('Egg Files', '*.egg'),
+                       ('Bam Files', '*.bam'),
+                       ('All files', '*')),
+            initialdir=path,
+            title='Load Nurbs Curve',
+            parent=self.parent)
         if mopathFilename and mopathFilename != 'None':
             self.reset()
             nodePath = loader.loadModel(
@@ -1670,17 +1675,17 @@ class MopathRecorder(AppShell, DirectObject):
             print('Using current directory')
             path = '.'
         mopathFilename = asksaveasfilename(
-            defaultextension = '.egg',
-            filetypes = (('Egg Files', '*.egg'),
-                         ('Bam Files', '*.bam'),
-                         ('All files', '*')),
-            initialdir = path,
-            title = 'Save Nurbs Curve as',
-            parent = self.parent)
+            defaultextension='.egg',
+            filetypes=(('Egg Files', '*.egg'),
+                       ('Bam Files', '*.bam'),
+                       ('All files', '*')),
+            initialdir=path,
+            title='Save Nurbs Curve as',
+            parent=self.parent)
         if mopathFilename:
             self.curveCollection.writeEgg(Filename(mopathFilename))
 
-    def followTerrain(self, height = 1.0):
+    def followTerrain(self, height=1.0):
         self.iRay.rayCollisionNodePath.reparentTo(self.nodePath)
         entry = self.iRay.pickGeom3D()
         if entry:
@@ -1699,47 +1704,47 @@ class MopathRecorder(AppShell, DirectObject):
         return self.variableDict[category + '-' + text]
 
     def createLabeledEntry(self, parent, category, text, balloonHelp,
-                           value = '', command = None,
-                           relief = 'sunken', side = LEFT,
-                           expand = 1, width = 12):
+                           value='', command=None,
+                           relief='sunken', side=LEFT,
+                           expand=1, width=12):
         frame = Frame(parent)
         variable = StringVar()
         variable.set(value)
-        label = Label(frame, text = text)
-        label.pack(side = LEFT, fill = X)
+        label = Label(frame, text=text)
+        label.pack(side=LEFT, fill=X)
         self.bind(label, balloonHelp)
         self.widgetDict[category + '-' + text + '-Label'] = label
-        entry = Entry(frame, width = width, relief = relief,
-                      textvariable = variable)
-        entry.pack(side = LEFT, fill = X, expand = expand)
+        entry = Entry(frame, width=width, relief=relief,
+                      textvariable=variable)
+        entry.pack(side=LEFT, fill=X, expand=expand)
         self.bind(entry, balloonHelp)
         self.widgetDict[category + '-' + text] = entry
         self.variableDict[category + '-' + text] = variable
         if command:
             entry.bind('<Return>', command)
-        frame.pack(side = side, fill = X, expand = expand)
+        frame.pack(side=side, fill=X, expand=expand)
         return (frame, label, entry)
 
     def createButton(self, parent, category, text, balloonHelp, command,
-                     side = 'top', expand = 0, fill = X):
-        widget = Button(parent, text = text)
+                     side='top', expand=0, fill=X):
+        widget = Button(parent, text=text)
         # Do this after the widget so command isn't called on creation
         widget['command'] = command
-        widget.pack(side = side, fill = fill, expand = expand)
+        widget.pack(side=side, fill=fill, expand=expand)
         self.bind(widget, balloonHelp)
         self.widgetDict[category + '-' + text] = widget
         return widget
 
     def createCheckbutton(self, parent, category, text,
                           balloonHelp, command, initialState,
-                          side = 'top', fill = X, expand = 0):
+                          side='top', fill=X, expand=0):
         bool = BooleanVar()
         bool.set(initialState)
-        widget = Checkbutton(parent, text = text, anchor = W,
-                         variable = bool)
+        widget = Checkbutton(parent, text=text, anchor=W,
+                             variable=bool)
         # Do this after the widget so command isn't called on creation
         widget['command'] = command
-        widget.pack(side = side, fill = fill, expand = expand)
+        widget.pack(side=side, fill=fill, expand=expand)
         self.bind(widget, balloonHelp)
         self.widgetDict[category + '-' + text] = widget
         self.variableDict[category + '-' + text] = bool
@@ -1747,19 +1752,19 @@ class MopathRecorder(AppShell, DirectObject):
 
     def createRadiobutton(self, parent, side, category, text,
                           balloonHelp, variable, value,
-                          command = None, fill = X, expand = 0):
-        widget = Radiobutton(parent, text = text, anchor = W,
-                             variable = variable, value = value)
+                          command=None, fill=X, expand=0):
+        widget = Radiobutton(parent, text=text, anchor=W,
+                             variable=variable, value=value)
         # Do this after the widget so command isn't called on creation
         widget['command'] = command
-        widget.pack(side = side, fill = fill, expand = expand)
+        widget.pack(side=side, fill=fill, expand=expand)
         self.bind(widget, balloonHelp)
         self.widgetDict[category + '-' + text] = widget
         return widget
 
     def createFloater(self, parent, category, text, balloonHelp,
-                      command = None, min = 0.0, resolution = None,
-                      maxVelocity = 10.0, **kw):
+                      command=None, min=0.0, resolution=None,
+                      maxVelocity=10.0, **kw):
         kw['text'] = text
         kw['min'] = min
         kw['maxVelocity'] = maxVelocity
@@ -1767,44 +1772,44 @@ class MopathRecorder(AppShell, DirectObject):
         widget = Floater.Floater(parent, **kw)
         # Do this after the widget so command isn't called on creation
         widget['command'] = command
-        widget.pack(fill = X)
+        widget.pack(fill=X)
         self.bind(widget, balloonHelp)
         self.widgetDict[category + '-' + text] = widget
         return widget
 
     def createAngleDial(self, parent, category, text, balloonHelp,
-                        command = None, **kw):
+                        command=None, **kw):
         kw['text'] = text
         widget = Dial.AngleDial(parent, **kw)
         # Do this after the widget so command isn't called on creation
         widget['command'] = command
-        widget.pack(fill = X)
+        widget.pack(fill=X)
         self.bind(widget, balloonHelp)
         self.widgetDict[category + '-' + text] = widget
         return widget
 
     def createSlider(self, parent, category, text, balloonHelp,
-                         command = None, min = 0.0, max = 1.0,
-                         resolution = None,
-                         side = TOP, fill = X, expand = 1, **kw):
+                     command=None, min=0.0, max=1.0,
+                     resolution=None,
+                     side=TOP, fill=X, expand=1, **kw):
         kw['text'] = text
         kw['min'] = min
         kw['max'] = max
         kw['resolution'] = resolution
-        #widget = apply(EntryScale.EntryScale, (parent,), kw)
+        # widget = apply(EntryScale.EntryScale, (parent,), kw)
         from direct.tkwidgets import Slider
         widget = Slider.Slider(parent, **kw)
         # Do this after the widget so command isn't called on creation
         widget['command'] = command
-        widget.pack(side = side, fill = fill, expand = expand)
+        widget.pack(side=side, fill=fill, expand=expand)
         self.bind(widget, balloonHelp)
         self.widgetDict[category + '-' + text] = widget
         return widget
 
     def createEntryScale(self, parent, category, text, balloonHelp,
-                         command = None, min = 0.0, max = 1.0,
-                         resolution = None,
-                         side = TOP, fill = X, expand = 1, **kw):
+                         command=None, min=0.0, max=1.0,
+                         resolution=None,
+                         side=TOP, fill=X, expand=1, **kw):
         kw['text'] = text
         kw['min'] = min
         kw['max'] = max
@@ -1812,43 +1817,43 @@ class MopathRecorder(AppShell, DirectObject):
         widget = EntryScale.EntryScale(parent, **kw)
         # Do this after the widget so command isn't called on creation
         widget['command'] = command
-        widget.pack(side = side, fill = fill, expand = expand)
+        widget.pack(side=side, fill=fill, expand=expand)
         self.bind(widget, balloonHelp)
         self.widgetDict[category + '-' + text] = widget
         return widget
 
     def createVector2Entry(self, parent, category, text, balloonHelp,
-                           command = None, **kw):
+                           command=None, **kw):
         # Set label's text
         kw['text'] = text
         widget = VectorWidgets.Vector2Entry(parent, **kw)
         # Do this after the widget so command isn't called on creation
         widget['command'] = command
-        widget.pack(fill = X)
+        widget.pack(fill=X)
         self.bind(widget, balloonHelp)
         self.widgetDict[category + '-' + text] = widget
         return widget
 
     def createVector3Entry(self, parent, category, text, balloonHelp,
-                           command = None, **kw):
+                           command=None, **kw):
         # Set label's text
         kw['text'] = text
         widget = VectorWidgets.Vector3Entry(parent, **kw)
         # Do this after the widget so command isn't called on creation
         widget['command'] = command
-        widget.pack(fill = X)
+        widget.pack(fill=X)
         self.bind(widget, balloonHelp)
         self.widgetDict[category + '-' + text] = widget
         return widget
 
     def createColorEntry(self, parent, category, text, balloonHelp,
-                         command = None, **kw):
+                         command=None, **kw):
         # Set label's text
         kw['text'] = text
         widget = VectorWidgets.ColorEntry(parent, **kw)
         # Do this after the widget so command isn't called on creation
         widget['command'] = command
-        widget.pack(fill = X)
+        widget.pack(fill=X)
         self.bind(widget, balloonHelp)
         self.widgetDict[category + '-' + text] = widget
         return widget
@@ -1858,37 +1863,37 @@ class MopathRecorder(AppShell, DirectObject):
         optionVar = StringVar()
         if len(items) > 0:
             optionVar.set(items[0])
-        widget = Pmw.OptionMenu(parent, labelpos = W, label_text = text,
-                                label_width = 12, menu_tearoff = 1,
-                                menubutton_textvariable = optionVar,
-                                items = items)
+        widget = Pmw.OptionMenu(parent, labelpos=W, label_text=text,
+                                label_width=12, menu_tearoff=1,
+                                menubutton_textvariable=optionVar,
+                                items=items)
         # Do this after the widget so command isn't called on creation
         widget['command'] = command
-        widget.pack(fill = X)
+        widget.pack(fill=X)
         self.bind(widget.component('menubutton'), balloonHelp)
         self.widgetDict[category + '-' + text] = widget
         self.variableDict[category + '-' + text] = optionVar
         return optionVar
 
     def createComboBox(self, parent, category, text, balloonHelp,
-                       items, command, history = 0,
-                       side = LEFT, expand = 0, fill = X):
+                       items, command, history=0,
+                       side=LEFT, expand=0, fill=X):
         widget = Pmw.ComboBox(parent,
-                              labelpos = W,
-                              label_text = text,
-                              label_anchor = 'e',
-                              label_width = 12,
-                              entry_width = 16,
-                              history = history,
-                              scrolledlist_items = items)
+                              labelpos=W,
+                              label_text=text,
+                              label_anchor='e',
+                              label_width=12,
+                              entry_width=16,
+                              history=history,
+                              scrolledlist_items=items)
         # Don't allow user to edit entryfield
-        widget.configure(entryfield_entry_state = 'disabled')
+        widget.configure(entryfield_entry_state='disabled')
         # Select first item if it exists
         if len(items) > 0:
             widget.selectitem(items[0])
         # Bind selection command
         widget['selectioncommand'] = command
-        widget.pack(side = side, fill = fill, expand = expand)
+        widget.pack(side=side, fill=fill, expand=expand)
         # Bind help
         self.bind(widget, balloonHelp)
         # Record widget

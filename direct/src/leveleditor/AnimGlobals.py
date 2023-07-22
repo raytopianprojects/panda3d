@@ -11,7 +11,7 @@ UID = 0
 PROP_NAME = 1
 
 FRAME = 0
-VALUE  = 1
+VALUE = 1
 INSLOPE = 2
 OUTSLOPE = 3
 
@@ -23,7 +23,7 @@ NODE = 0
 CURVE = 1
 
 NODE = 0
-CURVE  = 1
+CURVE = 1
 TIME = 2
 
 # index for animation curve generation information list structure(self.X, self.Y, self.Z in GraphEditorUI)
@@ -46,8 +46,7 @@ OUT_SLOPE = 6
 LOCAL_VALUE = 0
 SELECT = 1
 
-#index for coordinate
+# index for coordinate
 X = 0
 Y = 1
 Z = 2
-

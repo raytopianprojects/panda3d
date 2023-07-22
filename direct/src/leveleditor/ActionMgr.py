@@ -146,7 +146,8 @@ class ActionDeleteObj(ActionBase):
                 if parentNP == render:
                     self.hierarchy[uid] = None
                 else:
-                    parentObj = self.editor.objectMgr.findObjectByNodePath(parentNP)
+                    parentObj = self.editor.objectMgr.findObjectByNodePath(
+                        parentNP)
                     if parentObj:
                         self.hierarchy[uid] = parentObj[OG.OBJ_UID]
 
@@ -174,7 +175,8 @@ class ActionDeleteObj(ActionBase):
                                                            uid,
                                                            obj[OG.OBJ_MODEL],
                                                            parentNP)
-                self.editor.objectMgr.updateObjectColor(objRGBA[0], objRGBA[1], objRGBA[2], objRGBA[3], objNP)
+                self.editor.objectMgr.updateObjectColor(
+                    objRGBA[0], objRGBA[1], objRGBA[2], objRGBA[3], objNP)
                 self.editor.objectMgr.updateObjectProperties(objNP, objProp)
                 objNP.setMat(self.objTransforms[uid])
 
@@ -185,7 +187,8 @@ class ActionDeleteObj(ActionBase):
                         restoreObject(uid, parentNP)
                         del self.hierarchy[uid]
                     else:
-                        parentObj = self.editor.objectMgr.findObjectById(self.hierarchy[uid])
+                        parentObj = self.editor.objectMgr.findObjectById(
+                            self.hierarchy[uid])
                         if parentObj:
                             parentNP = parentObj[OG.OBJ_NP]
                             restoreObject(uid, parentNP)
@@ -228,7 +231,8 @@ class ActionDeleteObjById(ActionBase):
                 if parentNP == render:
                     self.hierarchy[uid] = None
                 else:
-                    parentObj = self.editor.objectMgr.findObjectByNodePath(parentNP)
+                    parentObj = self.editor.objectMgr.findObjectByNodePath(
+                        parentNP)
                     if parentObj:
                         self.hierarchy[uid] = parentObj[OG.OBJ_UID]
 
@@ -255,7 +259,8 @@ class ActionDeleteObjById(ActionBase):
                                                            uid,
                                                            obj[OG.OBJ_MODEL],
                                                            parentNP)
-                self.editor.objectMgr.updateObjectColor(objRGBA[0], objRGBA[1], objRGBA[2], objRGBA[3], objNP)
+                self.editor.objectMgr.updateObjectColor(
+                    objRGBA[0], objRGBA[1], objRGBA[2], objRGBA[3], objNP)
                 self.editor.objectMgr.updateObjectProperties(objNP, objProp)
                 objNP.setMat(self.objTransforms[uid])
 
@@ -266,7 +271,8 @@ class ActionDeleteObjById(ActionBase):
                         restoreObject(uid, parentNP)
                         del self.hierarchy[uid]
                     else:
-                        parentObj = self.editor.objectMgr.findObjectById(self.hierarchy[uid])
+                        parentObj = self.editor.objectMgr.findObjectById(
+                            self.hierarchy[uid])
                         if parentObj:
                             parentNP = parentObj[OG.OBJ_NP]
                             restoreObject(uid, parentNP)
@@ -286,10 +292,12 @@ class ActionChangeHierarchy(ActionBase):
         self.newParentId = newParentId
         self.childName = childName
         function = self.editor.ui.sceneGraphUI.parent
-        ActionBase.__init__(self, function, self.oldParentId, self.newParentId, self.childName, **kargs)
+        ActionBase.__init__(self, function, self.oldParentId,
+                            self.newParentId, self.childName, **kargs)
 
     def undo(self):
-        self.editor.ui.sceneGraphUI.parent(self.oldParentId, self.oldGrandParentId, self.childName)
+        self.editor.ui.sceneGraphUI.parent(
+            self.oldParentId, self.oldGrandParentId, self.childName)
 
 
 class ActionSelectObj(ActionBase):
@@ -333,14 +341,16 @@ class ActionTransformObj(ActionBase):
     def saveStatus(self):
         obj = self.editor.objectMgr.findObjectById(self.uid)
         if obj:
-            self.origMat = Mat4(self.editor.objectMgr.objectsLastXform[obj[OG.OBJ_UID]])
+            self.origMat = Mat4(
+                self.editor.objectMgr.objectsLastXform[obj[OG.OBJ_UID]])
             # self.origMat = Mat4(obj[OG.OBJ_NP].getMat())
 
     def _do__call__(self, *args, **kargs):
         self.result = ActionBase._do__call__(self, *args, **kargs)
         obj = self.editor.objectMgr.findObjectById(self.uid)
         if obj:
-            self.editor.objectMgr.objectsLastXform[self.uid] = Mat4(obj[OG.OBJ_NP].getMat())
+            self.editor.objectMgr.objectsLastXform[self.uid] = Mat4(
+                obj[OG.OBJ_NP].getMat())
         return self.result
 
     def undo(self):
@@ -351,7 +361,8 @@ class ActionTransformObj(ActionBase):
             obj = self.editor.objectMgr.findObjectById(self.uid)
             if obj:
                 obj[OG.OBJ_NP].setMat(self.origMat)
-                self.editor.objectMgr.objectsLastXform[self.uid] = Mat4(self.origMat)
+                self.editor.objectMgr.objectsLastXform[self.uid] = Mat4(
+                    self.origMat)
             del self.origMat
             self.origMat = None
 
@@ -400,7 +411,8 @@ class ActionUpdateObjectProp(ActionBase):
         self.obj[OG.OBJ_PROP][self.propName] = self.newVal
 
     def redo(self):
-        self.result = self._do__call__()  # uid=self.uid, xformMat=self.xformMat)
+        # uid=self.uid, xformMat=self.xformMat)
+        self.result = self._do__call__()
         if self.editor and self.fSelectObject:
             base.direct.select(self.obj[OG.OBJ_NP], fUndo=0)
         return self.result

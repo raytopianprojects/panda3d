@@ -150,7 +150,7 @@ class App(ShowBase):
             self.lastMouseX, self.lastMouseY = 0, 0
 
         # scale position and delta to pixels for user
-        w, h = self.win.getSize()
+        w, h = self.win.get_size()
 
         self.mouseText.setText("Mode: {0}, Recenter: {1}  |  Mouse: {2}, {3}  |  hasMouse: {4}".format(
              self.mouseMode, self.manualRecenterMouse,

@@ -8,10 +8,10 @@ class StagedObject:
     """
 
     UNKNOWN = -1
-    OFF     = 0
-    ON      = 1
+    OFF = 0
+    ON = 1
 
-    def __init__(self, initState = UNKNOWN):
+    def __init__(self, initState=UNKNOWN):
         """
         Only sets the initial state of this object.  This will not
         call any "handle" functions.
@@ -61,4 +61,3 @@ class StagedObject:
 
     def isOffStage(self):
         return self.__state == StagedObject.OFF
-

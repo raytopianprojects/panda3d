@@ -3,6 +3,7 @@
 from direct.directnotify import DirectNotifyGlobal
 from . import DistributedObject
 
+
 class CRCache:
     notify = DirectNotifyGlobal.directNotify.newCategory("CRCache")
 
@@ -76,7 +77,7 @@ class CRCache:
                 # if the cache is full, pop the oldest item
                 oldestDistObj = self.fifo.pop(0)
                 # and remove it from the dictionary
-                del(self.dict[oldestDistObj.getDoId()])
+                del (self.dict[oldestDistObj.getDoId()])
                 # and delete it
                 oldestDistObj.deleteOrDelay()
                 if oldestDistObj.getDelayDeleteCount() <= 0:
@@ -93,7 +94,7 @@ class CRCache:
             # Find the object
             distObj = self.dict[doId]
             # Remove it from the dictionary
-            del(self.dict[doId])
+            del (self.dict[doId])
             # Remove it from the fifo
             self.fifo.remove(distObj)
             # return the distObj
@@ -111,7 +112,7 @@ class CRCache:
         # Look it up
         distObj = self.dict[doId]
         # Remove it from the dict and fifo
-        del(self.dict[doId])
+        del (self.dict[doId])
         self.fifo.remove(distObj)
         # and delete it
         distObj.deleteOrDelay()

@@ -34,8 +34,8 @@ class GlowDemo(ShowBase):
         # create a window and set up everything we need for rendering into it.
         ShowBase.__init__(self)
 
-        base.disableMouse()
-        base.setBackgroundColor(0, 0, 0)
+        base.disable_mouse()
+        base.set_background_color(0, 0, 0)
         camera.setPos(0, -50, 0)
 
         # Check video card capabilities.
@@ -93,7 +93,7 @@ class GlowDemo(ShowBase):
         self.accept("V", base.bufferViewer.toggleEnable)
         base.bufferViewer.setPosition("llcorner")
         base.bufferViewer.setLayout("hline")
-        # base.camLens.setFov(100)
+        # base.cam_lens.setFov(100)
         # event handling
         self.accept("space", self.toggleGlow)
         self.accept("enter", self.toggleDisplay)

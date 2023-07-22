@@ -318,7 +318,7 @@ class sideWindow(AppShell):
     def enablebaseUseDrive(self):
         #################################################################
         # enablebaseUseDrive(self)
-        # This function will toggle the usage of base.useDrive.
+        # This function will toggle the usage of base.use_drive.
         # Well, it may not usefull at all.
         #
         # We won't send out any message in this time to notice
@@ -329,23 +329,23 @@ class sideWindow(AppShell):
         #################################################################
         if self.enableBaseUseDrive==0:
             print('Enabled')
-            base.useDrive()
+            base.use_drive()
             self.enableBaseUseDrive = 1
         else:
             print('disabled')
-            #base.useTrackball()
-            base.disableMouse()
+            #base.use_trackball()
+            base.disable_mouse()
             self.enableBaseUseDrive = 0
         self.basedriveEnable = (self.basedriveEnable+1)%2
         pass
 
     def toggleBackface(self):
         #################################################################
-        # toggleBackface(self)
+        # toggle_backface(self)
         # This function will toggle the back face setting. so it will
         # render the polygon with two sides.
         #################################################################
-        base.toggleBackface()
+        base.toggle_backface()
         self.backface = (self.backface+1)%2
         return
 
@@ -363,10 +363,10 @@ class sideWindow(AppShell):
 
     def toggleTexture(self):
         #################################################################
-        # toggleTexture(self)
+        # toggle_texture(self)
         # This function will toggle the txture using option for the whole scene.
         #################################################################
-        base.toggleTexture()
+        base.toggle_texture()
         self.texture = (self.texture+1)%2
         return
 
@@ -384,10 +384,10 @@ class sideWindow(AppShell):
 
     def toggleWireframe(self):
         #################################################################
-        # toggleWireframe(self)
+        # toggle_wireframe(self)
         # This function will toggle the wire frame mode.
         #################################################################
-        base.toggleWireframe()
+        base.toggle_wireframe()
         self.wireframe = (self.wireframe+1)%2
         return
 
@@ -444,9 +444,9 @@ class sideWindow(AppShell):
         # This will be called from the colorEntry on the world setting page.
         # The "color" here is a list containing three integer data, R, G and B.
         #################################################################
-        base.setBackgroundColor(color[0]/255.0,
-                                color[1]/255.0,
-                                color[2]/255.0)
+        base.set_background_color(color[0] / 255.0,
+                                  color[1] / 255.0,
+                                  color[2] / 255.0)
         self.worldColor = [color[0],color[1],color[2],0]
 
     def toggleAutoCamera(self):

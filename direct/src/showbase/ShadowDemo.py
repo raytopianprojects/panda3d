@@ -9,12 +9,14 @@ multitexture rendering techniques.  It's not a particularly great
 way to do shadows.
 """
 
-__all__ = ['ShadowCaster', 'avatarShadow', 'piratesAvatarShadow', 'arbitraryShadow']
+__all__ = ['ShadowCaster', 'avatarShadow',
+           'piratesAvatarShadow', 'arbitraryShadow']
 
 from panda3d.core import *
 from direct.task import Task
 
 sc = None
+
 
 class ShadowCaster:
     texXSize = 128
@@ -100,9 +102,10 @@ class ShadowCaster:
             self.lens = None
 
         if self.buffer:
-            base.graphicsEngine.removeWindow(self.buffer)
+            base.graphics_engine.removeWindow(self.buffer)
             self.tex = None
             self.buffer = None
+
 
 def avatarShadow():
     # Turn off the existing drop shadow.
@@ -123,7 +126,7 @@ def avatarShadow():
     # direction relative to render (otherwise, the shadow seems to
     # rotate when you rotate your avatar, which is strange).  We can't
     # just use a compass effect, since that doesn't work on cameras.
-    def shadowCameraRotate(task, shadowCamera = shadowCamera):
+    def shadowCameraRotate(task, shadowCamera=shadowCamera):
         shadowCamera.setHpr(render, 0, 0, 0)
         lightPath.lookAt(shadowCamera, 0, 0, 3)
         return Task.cont
@@ -143,11 +146,13 @@ def avatarShadow():
 
     return sc
 
+
 def piratesAvatarShadow():
     a = avatarShadow()
     # Force the lod to be 0 at all times
     base.localAvatar.getGeomNode().getChild(0).node().forceSwitch(0)
     return a
+
 
 def arbitraryShadow(node):
     # Turn off the existing drop shadow, if any
@@ -169,7 +174,7 @@ def arbitraryShadow(node):
     # direction relative to render (otherwise, the shadow seems to
     # rotate when you rotate your avatar, which is strange).  We can't
     # just use a compass effect, since that doesn't work on cameras.
-    def shadowCameraRotate(task, shadowCamera = shadowCamera):
+    def shadowCameraRotate(task, shadowCamera=shadowCamera):
         shadowCamera.setHpr(render, 0, 0, 0)
         lightPath.lookAt(shadowCamera, 0, 0, 3)
         return Task.cont
@@ -189,33 +194,30 @@ def arbitraryShadow(node):
 
     return sc
 
-##def testShadow():
-##    a = piratesAvatarShadow()
+# def testShadow():
+# a = piratesAvatarShadow()
 ##
-##from direct.showbase.ShadowDemo import *
-##from direct.interval.IntervalGlobal import *
-##b = loader.loadModel('/i/beta/PotC/Maya/Pirates/scenes/models/sets/buildings/spanish_buildings/TavernIntExt/tavern_ext/bar.egg')
-##bs = arbitraryShadow(b)
-##s = loader.loadModel('smiley')
-##s.reparentTo(bs.lightPath)
-##b.reparentTo((base.localAvatar))
-##a = AmbientLight('cloudAmbientHi')
-##a.setColor(Vec4(0.9, 0.9, 0.9, 1.000))
-##aNP = s.attachNewNode(a)
-##b.setLight(aNP)
-##d = DirectionalLight("chernabogDirectionalLight")
-##d.setDirection(Vec3(0, 1, 0))
-##d.setColor(Vec4(1))
-###d.setColor(Vec4(0.9, 0.7, 0.7, 1.000))
-##dNP = s.attachNewNode(d)
-##b.setLight(dNP)
+# from direct.showbase.ShadowDemo import *
+# from direct.interval.IntervalGlobal import *
+# b = loader.loadModel('/i/beta/PotC/Maya/Pirates/scenes/models/sets/buildings/spanish_buildings/TavernIntExt/tavern_ext/bar.egg')
+# bs = arbitraryShadow(b)
+# s = loader.loadModel('smiley')
+# s.reparentTo(bs.lightPath)
+# b.reparentTo((base.localAvatar))
+# a = AmbientLight('cloudAmbientHi')
+# a.setColor(Vec4(0.9, 0.9, 0.9, 1.000))
+# aNP = s.attachNewNode(a)
+# b.setLight(aNP)
+# d = DirectionalLight("chernabogDirectionalLight")
+# d.setDirection(Vec3(0, 1, 0))
+# d.setColor(Vec4(1))
+# d.setColor(Vec4(0.9, 0.7, 0.7, 1.000))
+# dNP = s.attachNewNode(d)
+# b.setLight(dNP)
 ##
-##ival = Sequence(LerpPosInterval(bs.lightPath, 0.0, Vec3(-200, 0, 50)),
-##                LerpPosInterval(bs.lightPath, 10.0, Vec3(-200, 0, 200)),
-##                LerpPosInterval(bs.lightPath, 10.0, Vec3(200, 0, 200)),
-##                LerpPosInterval(bs.lightPath, 10.0, Vec3(200, 0, 50)),
-##)
-##ival.loop()
-
-
-
+# ival = Sequence(LerpPosInterval(bs.lightPath, 0.0, Vec3(-200, 0, 50)),
+# LerpPosInterval(bs.lightPath, 10.0, Vec3(-200, 0, 200)),
+# LerpPosInterval(bs.lightPath, 10.0, Vec3(200, 0, 200)),
+# LerpPosInterval(bs.lightPath, 10.0, Vec3(200, 0, 50)),
+# )
+# ival.loop()

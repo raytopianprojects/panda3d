@@ -65,7 +65,8 @@ class ActorInterval(Interval.Interval):
             name = id
 
         if len(self.controls) == 0:
-            self.notify.warning("Unknown animation for actor: %s" % (self.animName))
+            self.notify.warning(
+                "Unknown animation for actor: %s" % (self.animName))
             self.frameRate = 1.0
             self.startFrame = 0
             self.endFrame = 0

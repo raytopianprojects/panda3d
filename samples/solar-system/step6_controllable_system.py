@@ -35,8 +35,8 @@ class World(DirectObject):
     def __init__(self):
 
         # The standard camera position and background initialization
-        base.setBackgroundColor(0, 0, 0)
-        base.disableMouse()
+        base.set_background_color(0, 0, 0)
+        base.disable_mouse()
         camera.setPos(0, 0, 45)
         camera.setHpr(0, -90, 0)
 

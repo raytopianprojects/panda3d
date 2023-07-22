@@ -21,6 +21,7 @@ shared context between all objects written by that Pickler.
 Unfortunately, cPickle cannot be supported, because it does not
 support extensions of this nature. """
 
+from io import BytesIO
 __all__ = ["PickleError", "PicklingError", "UnpicklingError", "Pickler",
            "Unpickler", "dump", "dumps", "load", "loads", "HIGHEST_PROTOCOL"]
 
@@ -102,13 +103,13 @@ class Pickler(BasePickler):
         # Check the type dispatch table
         f = self.dispatch.get(t)
         if f:
-            f(self, obj) # Call unbound method with explicit self
+            f(self, obj)  # Call unbound method with explicit self
             return
 
         # Check for a class with a custom metaclass; treat as regular class
         try:
             issc = issubclass(t, type)
-        except TypeError: # t is not a class (old Boost; see SF #502085)
+        except TypeError:  # t is not a class (old Boost; see SF #502085)
             issc = 0
         if issc:
             self.save_global(obj)
@@ -188,18 +189,21 @@ class Unpickler(BaseUnpickler):
 
 
 # Shorthands
-from io import BytesIO
+
 
 def dump(obj, file, protocol=None):
     Pickler(file, protocol).dump(obj)
+
 
 def dumps(obj, protocol=None):
     file = BytesIO()
     Pickler(file, protocol).dump(obj)
     return file.getvalue()
 
+
 def load(file):
     return Unpickler(file).load()
+
 
 def loads(str):
     file = BytesIO(str)

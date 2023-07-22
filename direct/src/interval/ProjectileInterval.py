@@ -8,6 +8,7 @@ from direct.directnotify.DirectNotifyGlobal import *
 from .Interval import Interval
 from direct.showbase import PythonUtil
 
+
 class ProjectileInterval(Interval):
     """ProjectileInterval class: moves a nodepath through the trajectory
     of a projectile under the influence of gravity"""
@@ -25,12 +26,12 @@ class ProjectileInterval(Interval):
     # the projectile's motion in the Z (up) direction is parabolic
     # due to the constant force of gravity, which acts in the -Z direction
 
-    def __init__(self, node, startPos = None,
-                 endPos = None, duration = None,
-                 startVel = None, endZ = None,
-                 wayPoint = None, timeToWayPoint = None,
-                 gravityMult = None, name = None,
-                 collNode = None):
+    def __init__(self, node, startPos=None,
+                 endPos=None, duration=None,
+                 startVel=None, endZ=None,
+                 wayPoint=None, timeToWayPoint=None,
+                 gravityMult=None, name=None,
+                 collNode=None):
         """
         You may specify several different sets of input parameters.
         (If startPos is not provided, it will be obtained from the node's
@@ -89,11 +90,11 @@ class ProjectileInterval(Interval):
 
         Interval.__init__(self, name, self.duration)
 
-    def __calcTrajectory(self, startPos = None,
-                         endPos = None, duration = None,
-                         startVel = None, endZ = None,
-                         wayPoint = None, timeToWayPoint = None,
-                         gravityMult = None):
+    def __calcTrajectory(self, startPos=None,
+                         endPos=None, duration=None,
+                         startVel=None, endZ=None,
+                         wayPoint=None, timeToWayPoint=None,
+                         gravityMult=None):
         if startPos is None:
             startPos = self.node.getPos()
 
@@ -106,9 +107,9 @@ class ProjectileInterval(Interval):
             return result
 
         startPos, endPos, startVel, endZ, gravityMult, wayPoint, \
-                  timeToWayPoint = \
-                  doIndirections(startPos, endPos, startVel, endZ, gravityMult,
-                                 wayPoint, timeToWayPoint)
+            timeToWayPoint = \
+            doIndirections(startPos, endPos, startVel, endZ, gravityMult,
+                           wayPoint, timeToWayPoint)
 
         # we're guaranteed to know the starting position at this point
         self.startPos = startPos
@@ -125,8 +126,8 @@ class ProjectileInterval(Interval):
                 return Point3(0, 0, 0)
             else:
                 return Point3((endPos[0] - startPos[0]) / duration,
-                          (endPos[1] - startPos[1]) / duration,
-                          (endPos[2] - startPos[2] - (.5*zAccel*duration*duration)) / duration)
+                              (endPos[1] - startPos[1]) / duration,
+                              (endPos[2] - startPos[2] - (.5*zAccel*duration*duration)) / duration)
 
         def calcTimeOfImpactOnPlane(startHeight, endHeight, startVel, accel):
             return PythonUtil.solveQuadratic(accel * .5, startVel,
@@ -142,11 +143,11 @@ class ProjectileInterval(Interval):
                 # projectile hits plane once going up, once going down
                 # assume they want the one on the way down
                 assert self.notify.debug('projectile hits plane twice at times: %s' %
-                                  time)
+                                         time)
                 time = max(*time)
             else:
                 assert self.notify.debug('projectile hits plane once at time: %s' %
-                                  time)
+                                         time)
             return time
 
         # now all we need is startVel, duration, and endPos.
@@ -253,6 +254,7 @@ class ProjectileInterval(Interval):
             csolid = self.collNode.modifySolid(0)
             csolid.setT1(csolid.getT2())
             csolid.setT2(t)
+
 
 """
         ##################################################################

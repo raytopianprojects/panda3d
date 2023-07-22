@@ -12,6 +12,7 @@ from direct.extensions_native import CInterval_extensions
 from direct.extensions_native import NodePath_extensions
 import math
 
+
 class Interval(DirectObject):
     """Interval class: Base class for timeline functionality"""
 
@@ -39,7 +40,8 @@ class Interval(DirectObject):
         self.pstats = None
         if __debug__ and TaskManager.taskTimerVerbose:
             self.pname = name.split('-', 1)[0]
-            self.pstats = PStatCollector("App:Show code:ivalLoop:%s" % (self.pname))
+            self.pstats = PStatCollector(
+                "App:Show code:ivalLoop:%s" % (self.pname))
 
         # Set true if the interval should be invoked if it was
         # completely skipped over during initialize or finalize, false
@@ -71,14 +73,14 @@ class Interval(DirectObject):
         # Returns true if the interval has not been started, has already
         # played to its completion, or has been explicitly stopped via
         # finish().
-        return (self.getState() == CInterval.SInitial or \
+        return (self.getState() == CInterval.SInitial or
                 self.getState() == CInterval.SFinal)
 
     def setT(self, t):
         # There doesn't seem to be any reason to clamp this, and it
         # breaks looping intervals.  The interval code should properly
         # handle t values outside the proper range.
-        #t = min(max(t, 0.0), self.getDuration())
+        # t = min(max(t, 0.0), self.getDuration())
 
         state = self.getState()
         if state == CInterval.SInitial:
@@ -115,12 +117,12 @@ class Interval(DirectObject):
     def getT(self):
         return self.currT
 
-    def start(self, startT = 0.0, endT = -1.0, playRate = 1.0):
+    def start(self, startT=0.0, endT=-1.0, playRate=1.0):
         """ Starts the interval.  Returns an awaitable. """
         self.setupPlay(startT, endT, playRate, 0)
         return self.__spawnTask()
 
-    def loop(self, startT = 0.0, endT = -1.0, playRate = 1.0):
+    def loop(self, startT=0.0, endT=-1.0, playRate=1.0):
         self.setupPlay(startT, endT, playRate, 1)
         self.__spawnTask()
 
@@ -131,7 +133,7 @@ class Interval(DirectObject):
         self.__removeTask()
         return self.getT()
 
-    def resume(self, startT = None):
+    def resume(self, startT=None):
         if startT != None:
             self.setT(startT)
         self.setupResume()
@@ -221,7 +223,6 @@ class Interval(DirectObject):
         if self.pstats:
             self.pstats.stop()
 
-
     def privInitialize(self, t):
         # Subclasses may redefine this function
         self.state = CInterval.SStarted
@@ -299,9 +300,11 @@ class Interval(DirectObject):
     def setupResume(self):
         now = ClockObject.getGlobalClock().getFrameTime()
         if self.__playRate > 0:
-            self.__clockStart = now - ((self.getT() - self.__startT) / self.__playRate)
+            self.__clockStart = now - \
+                ((self.getT() - self.__startT) / self.__playRate)
         elif self.__playRate < 0:
-            self.__clockStart = now - ((self.getT() - self.__endT) / self.__playRate)
+            self.__clockStart = now - \
+                ((self.getT() - self.__endT) / self.__playRate)
         self.__loopCount = 0
 
     def stepPlay(self):
@@ -343,8 +346,10 @@ class Interval(DirectObject):
                 else:
                     # Otherwise, figure out how many loops we need to
                     # skip.
-                    timePerLoop = (self.__endT - self.__startT) / self.__playRate
-                    numLoops = math.floor((now - self.__clockStart) / timePerLoop)
+                    timePerLoop = (self.__endT - self.__startT) / \
+                        self.__playRate
+                    numLoops = math.floor(
+                        (now - self.__clockStart) / timePerLoop)
                     self.__loopCount += numLoops
                     self.__clockStart += numLoops * timePerLoop
 
@@ -382,8 +387,10 @@ class Interval(DirectObject):
                 else:
                     # Otherwise, figure out how many loops we need to
                     # skip.
-                    timePerLoop = (self.__endT - self.__startT) / -self.__playRate
-                    numLoops = math.floor((now - self.__clockStart) / timePerLoop)
+                    timePerLoop = (
+                        self.__endT - self.__startT) / -self.__playRate
+                    numLoops = math.floor(
+                        (now - self.__clockStart) / timePerLoop)
                     self.__loopCount += numLoops
                     self.__clockStart += numLoops * timePerLoop
 
@@ -448,13 +455,14 @@ class Interval(DirectObject):
         else:
             return Task.done
 
-    def popupControls(self, tl = None):
+    def popupControls(self, tl=None):
         """
         Popup control panel for interval.
         """
         # Don't use a regular import, to prevent ModuleFinder from picking
         # it up as a dependency when building a .p3d package.
-        import importlib, sys
+        import importlib
+        import sys
         EntryScale = importlib.import_module('direct.tkwidgets.EntryScale')
         if sys.version_info >= (3, 0):
             tkinter = importlib.import_module('tkinter')
@@ -465,49 +473,55 @@ class Interval(DirectObject):
             tl = tkinter.Toplevel()
             tl.title('Interval Controls')
         outerFrame = tkinter.Frame(tl)
+
         def entryScaleCommand(t, s=self):
             s.setT(t)
             s.pause()
         self.es = es = EntryScale.EntryScale(
-            outerFrame, text = self.getName(),
-            min = 0, max = math.floor(self.getDuration() * 100) / 100,
-            command = entryScaleCommand)
-        es.set(self.getT(), fCommand = 0)
-        es.pack(expand = 1, fill = tkinter.X)
+            outerFrame, text=self.getName(),
+            min=0, max=math.floor(self.getDuration() * 100) / 100,
+            command=entryScaleCommand)
+        es.set(self.getT(), fCommand=0)
+        es.pack(expand=1, fill=tkinter.X)
         bf = tkinter.Frame(outerFrame)
         # Jump to start and end
+
         def toStart(s=self, es=es):
             s.clearToInitial()
-            es.set(0, fCommand = 0)
+            es.set(0, fCommand=0)
+
         def toEnd(s=self):
             s.pause()
             s.setT(s.getDuration())
-            es.set(s.getDuration(), fCommand = 0)
+            es.set(s.getDuration(), fCommand=0)
             s.pause()
-        jumpToStart = tkinter.Button(bf, text = '<<', command = toStart)
+        jumpToStart = tkinter.Button(bf, text='<<', command=toStart)
         # Stop/play buttons
+
         def doPlay(s=self, es=es):
             s.resume(es.get())
 
-        stop = tkinter.Button(bf, text = 'Stop',
-                      command = lambda s=self: s.pause())
+        stop = tkinter.Button(bf, text='Stop',
+                              command=lambda s=self: s.pause())
         play = tkinter.Button(
-            bf, text = 'Play',
-            command = doPlay)
-        jumpToEnd = tkinter.Button(bf, text = '>>', command = toEnd)
-        jumpToStart.pack(side = tkinter.LEFT, expand = 1, fill = tkinter.X)
-        play.pack(side = tkinter.LEFT, expand = 1, fill = tkinter.X)
-        stop.pack(side = tkinter.LEFT, expand = 1, fill = tkinter.X)
-        jumpToEnd.pack(side = tkinter.LEFT, expand = 1, fill = tkinter.X)
-        bf.pack(expand = 1, fill = tkinter.X)
-        outerFrame.pack(expand = 1, fill = tkinter.X)
+            bf, text='Play',
+            command=doPlay)
+        jumpToEnd = tkinter.Button(bf, text='>>', command=toEnd)
+        jumpToStart.pack(side=tkinter.LEFT, expand=1, fill=tkinter.X)
+        play.pack(side=tkinter.LEFT, expand=1, fill=tkinter.X)
+        stop.pack(side=tkinter.LEFT, expand=1, fill=tkinter.X)
+        jumpToEnd.pack(side=tkinter.LEFT, expand=1, fill=tkinter.X)
+        bf.pack(expand=1, fill=tkinter.X)
+        outerFrame.pack(expand=1, fill=tkinter.X)
         # Add function to update slider during setT calls
+
         def update(t, es=es):
-            es.set(t, fCommand = 0)
+            es.set(t, fCommand=0)
         if not hasattr(self, "setTHooks"):
             self.setTHooks = []
         self.setTHooks.append(update)
         # Clear out function on destroy
+
         def onDestroy(e, s=self, u=update):
             if u in s.setTHooks:
                 s.setTHooks.remove(u)

@@ -10,10 +10,10 @@ class Rope(NodePath):
     thick lines built from triangle strips.
     """
 
-    showRope = ConfigVariableBool('show-rope', True, \
-      "Set this to false to deactivate the display of ropes.")
+    showRope = ConfigVariableBool('show-rope', True,
+                                  "Set this to false to deactivate the display of ropes.")
 
-    def __init__(self, name = 'Rope'):
+    def __init__(self, name='Rope'):
         self.ropeNode = RopeNode(name)
         self.curve = NurbsCurveEvaluator()
         self.ropeNode.setCurve(self.curve)
@@ -23,7 +23,7 @@ class Rope(NodePath):
         self.verts = []
         self.knots = None
 
-    def setup(self, order, verts, knots = None):
+    def setup(self, order, verts, knots=None):
         """This must be called to define the shape of the curve
         initially, and may be called again as needed to adjust the
         curve's properties.
@@ -108,9 +108,11 @@ class Rope(NodePath):
 
             if isinstance(point, tuple):
                 if (len(point) >= 4):
-                    self.curve.setVertex(i, VBase4(point[0], point[1], point[2], point[3]))
+                    self.curve.setVertex(
+                        i, VBase4(point[0], point[1], point[2], point[3]))
                 else:
-                    self.curve.setVertex(i, VBase3(point[0], point[1], point[2]))
+                    self.curve.setVertex(
+                        i, VBase3(point[0], point[1], point[2]))
             else:
                 self.curve.setVertex(i, point)
             if nodePath:

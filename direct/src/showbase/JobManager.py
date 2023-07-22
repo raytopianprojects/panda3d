@@ -130,10 +130,12 @@ class JobManager:
         # run for 1/2 millisecond per frame by default
         # config is in milliseconds, this func returns value in seconds
         return getBase().config.GetFloat('job-manager-timeslice-ms', .5) / 1000.
+
     def getTimeslice(self):
         if self._timeslice:
             return self._timeslice
         return self.getDefaultTimeslice()
+
     def setTimeslice(self, timeslice):
         self._timeslice = timeslice
 
@@ -147,7 +149,7 @@ class JobManager:
         if self._useOverflowTime is None:
             self._useOverflowTime = config.GetBool('job-use-overflow-time', 1)
         if len(self._pri2jobId2job):
-            #assert self.notify.debugCall()
+            # assert self.notify.debugCall()
             # figure out how long we can run
             endT = globalClock.getRealTime() + (self.getTimeslice() * .9)
             while True:
@@ -155,7 +157,7 @@ class JobManager:
                     # round-robin the jobs, giving high-priority jobs more timeslices
                     self._jobIdGenerator = flywheel(
                         list(self._jobId2timeslices.keys()),
-                        countFunc = lambda jobId: self._jobId2timeslices[jobId])
+                        countFunc=lambda jobId: self._jobId2timeslices[jobId])
                 try:
                     # grab the next jobId in the sequence
                     jobId = next(self._jobIdGenerator)
@@ -172,7 +174,8 @@ class JobManager:
                     overflowTime = self._jobId2overflowTime[jobId]
                     timeLeft = endT - globalClock.getRealTime()
                     if overflowTime >= timeLeft:
-                        self._jobId2overflowTime[jobId] = max(0., overflowTime-timeLeft)
+                        self._jobId2overflowTime[jobId] = max(
+                            0., overflowTime-timeLeft)
                         # don't run any more jobs this frame, this makes up
                         # for the extra overflow time that was used before
                         break
@@ -187,7 +190,8 @@ class JobManager:
                     except StopIteration:
                         # Job didn't yield Job.Done, it ran off the end and returned
                         # treat it as if it returned Job.Done
-                        self.notify.warning('job %s never yielded Job.Done' % job)
+                        self.notify.warning(
+                            'job %s never yielded Job.Done' % job)
                         result = Job.Done
 
                     if result is Job.Sleep:
@@ -207,7 +211,7 @@ class JobManager:
                         break
                 else:
                     # we've run out of time
-                    #assert self.notify.debug('timeslice end: %s, %s' % (endT, globalClock.getRealTime()))
+                    # assert self.notify.debug('timeslice end: %s, %s' % (endT, globalClock.getRealTime()))
                     job.suspend()
                     overflowTime = globalClock.getRealTime() - endT
                     if overflowTime > self.getTimeslice():
@@ -222,7 +226,7 @@ class JobManager:
         return task.cont
 
     def __repr__(self):
-        s  =   '======================================================='
+        s = '======================================================='
         s += '\nJobManager: active jobs in descending order of priority'
         s += '\n======================================================='
         pris = self._getSortedPriorities()
@@ -235,6 +239,7 @@ class JobManager:
                 # run through the jobs at this priority in the order that they will run
                 for jobId in self._pri2jobIds[pri]:
                     job = jobId2job[jobId]
-                    s += '\n%5d: %s (jobId %s)' % (pri, job.getJobName(), jobId)
+                    s += '\n%5d: %s (jobId %s)' % (pri,
+                                                   job.getJobName(), jobId)
         s += '\n'
         return s

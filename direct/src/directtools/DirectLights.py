@@ -1,6 +1,7 @@
 
 from panda3d.core import *
 
+
 class DirectLight(NodePath):
     def __init__(self, light, parent):
         # Initialize the superclass
@@ -17,8 +18,9 @@ class DirectLight(NodePath):
     def getLight(self):
         return self.light
 
+
 class DirectLights(NodePath):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         if parent is None:
             parent = base.render
 
@@ -66,7 +68,8 @@ class DirectLights(NodePath):
             light.setColor(VBase4(.3, .3, .3, 1))
         elif type == 'directional':
             self.directionalCount += 1
-            light = DirectionalLight('directional-' + repr(self.directionalCount))
+            light = DirectionalLight(
+                'directional-' + repr(self.directionalCount))
             light.setColor(VBase4(1))
         elif type == 'point':
             self.pointCount += 1
@@ -130,6 +133,3 @@ class DirectLights(NodePath):
         Turn off the given directLight
         """
         render.clearLight(directLight)
-
-
-

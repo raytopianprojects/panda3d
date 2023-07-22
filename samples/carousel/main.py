@@ -41,7 +41,7 @@ class CarouselDemo(ShowBase):
                                   fg=(1, 1, 1, 1), shadow=(0, 0, 0, .5),
                                   pos=(0, .1), scale=.1)
 
-        base.disableMouse()  # Allow manual positioning of the camera
+        base.disable_mouse()  # Allow manual positioning of the camera
         camera.setPosHpr(0, -8, 2.5, 0, -9, 0)  # Set the cameras' position
                                                 # and orientation
 

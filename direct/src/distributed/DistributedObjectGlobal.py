@@ -3,6 +3,7 @@
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObject import DistributedObject
 
+
 class DistributedObjectGlobal(DistributedObject):
     """
     The Distributed Object Global class is the base class for global
@@ -21,4 +22,3 @@ class DistributedObjectGlobal(DistributedObject):
         DistributedObject.__init__(self, cr)
         self.parentId = 0
         self.zoneId = 0
-

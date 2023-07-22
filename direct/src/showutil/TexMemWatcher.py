@@ -3,6 +3,7 @@ from direct.showbase.DirectObject import DirectObject
 import math
 import copy
 
+
 class TexMemWatcher(DirectObject):
     """
     This class creates a separate graphics window that displays an
@@ -24,7 +25,7 @@ class TexMemWatcher(DirectObject):
 
     StatusHeight = 20  # in pixels
 
-    def __init__(self, gsg = None, limit = None):
+    def __init__(self, gsg=None, limit=None):
         DirectObject.__init__(self)
 
         # First, we'll need a name to uniquify the object.
@@ -75,7 +76,6 @@ class TexMemWatcher(DirectObject):
         # correspond to pixels onscreen (they may be larger, sometimes
         # considerably larger, than 1 pixel, depending on the window
         # size).
-
 
         # This number defines the size of a Q-unit square, in texture
         # bytes.  It is automatically adjusted in repack() based on
@@ -135,8 +135,8 @@ class TexMemWatcher(DirectObject):
         if not self.pipe:
             self.pipe = base.pipe
 
-        self.win = base.graphicsEngine.makeOutput(self.pipe, name, 0, fbprops,
-                                                  props, flags)
+        self.win = base.graphics_engine.makeOutput(self.pipe, name, 0, fbprops,
+                                                   props, flags)
         assert self.win
 
         # We should render at the end of the frame.
@@ -158,7 +158,8 @@ class TexMemWatcher(DirectObject):
                     self.graphicsMemoryLimitChanged)
 
         # We'll need a mouse object to get mouse events.
-        self.mouse = base.dataRoot.attachNewNode(MouseAndKeyboard(self.win, 0, '%s-mouse' % (self.name)))
+        self.mouse = base.data_root.attachNewNode(
+            MouseAndKeyboard(self.win, 0, '%s-mouse' % (self.name)))
         bt = ButtonThrower('%s-thrower' % (self.name))
         self.mouse.attachNewNode(bt)
         bt.setPrefix('button-%s-' % (self.name))
@@ -179,7 +180,8 @@ class TexMemWatcher(DirectObject):
         # How frequently should the texture memory window check for
         # state changes?
         updateInterval = base.config.GetDouble("tex-mem-update-interval", 0.5)
-        self.task = taskMgr.doMethodLater(updateInterval, self.updateTextures, 'TexMemWatcher')
+        self.task = taskMgr.doMethodLater(
+            updateInterval, self.updateTextures, 'TexMemWatcher')
 
         self.setLimit(limit)
 
@@ -194,7 +196,7 @@ class TexMemWatcher(DirectObject):
 
         # Create a DisplayRegion and an associated camera.
         dr = self.win.makeDisplayRegion()
-        cam = Camera('cam2d')
+        cam = Camera('cam_2d')
         self.lens = OrthographicLens()
         self.lens.setNearFar(-1000, 1000)
         self.lens.setFilmSize(2, 2)
@@ -241,7 +243,7 @@ class TexMemWatcher(DirectObject):
         # Create a DisplayRegion and an associated camera.
         self.canvasDR = self.win.makeDisplayRegion()
         self.canvasDR.setSort(-10)
-        cam = Camera('cam2d')
+        cam = Camera('cam_2d')
         self.canvasLens = OrthographicLens()
         self.canvasLens.setNearFar(-1000, 1000)
         cam.setLens(self.canvasLens)
@@ -282,7 +284,8 @@ class TexMemWatcher(DirectObject):
         if self.canvasBackground:
             self.canvasBackground.removeNode()
 
-        self.canvasBackground = self.canvasRoot.attachNewNode('canvasBackground', -100)
+        self.canvasBackground = self.canvasRoot.attachNewNode(
+            'canvasBackground', -100)
 
         cm = CardMaker('background')
         cm.setFrame(0, 1, 0, 1)
@@ -296,7 +299,7 @@ class TexMemWatcher(DirectObject):
 
         self.canvasBackground.setTexture(self.checkTex)
 
-    def setLimit(self, limit = None):
+    def setLimit(self, limit=None):
         """ Indicates the texture memory limit.  If limit is None or
         unspecified, the limit is taken from the GSG, if any; or there
         is no limit. """
@@ -349,14 +352,15 @@ class TexMemWatcher(DirectObject):
             self.makeCanvasBackground()
 
         self.canvasLens.setFilmSize(1, self.top)
-        self.canvasLens.setFilmOffset(0.5, self.top / 2.0)  # lens covers 0..1 in x and y
+        # lens covers 0..1 in x and y
+        self.canvasLens.setFilmOffset(0.5, self.top / 2.0)
 
     def cleanup(self):
         if not self.cleanedUp:
             self.cleanedUp = True
 
             # Remove the window.
-            base.graphicsEngine.removeWindow(self.win)
+            base.graphics_engine.removeWindow(self.win)
             self.win = None
             self.gsg = None
             self.pipe = None
@@ -524,7 +528,6 @@ class TexMemWatcher(DirectObject):
         ls.drawTo(l, 0, b)
         self.isolate.attachNewNode(ls.create())
 
-
     def reconfigureWindow(self):
         """ Resets everything for a new window size. """
 
@@ -630,7 +633,8 @@ class TexMemWatcher(DirectObject):
             self.repack()
 
         else:
-            overflowCount = sum([tp.overflowed for tp in self.texPlacements.keys()])
+            overflowCount = sum(
+                [tp.overflowed for tp in self.texPlacements.keys()])
             if totalSize <= self.limit and overflowCount:
                 # Shouldn't be overflowing any more.  Better repack.
                 self.repack()
@@ -640,7 +644,7 @@ class TexMemWatcher(DirectObject):
 
                 # Sort the regions from largest to smallest to maximize
                 # packing effectiveness.
-                texRecords.sort(key = lambda tr: (tr.tw, tr.th), reverse = True)
+                texRecords.sort(key=lambda tr: (tr.tw, tr.th), reverse=True)
 
                 for tr in texRecords:
                     self.placeTexture(tr)
@@ -648,7 +652,6 @@ class TexMemWatcher(DirectObject):
                     self.texRecordsByKey[tr.key] = tr
 
         return task.again
-
 
     def repack(self):
         """ Repacks all of the current textures. """
@@ -733,7 +736,7 @@ class TexMemWatcher(DirectObject):
         # Sort the regions from largest to smallest to maximize
         # packing effectiveness.
         texRecords = list(self.texRecordsByTex.values())
-        texRecords.sort(key = lambda tr: (tr.tw, tr.th), reverse = True)
+        texRecords.sort(key=lambda tr: (tr.tw, tr.th), reverse=True)
 
         for tr in texRecords:
             self.placeTexture(tr)
@@ -791,7 +794,7 @@ class TexMemWatcher(DirectObject):
             if tp:
                 texCmp = (tr.w > tr.h) - (tr.w < tr.h)
                 holeCmp = ((tp.p[1] - tp.p[0]) > (tp.p[3] - tp.p[2])) \
-                        - ((tp.p[1] - tp.p[0]) < (tp.p[3] - tp.p[2]))
+                    - ((tp.p[1] - tp.p[0]) < (tp.p[3] - tp.p[2]))
                 if texCmp != 0 and holeCmp != 0 and texCmp != holeCmp:
                     tp.rotated = True
                 tr.placements = [tp]
@@ -811,7 +814,7 @@ class TexMemWatcher(DirectObject):
                 tr.placements = tpList
                 for tp in tpList:
                     holeCmp = ((tp.p[1] - tp.p[0]) > (tp.p[3] - tp.p[2])) \
-                            - ((tp.p[1] - tp.p[0]) < (tp.p[3] - tp.p[2]))
+                        - ((tp.p[1] - tp.p[0]) < (tp.p[3] - tp.p[2]))
                     if texCmp != 0 and holeCmp != 0 and texCmp != holeCmp:
                         tp.rotated = True
                     tp.setBitmasks(self.bitmasks)
@@ -832,7 +835,6 @@ class TexMemWatcher(DirectObject):
         tr.makeCard(self)
         tp.setBitmasks(self.bitmasks)
         self.texPlacements[tp] = tr
-
 
     def findHole(self, area, w, h):
         """ Searches for a rectangular hole that is at least area
@@ -943,7 +945,7 @@ class TexMemWatcher(DirectObject):
             return max(holes, key=lambda hole: hole[0])[1]
         return None
 
-    def findAvailableHoles(self, area, w = None, h = None):
+    def findAvailableHoles(self, area, w=None, h=None):
         """ Finds a list of available holes, of at least the indicated
         area.  Returns a list of tuples, where each tuple is of the
         form (area, tp).
@@ -985,8 +987,8 @@ class TexMemWatcher(DirectObject):
                 if tarea >= area:
                     tp = TexPlacement(l, r, b, t)
                     if w and h and \
-                       ((tpw >= w and tph >= h) or \
-                        (tph >= w and tpw >= h)):
+                       ((tpw >= w and tph >= h) or
+                            (tph >= w and tpw >= h)):
                         # This hole is big enough; short circuit.
                         return [(tarea, tp)]
 
@@ -1051,7 +1053,7 @@ class TexMemWatcher(DirectObject):
 
                 t = b + 1
                 while t < b + h and \
-                      (t >= len(self.bitmasks) or (self.bitmasks[t] & mask).isZero()):
+                        (t >= len(self.bitmasks) or (self.bitmasks[t] & mask).isZero()):
                     t += 1
 
                 if t < b + h:
@@ -1115,7 +1117,6 @@ class TexRecord:
         self.h = max(int(self.th / tmw.quantize + 0.5), 1)
         self.area = self.w * self.h
 
-
     def setActive(self, flag):
         self.active = flag
         if self.active:
@@ -1153,12 +1154,12 @@ class TexRecord:
         # its neighbors.
         frame = root.attachNewNode('frame', 30)
 
-
         for p in self.placements:
             l, r, b, t = p.p
             cx = (l + r) * 0.5
             cy = (b + t) * 0.5
-            shrinkMat = Mat4.translateMat(-cx, 0, -cy) * Mat4.scaleMat(0.9) * Mat4.translateMat(cx, 0, cy)
+            shrinkMat = Mat4.translateMat(-cx, 0, -cy) * \
+                Mat4.scaleMat(0.9) * Mat4.translateMat(cx, 0, cy)
 
             cm = CardMaker('backing')
             cm.setFrame(l, r, b, t)
@@ -1188,18 +1189,18 @@ class TexRecord:
             f2 = f1.copyTo(frame)
             f2.setMat(shrinkMat)
 
-        #matte.flattenStrong()
+        # matte.flattenStrong()
         self.matte = matte
 
-        #backing.flattenStrong()
+        # backing.flattenStrong()
         self.backing = backing
 
         card.setTransparency(TransparencyAttrib.MAlpha)
         card.setTexture(self.tex)
-        #card.flattenStrong()
+        # card.flattenStrong()
         self.card = card
 
-        #frame.flattenStrong()
+        # frame.flattenStrong()
         self.frame = frame
 
         root.reparentTo(tmw.canvas)
@@ -1213,6 +1214,7 @@ class TexRecord:
             r = MouseWatcherRegion('%s:%s' % (self.key, pi), *p.p)
             tmw.mw.addRegion(r)
             self.regions.append(r)
+
 
 class TexPlacement:
     def __init__(self, l, r, b, t):

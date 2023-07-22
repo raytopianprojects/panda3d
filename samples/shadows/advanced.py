@@ -47,7 +47,7 @@ class World(DirectObject):
         props.setRgbColor(1)
         props.setAlphaBits(1)
         props.setDepthBits(1)
-        LBuffer = base.graphicsEngine.makeOutput(
+        LBuffer = base.graphics_engine.makeOutput(
             base.pipe, "offscreen buffer", -2,
             props, winprops,
             GraphicsPipe.BFRefuseWindow,
@@ -81,11 +81,11 @@ class World(DirectObject):
         self.inst_x = addInstructions(0.42, 'Left/Right Arrow : switch camera angles')
         self.inst_a = addInstructions(0.48, 'Something about A/Z and push bias')
 
-        base.setBackgroundColor(0, 0, 0.2, 1)
+        base.set_background_color(0, 0, 0.2, 1)
 
-        base.camLens.setNearFar(1.0, 10000)
-        base.camLens.setFov(75)
-        base.disableMouse()
+        base.cam_lens.setNearFar(1.0, 10000)
+        base.cam_lens.setFov(75)
+        base.disable_mouse()
 
         # Load the scene.
 
@@ -133,7 +133,7 @@ class World(DirectObject):
         self.accept('a', self.adjustPushBias, [1.1])
         self.accept('z', self.adjustPushBias, [0.9])
 
-        self.LCam = base.makeCamera(LBuffer)
+        self.LCam = base.make_camera(LBuffer)
         self.LCam.node().setScene(render)
         self.LCam.node().getLens().setFov(40)
         self.LCam.node().getLens().setNearFar(10, 100)

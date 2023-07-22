@@ -46,11 +46,13 @@ class PushesStateChanges:
         for subscriber in self._subscribers:
             subscriber._recvStatePush(self)
 
+
 if __debug__:
     psc = PushesStateChanges(0)
     assert psc.getState() == 0
     psc.destroy()
     del psc
+
 
 class ReceivesStateChanges:
     # base class for objects that subscribe to state changes from PushesStateChanges objects
@@ -83,10 +85,12 @@ class ReceivesStateChanges:
     def _recvStatePush(self, source):
         pass
 
+
 if __debug__:
     rsc = ReceivesStateChanges(None)
     rsc.destroy()
     del rsc
+
 
 class StateVar(PushesStateChanges):
     # coder-friendly object that allows values to be set on it and pushes those values
@@ -97,6 +101,7 @@ class StateVar(PushesStateChanges):
     def get(self):
         return PushesStateChanges.getState(self)
 
+
 if __debug__:
     sv = StateVar(0)
     assert sv.get() == 0
@@ -104,6 +109,7 @@ if __debug__:
     assert sv.get() == 1
     sv.destroy()
     del sv
+
 
 class StateChangeNode(PushesStateChanges, ReceivesStateChanges):
     # base class that can be used to create a state-change notification chain
@@ -119,6 +125,7 @@ class StateChangeNode(PushesStateChanges, ReceivesStateChanges):
     def _recvStatePush(self, source):
         # got a state push, apply new state to self
         self._handlePotentialStateChange(source._value)
+
 
 if __debug__:
     sv = StateVar(0)
@@ -145,6 +152,7 @@ if __debug__:
     del scn2
     del scn
     del sv
+
 
 class ReceivesMultipleStateChanges:
     # base class for objects that subscribe to state changes from multiple PushesStateChanges
@@ -179,6 +187,7 @@ class ReceivesMultipleStateChanges:
     def _recvMultiStatePush(self, key, source):
         pass
 
+
 if __debug__:
     rsc = ReceivesMultipleStateChanges()
     sv = StateVar(0)
@@ -188,6 +197,7 @@ if __debug__:
     rsc._unsubscribe('a')
     rsc.destroy()
     del rsc
+
 
 class FunctionCall(ReceivesMultipleStateChanges, PushesStateChanges):
     # calls func with provided args whenever arguments' state changes
@@ -217,8 +227,8 @@ class FunctionCall(ReceivesMultipleStateChanges, PushesStateChanges):
                 self._bakedKargs[key] = arg
         self._initialized = True
         # call pushCurrentState() instead
-        ## push the current state to any listeners
-        ##self._handleStateChange()
+        # push the current state to any listeners
+        # self._handleStateChange()
 
     def destroy(self):
         ReceivesMultipleStateChanges.destroy(self)
@@ -249,8 +259,10 @@ class FunctionCall(ReceivesMultipleStateChanges, PushesStateChanges):
             self._func(*self._bakedArgs, **self._bakedKargs)
             PushesStateChanges._handleStateChange(self)
 
+
 if __debug__:
     l = []
+
     def handler(value, l=l):
         l.append(value)
     assert l == []
@@ -260,9 +272,9 @@ if __debug__:
     fc.pushCurrentState()
     assert l == [0,]
     sv.set(1)
-    assert l == [0,1,]
+    assert l == [0, 1,]
     sv.set(2)
-    assert l == [0,1,2,]
+    assert l == [0, 1, 2,]
     fc.destroy()
     sv.destroy()
     del fc
@@ -271,6 +283,7 @@ if __debug__:
     del l
 
     l = []
+
     def handler(value, kDummy=None, kValue=None, l=l):
         l.append((value, kValue))
     assert l == []
@@ -279,11 +292,11 @@ if __debug__:
     fc = FunctionCall(handler, sv, kValue=ksv)
     assert l == []
     fc.pushCurrentState()
-    assert l == [(0,'a',),]
+    assert l == [(0, 'a',),]
     sv.set(1)
-    assert l == [(0,'a'),(1,'a'),]
+    assert l == [(0, 'a'), (1, 'a'),]
     ksv.set('b')
-    assert l == [(0,'a'),(1,'a'),(1,'b'),]
+    assert l == [(0, 'a'), (1, 'a'), (1, 'b'),]
     fc.destroy()
     sv.destroy()
     del fc
@@ -291,8 +304,9 @@ if __debug__:
     del handler
     del l
 
+
 class EnterExit(StateChangeNode):
-    # call enterFunc when our state becomes true, exitFunc when it becomes false
+    # call enterFunc when our state becomes true, exit_func when it becomes false
     def __init__(self, source, enterFunc, exitFunc):
         self._enterFunc = enterFunc
         self._exitFunc = exitFunc
@@ -314,10 +328,13 @@ class EnterExit(StateChangeNode):
             self._exitFunc()
         StateChangeNode._handleStateChange(self)
 
+
 if __debug__:
     l = []
+
     def enter(l=l):
         l.append(1)
+
     def exit(l=l):
         l.append(0)
     sv = StateVar(0)
@@ -329,11 +346,11 @@ if __debug__:
     sv.set(2)
     assert l == [1,]
     sv.set(0)
-    assert l == [1,0,]
+    assert l == [1, 0,]
     sv.set(True)
-    assert l == [1,0,1,]
+    assert l == [1, 0, 1,]
     sv.set(False)
-    assert l == [1,0,1,0,]
+    assert l == [1, 0, 1, 0,]
     ee.destroy()
     sv.destroy()
     del ee
@@ -341,6 +358,7 @@ if __debug__:
     del enter
     del exit
     del l
+
 
 class Pulse(PushesStateChanges):
     # changes state to True then immediately to False whenever sendPulse is called
@@ -351,8 +369,10 @@ class Pulse(PushesStateChanges):
         self._handlePotentialStateChange(True)
         self._handlePotentialStateChange(False)
 
+
 if __debug__:
     l = []
+
     def handler(value, l=l):
         l.append(value)
     p = Pulse()
@@ -371,6 +391,7 @@ if __debug__:
     del l
     del handler
 
+
 class EventPulse(Pulse, DirectObject):
     # sends a True-False "pulse" whenever a specific messenger message is sent
     def __init__(self, event):
@@ -380,6 +401,7 @@ class EventPulse(Pulse, DirectObject):
     def destroy(self):
         self.ignoreAll()
         Pulse.destroy(self)
+
 
 class EventArgument(PushesStateChanges, DirectObject):
     # tracks a particular argument to a particular messenger event
@@ -396,6 +418,7 @@ class EventArgument(PushesStateChanges, DirectObject):
     def _handleEvent(self, *args):
         self._handlePotentialStateChange(args[self._index])
 
+
 class AttrSetter(StateChangeNode):
     def __init__(self, source, object, attrName):
         self._object = object
@@ -406,6 +429,7 @@ class AttrSetter(StateChangeNode):
     def _handleStateChange(self):
         setattr(self._object, self._attrName, self._value)
         StateChangeNode._handleStateChange(self)
+
 
 if __debug__:
     o = ScratchPad()

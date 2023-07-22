@@ -5,6 +5,7 @@ from direct.particles import ParticleEffect
 from direct.particles import Particles
 from direct.particles import ForceGroup
 
+
 class ParticleFloorTest(NodePath):
     def __init__(self):
         NodePath.__init__(self, "particleFloorTest")
@@ -25,7 +26,7 @@ class ParticleFloorTest(NodePath):
         self.p0.setLitterSize(7)
         self.p0.setLitterSpread(2)
         self.p0.setSystemLifespan(0.0000)
-        #self.p0.setLocalVelocityFlag(1)
+        # self.p0.setLocalVelocityFlag(1)
         self.p0.setFloorZ(-1.0)
         self.p0.setSystemGrowsOlderFlag(0)
         # Factory parameters
@@ -46,6 +47,7 @@ class ParticleFloorTest(NodePath):
 
     def start(self):
         self.f.enable()
+
 
 if __name__ == "__main__":
     from direct.directbase.TestStart import *

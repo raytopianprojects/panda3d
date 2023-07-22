@@ -22,6 +22,7 @@ if sys.version_info >= (3, 0):
 else:
     import __builtin__ as builtins
 
+
 class ExclusiveObjectPool(DirectObject.DirectObject):
     # ObjectPool specialization that excludes particular objects
     # IDs of objects to globally exclude from reporting
@@ -38,6 +39,7 @@ class ExclusiveObjectPool(DirectObject.DirectObject):
             cls._ExclObjIds.setdefault(id(obj), 0)
             cls._ExclObjIds[id(obj)] += 1
         cls._SyncMaster.change()
+
     @classmethod
     def removeExclObjs(cls, *objs):
         for obj in makeList(objs):
@@ -70,7 +72,8 @@ class ExclusiveObjectPool(DirectObject.DirectObject):
         if self._sync.isSynced(self._SyncMaster):
             return
         if hasattr(self, '_filteredPool'):
-            ExclusiveObjectPool.removeExclObjs(*self._filteredPool._getInternalObjs())
+            ExclusiveObjectPool.removeExclObjs(
+                *self._filteredPool._getInternalObjs())
             ExclusiveObjectPool.removeExclObjs(self._filteredPool)
             del self._filteredPool
         del self._postFilterObjs[:]
@@ -85,35 +88,42 @@ class ExclusiveObjectPool(DirectObject.DirectObject):
     def getObjsOfType(self, type):
         self._resync()
         return self._filteredPool.getObjsOfType(type)
+
     def printObjsOfType(self, type):
         self._resync()
         return self._filteredPool.printObjsOfType(type)
+
     def diff(self, other):
         self._resync()
         return self._filteredPool.diff(other._filteredPool)
+
     def typeFreqStr(self):
         self._resync()
         return self._filteredPool.typeFreqStr()
+
     def __len__(self):
         self._resync()
         return len(self._filteredPool)
+
 
 class ObjectReport:
     """report on every Python object in the current process"""
     notify = directNotify.newCategory('ObjectReport')
 
     def __init__(self, name, log=True):
-        gr = GarbageReport.GarbageReport('ObjectReport\'s GarbageReport: %s' % name, log=log)
+        gr = GarbageReport.GarbageReport(
+            'ObjectReport\'s GarbageReport: %s' % name, log=log)
         gr.destroy()
         del gr
         self._name = name
         self._pool = ObjectPool.ObjectPool(self._getObjectList())
-        #ExclusiveObjectPool.addExclObjs(self, self._pool, self._name)
+        # ExclusiveObjectPool.addExclObjs(self, self._pool, self._name)
         if log:
-            self.notify.info('===== ObjectReport: \'%s\' =====\n%s' % (self._name, self.typeFreqStr()))
+            self.notify.info('===== ObjectReport: \'%s\' =====\n%s' %
+                             (self._name, self.typeFreqStr()))
 
     def destroy(self):
-        #ExclusiveObjectPool.removeExclObjs(self, self._pool, self._name)
+        # ExclusiveObjectPool.removeExclObjs(self, self._pool, self._name)
         self._pool.destroy()
         del self._pool
         del self._name
@@ -191,4 +201,3 @@ class ObjectReport:
                     stateStack.push((adj, None, 0))
                     continue
                     """
-

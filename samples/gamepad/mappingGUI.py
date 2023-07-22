@@ -274,7 +274,7 @@ class MappingGUIDemo(ShowBase):
             self.actionLabels[action]["text"] = self.mapping.formatMapping(action)
 
         # cleanup
-        for bt in base.buttonThrowers:
+        for bt in base.button_throwers:
             bt.node().setSpecificFlag(True)
             bt.node().setButtonDownEvent("")
         for bt in base.deviceButtonThrowers:
@@ -299,7 +299,7 @@ class MappingGUIDemo(ShowBase):
 
         # Disable regular button events on all button event throwers, and
         # instead broadcast a generic event.
-        for bt in base.buttonThrowers:
+        for bt in base.button_throwers:
             bt.node().setSpecificFlag(False)
             bt.node().setButtonDownEvent("keyListenEvent")
         for bt in base.deviceButtonThrowers:

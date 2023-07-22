@@ -13,6 +13,7 @@ from direct.p3d.FileSpec import FileSpec
 from direct.directnotify.DirectNotifyGlobal import directNotify
 import time
 
+
 class HostInfo:
     """ This class represents a particular download host serving up
     Panda3D packages.  It is the Python equivalent of the P3DHost
@@ -20,9 +21,8 @@ class HostInfo:
 
     notify = directNotify.newCategory("HostInfo")
 
-    def __init__(self, hostUrl, appRunner = None, hostDir = None,
-                 rootDir = None, asMirror = False, perPlatform = None):
-
+    def __init__(self, hostUrl, appRunner=None, hostDir=None,
+                 rootDir=None, asMirror=False, perPlatform=None):
         """ You must specify either an appRunner or a hostDir to the
         HostInfo constructor.
 
@@ -121,7 +121,7 @@ class HostInfo:
         it downloads a new version on-the-spot.  Returns true on
         success, false on failure. """
 
-        if fileSpec.quickVerify(pathname = localPathname):
+        if fileSpec.quickVerify(pathname=localPathname):
             # It's good, keep it.
             return True
 
@@ -129,7 +129,8 @@ class HostInfo:
         doc = None
         if self.appRunner and self.appRunner.superMirrorUrl:
             # Use the "super mirror" first.
-            url = core.URLSpec(self.appRunner.superMirrorUrl + fileSpec.filename)
+            url = core.URLSpec(
+                self.appRunner.superMirrorUrl + fileSpec.filename)
             self.notify.info("Freshening %s" % (url))
             doc = http.getDocument(url)
 
@@ -154,15 +155,15 @@ class HostInfo:
             file.unlink()
             return False
 
-        if not fileSpec.fullVerify(pathname = localPathname, notify = self.notify):
+        if not fileSpec.fullVerify(pathname=localPathname, notify=self.notify):
             # No good after download.
             self.notify.info("%s is still no good after downloading." % (url))
             return False
 
         return True
 
-    def downloadContentsFile(self, http, redownload = False,
-                             hashVal = None):
+    def downloadContentsFile(self, http, redownload=False,
+                             hashVal=None):
         """ Downloads the contents.xml file for this particular host,
         synchronously, and then reads it.  Returns true on success,
         false on failure.  If hashVal is not None, it should be a
@@ -212,7 +213,7 @@ class HostInfo:
                 statusString = ''
                 for attempt in range(int(ConfigVariableInt('contents-xml-dl-attempts', 3))):
                     if attempt > 0:
-                        self.notify.info("Retrying (%s)..."%(attempt,))
+                        self.notify.info("Retrying (%s)..." % (attempt,))
                     rf = Ramfile()
                     channel = http.makeChannel(False)
                     channel.getDocument(request)
@@ -223,8 +224,10 @@ class HostInfo:
                         rf = None
                         statusCode = channel.getStatusCode()
                         statusString = channel.getStatusString()
-                        self.notify.warning("Could not contact download server at %s" % (url,))
-                        self.notify.warning("Status code = %s %s" % (statusCode, statusString))
+                        self.notify.warning(
+                            "Could not contact download server at %s" % (url,))
+                        self.notify.warning(
+                            "Status code = %s %s" % (statusCode, statusString))
 
                 if not rf:
                     self.notify.warning("Unable to download %s" % (url,))
@@ -265,7 +268,7 @@ class HostInfo:
             if hashVal:
                 hashVal.hashString(rf.getData())
 
-            if not self.readContentsFile(tempFilename, freshDownload = True):
+            if not self.readContentsFile(tempFilename, freshDownload=True):
                 self.notify.warning("Failure reading %s" % (url))
                 tempFilename.unlink()
                 return False
@@ -302,8 +305,8 @@ class HostInfo:
         # Now download it again.
         self.hasContentsFile = False
         hv2 = HashVal()
-        if not self.downloadContentsFile(http, redownload = True,
-                                         hashVal = hv2):
+        if not self.downloadContentsFile(http, redownload=True,
+                                         hashVal=hv2):
             return False
 
         if hv2 == HashVal():
@@ -320,8 +323,8 @@ class HostInfo:
         """ Returns true if a contents.xml file has been successfully
         read for this host and is still current, false otherwise. """
         if not self.appRunner \
-            or self.appRunner.verifyContents == self.appRunner.P3DVCNone \
-            or self.appRunner.verifyContents == self.appRunner.P3DVCNever:
+                or self.appRunner.verifyContents == self.appRunner.P3DVCNone \
+                or self.appRunner.verifyContents == self.appRunner.P3DVCNever:
             # If we're not asking to verify contents, then
             # contents.xml files never expires.
             return self.hasContentsFile
@@ -329,7 +332,7 @@ class HostInfo:
         now = int(time.time())
         return now < self.contentsExpiration and self.hasContentsFile
 
-    def readContentsFile(self, tempFilename = None, freshDownload = False):
+    def readContentsFile(self, tempFilename=None, freshDownload=False):
         """ Reads the contents.xml file for this particular host, once
         it has been downloaded into the indicated temporary file.
         Returns true on success, false if the contents file is not
@@ -409,7 +412,8 @@ class HostInfo:
                 self.contentsSpec.readHash(tempFilename)
 
             if expiration is not None:
-                self.contentsExpiration = min(self.contentsExpiration, expiration)
+                self.contentsExpiration = min(
+                    self.contentsExpiration, expiration)
 
         # Look for our own entry in the hosts table.
         if self.hostUrl:
@@ -436,7 +440,8 @@ class HostInfo:
             except ValueError:
                 perPlatform = False
 
-            package = self.__makePackage(name, platform, version, solo, perPlatform)
+            package = self.__makePackage(
+                name, platform, version, solo, perPlatform)
             package.descFile = FileSpec()
             package.descFile.loadXml(xpackage)
             package.setupFilenames()
@@ -526,7 +531,8 @@ class HostInfo:
 
         hostDirBasename = xhost.Attribute('host_dir')
         if self.rootDir and not self.hostDir:
-            self.hostDir = self.__determineHostDir(hostDirBasename, self.hostUrl)
+            self.hostDir = self.__determineHostDir(
+                hostDirBasename, self.hostUrl)
 
         # Get the "download" URL, which is the source from which we
         # download everything other than the contents.xml file.
@@ -567,14 +573,14 @@ class HostInfo:
         platforms = self.packages.setdefault((name, version or ""), {})
         package = platforms.get("", None)
         if not package:
-            package = PackageInfo(self, name, version, platform = platform,
-                                  solo = solo, asMirror = self.asMirror,
-                                  perPlatform = perPlatform)
+            package = PackageInfo(self, name, version, platform=platform,
+                                  solo=solo, asMirror=self.asMirror,
+                                  perPlatform=perPlatform)
             platforms[platform or ""] = package
 
         return package
 
-    def getPackage(self, name, version, platform = None):
+    def getPackage(self, name, version, platform=None):
         """ Returns a PackageInfo that matches the indicated name and
         version and the indicated platform or the current runtime
         platform, if one is provided by this host, or None if not. """
@@ -598,7 +604,7 @@ class HostInfo:
 
         return package
 
-    def getPackages(self, name = None, platform = None):
+    def getPackages(self, name=None, platform=None):
         """ Returns a list of PackageInfo objects that match the
         indicated name and/or platform, with no particular regards to
         version.  If name is None, all packages are returned. """
@@ -612,17 +618,17 @@ class HostInfo:
 
             if not platform:
                 for p2 in platforms:
-                    package = self.getPackage(pn, version, platform = p2)
+                    package = self.getPackage(pn, version, platform=p2)
                     if package:
                         packages.append(package)
             else:
-                package = self.getPackage(pn, version, platform = platform)
+                package = self.getPackage(pn, version, platform=platform)
                 if package:
                     packages.append(package)
 
         return packages
 
-    def getAllPackages(self, includeAllPlatforms = False):
+    def getAllPackages(self, includeAllPlatforms=False):
         """ Returns a list of all available packages provided by this
         host. """
 
@@ -677,10 +683,12 @@ class HostInfo:
         for the indicated package. """
 
         if self.appRunner:
-            self.notify.info("Deleting package %s: %s" % (package.packageName, package.getPackageDir()))
+            self.notify.info("Deleting package %s: %s" %
+                             (package.packageName, package.getPackageDir()))
             self.appRunner.rmtree(package.getPackageDir())
 
-            self.appRunner.sendRequest('forget_package', self.hostUrl, package.packageName, package.packageVersion or '')
+            self.appRunner.sendRequest(
+                'forget_package', self.hostUrl, package.packageName, package.packageVersion or '')
 
     def __determineHostDir(self, hostDirBasename, hostUrl):
         """ Hashes the host URL into a (mostly) unique directory
@@ -728,7 +736,7 @@ class HostInfo:
                 end = colon
 
             # Now start .. end is just the hostname.
-            hostname = hostUrl[start : end]
+            hostname = hostUrl[start: end]
 
         # Now build a hash string of the whole URL.  We'll use MD5 to
         # get a pretty good hash, with a minimum chance of collision.

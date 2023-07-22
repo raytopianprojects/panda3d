@@ -24,15 +24,16 @@ class ParticleInterval(Interval):
     # create ParticleInterval DirectNotify category
     notify = directNotify.newCategory('ParticleInterval')
     # Class methods
+
     def __init__(self,
                  particleEffect,
                  parent,
-                 worldRelative = 1,
-                 renderParent = None,
-                 duration = 0.0,
-                 softStopT = 0.0,
-                 cleanup = False,
-                 name = None):
+                 worldRelative=1,
+                 renderParent=None,
+                 duration=0.0,
+                 softStopT=0.0,
+                 cleanup=False,
+                 name=None):
         """
         Args:
             particleEffect (ParticleEffect): a particle effect
@@ -81,9 +82,9 @@ class ParticleInterval(Interval):
         # Initialize superclass
         Interval.__init__(self, name, duration)
 
-    def __step(self,dt):
+    def __step(self, dt):
         if self.particleEffect:
-            self.particleEffect.accelerate(dt,1,0.05)
+            self.particleEffect.accelerate(dt, 1, 0.05)
 
     def __softStart(self):
         if self.particleEffect:
@@ -108,7 +109,7 @@ class ParticleInterval(Interval):
             for forceGroup in self.particleEffect.getForceGroupList():
                 forceGroup.enable()
 
-        Interval.privInitialize(self,t)
+        Interval.privInitialize(self, t)
 
     def privInstant(self):
         self.privInitialize(self.getDuration())
@@ -125,11 +126,10 @@ class ParticleInterval(Interval):
                 self.__step(t-self.softStopT)
             else:
                 self.__step(t-self.currT)
-            Interval.privStep(self,t)
+            Interval.privStep(self, t)
 
     def privFinalize(self):
         Interval.privFinalize(self)
         if self.cleanup and self.particleEffect:
             self.particleEffect.cleanup()
             self.particleEffect = None
-

@@ -4,17 +4,17 @@ from panda3d.core import *
 from panda3d.direct import *
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObjectBase import DistributedObjectBase
-#from PyDatagram import PyDatagram
-#from PyDatagramIterator import PyDatagramIterator
+# from PyDatagram import PyDatagram
+# from PyDatagramIterator import PyDatagramIterator
 
 # Values for DistributedObject.activeState
 
-ESNew          = 1
-ESDeleted      = 2
-ESDisabling    = 3
-ESDisabled     = 4  # values here and lower are considered "disabled"
-ESGenerating   = 5  # values here and greater are considered "generated"
-ESGenerated    = 6
+ESNew = 1
+ESDeleted = 2
+ESDisabling = 3
+ESDisabled = 4  # values here and lower are considered "disabled"
+ESGenerating = 5  # values here and greater are considered "generated"
+ESGenerated = 6
 
 # update this table if the values above change
 ESNum2Str = {
@@ -24,7 +24,7 @@ ESNum2Str = {
     ESDisabled: 'ESDisabled',
     ESGenerating: 'ESGenerating',
     ESGenerated: 'ESGenerated',
-    }
+}
 
 
 class DistributedObject(DistributedObjectBase):
@@ -242,18 +242,18 @@ class DistributedObject(DistributedObjectBase):
         """
         assert self.notify.debug('announceGenerate(): %s' % (self.doId))
 
-
     def _deactivateDO(self):
         # after this is called, the object is no longer an active DistributedObject
         # and it may be placed in the cache
         if not self.cr:
             # we are going to crash, output the destroyDo stacktrace
-            self.notify.warning('self.cr is none in _deactivateDO %d' % self.doId)
+            self.notify.warning(
+                'self.cr is none in _deactivateDO %d' % self.doId)
             if hasattr(self, 'destroyDoStackTrace'):
                 print(self.destroyDoStackTrace)
         self.__callbacks = {}
         self.cr.closeAutoInterests(self)
-        self.setLocation(0,0)
+        self.setLocation(0, 0)
         self.cr.deleteObjectLocation(self, self.parentId, self.zoneId)
 
     def _destroyDO(self):
@@ -267,7 +267,8 @@ class DistributedObject(DistributedObjectBase):
         # this will catch typos in the data name in calls to get/setCachedData
         if hasattr(self, '_cachedData'):
             for name, cachedData in self._cachedData.items():
-                self.notify.warning('flushing unretrieved cached data: %s' % name)
+                self.notify.warning(
+                    'flushing unretrieved cached data: %s' % name)
                 cachedData.flush()
             del self._cachedData
         self.cr = None
@@ -312,7 +313,7 @@ class DistributedObject(DistributedObjectBase):
         assert self.notify.debugStateCall(self)
         self.activeState = ESGenerating
         # this has already been set at this point
-        #self.cr.storeObjectLocation(self, self.parentId, self.zoneId)
+        # self.cr.storeObjectLocation(self, self.parentId, self.zoneId)
         # semi-hack: we seem to be calling generate() more than once for objects that multiply-inherit
         if not hasattr(self, '_autoInterestHandle'):
             self.cr.openAutoInterests(self)
@@ -330,9 +331,9 @@ class DistributedObject(DistributedObjectBase):
         """
         return self.doId
 
+    # This message was moved out of announce generate
+    # to avoid ordering issues.
 
-    #This message was moved out of announce generate
-    #to avoid ordering issues.
     def postGenerateMessage(self):
         if self.activeState != ESGenerated:
             self.activeState = ESGenerated
@@ -359,13 +360,14 @@ class DistributedObject(DistributedObjectBase):
 
         dclass.receiveUpdateOther(self, di)
 
-    def sendUpdate(self, fieldName, args = [], sendToId = None):
+    def sendUpdate(self, fieldName, args=[], sendToId=None):
         if self.cr:
             dg = self.dclass.clientFormatUpdate(
                 fieldName, sendToId or self.doId, args)
             self.cr.send(dg)
         else:
-            assert self.notify.error("sendUpdate failed, because self.cr is not set")
+            assert self.notify.error(
+                "sendUpdate failed, because self.cr is not set")
 
     def sendDisableMsg(self):
         self.cr.sendDisableMsg(self.doId)
@@ -379,7 +381,7 @@ class DistributedObject(DistributedObjectBase):
     def uniqueName(self, idString):
         return ("%s-%s" % (idString, self.doId))
 
-    def getCallbackContext(self, callback, extraArgs = []):
+    def getCallbackContext(self, callback, extraArgs=[]):
         # Some objects implement a back-and-forth handshake operation
         # with the AI via an arbitrary context number.  This method
         # (coupled with doCallbackContext(), below) maps a Python
@@ -433,7 +435,8 @@ class DistributedObject(DistributedObjectBase):
                 callback(*completeArgs)
             del self.__callbacks[context]
         else:
-            self.notify.warning("Got unexpected context from AI: %s" % (context))
+            self.notify.warning(
+                "Got unexpected context from AI: %s" % (context))
 
     def setBarrierData(self, data):
         # This message is sent by the AI to tell us the barriers and
@@ -448,7 +451,8 @@ class DistributedObject(DistributedObjectBase):
                 if self.cr.isLocalId(avId):
                     # We found the local avatar's id; stop here.
                     self.__barrierContext = (context, name)
-                    assert self.notify.debug('setBarrierData(%s, %s)' % (context, name))
+                    assert self.notify.debug(
+                        'setBarrierData(%s, %s)' % (context, name))
                     return
 
         # This barrier didn't involve this client; ignore it.
@@ -459,7 +463,7 @@ class DistributedObject(DistributedObjectBase):
         # Return a trivially-empty (context, name, avIds) value.
         return ((0, '', []),)
 
-    def doneBarrier(self, name = None):
+    def doneBarrier(self, name=None):
         # Tells the AI we have finished handling our task.  If the
         # optional name parameter is specified, it must match the
         # barrier name specified on the AI, or the barrier is ignored.
@@ -473,13 +477,16 @@ class DistributedObject(DistributedObjectBase):
         if self.__barrierContext != None:
             context, aiName = self.__barrierContext
             if name == None or name == aiName:
-                assert self.notify.debug('doneBarrier(%s, %s)' % (context, aiName))
+                assert self.notify.debug(
+                    'doneBarrier(%s, %s)' % (context, aiName))
                 self.sendUpdate("setBarrierReady", [context])
                 self.__barrierContext = None
             else:
-                assert self.notify.debug('doneBarrier(%s) ignored; current barrier is %s' % (name, aiName))
+                assert self.notify.debug(
+                    'doneBarrier(%s) ignored; current barrier is %s' % (name, aiName))
         else:
-            assert self.notify.debug('doneBarrier(%s) ignored; no active barrier.' % (name))
+            assert self.notify.debug(
+                'doneBarrier(%s) ignored; no active barrier.' % (name))
 
     def addInterest(self, zoneId, note="", event=None):
         return self.cr.addInterest(self.getDoId(), zoneId, note, event)

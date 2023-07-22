@@ -4,6 +4,7 @@ from direct.showbase.PythonUtil import safeRepr
 from direct.showbase.Job import Job
 import types
 
+
 class ContainerReport(Job):
     notify = directNotify.newCategory("ContainerReport")
     # set of containers that should not be included in the report
@@ -48,7 +49,7 @@ class ContainerReport(Job):
             id(self._type2id2len),
             id(self._queue),
             id(self._instanceDictIds),
-            ]))
+        ]))
         # push on a few things that we want to give priority
         # for the sake of the variable-name printouts
         try:
@@ -56,14 +57,14 @@ class ContainerReport(Job):
         except:
             pass
         else:
-            self._enqueueContainer( base.__dict__,
+            self._enqueueContainer(base.__dict__,
                                    'base')
         try:
             simbase
         except:
             pass
         else:
-            self._enqueueContainer( simbase.__dict__,
+            self._enqueueContainer(simbase.__dict__,
                                    'simbase')
         self._queue.push(__builtins__)
         self._id2pathStr[id(__builtins__)] = ''
@@ -73,7 +74,7 @@ class ContainerReport(Job):
             # top of the while loop from various points
             yield None
             parentObj = self._queue.pop()
-            #print '%s: %s, %s' % (id(parentObj), type(parentObj), self._id2pathStr[id(parentObj)])
+            # print '%s: %s, %s' % (id(parentObj), type(parentObj), self._id2pathStr[id(parentObj)])
             isInstanceDict = False
             if id(parentObj) in self._instanceDictIds:
                 isInstanceDict = True
@@ -92,7 +93,8 @@ class ContainerReport(Job):
                 if self._examine(child):
                     assert (self._queue.back() is child)
                     self._instanceDictIds.add(id(child))
-                    self._id2pathStr[id(child)] = str(self._id2pathStr[id(parentObj)])
+                    self._id2pathStr[id(child)] = str(
+                        self._id2pathStr[id(parentObj)])
                 continue
 
             if type(parentObj) is dict:
@@ -102,7 +104,8 @@ class ContainerReport(Job):
                 try:
                     keys.sort()
                 except TypeError as e:
-                    self.notify.warning('non-sortable dict keys: %s: %s' % (self._id2pathStr[id(parentObj)], repr(e)))
+                    self.notify.warning(
+                        'non-sortable dict keys: %s: %s' % (self._id2pathStr[id(parentObj)], repr(e)))
                 for key in keys:
                     try:
                         attr = parentObj[key]
@@ -117,9 +120,11 @@ class ContainerReport(Job):
                                 self._id2pathStr[id(attr)] = key
                             else:
                                 if isInstanceDict:
-                                    self._id2pathStr[id(attr)] = self._id2pathStr[id(parentObj)] + '.%s' % key
+                                    self._id2pathStr[id(attr)] = self._id2pathStr[id(
+                                        parentObj)] + '.%s' % key
                                 else:
-                                    self._id2pathStr[id(attr)] = self._id2pathStr[id(parentObj)] + '[%s]' % safeRepr(key)
+                                    self._id2pathStr[id(attr)] = self._id2pathStr[id(
+                                        parentObj)] + '[%s]' % safeRepr(key)
                 del key
                 del attr
                 continue
@@ -143,7 +148,8 @@ class ContainerReport(Job):
                                 self._visitedIds.add(id(attr))
                                 if self._examine(attr):
                                     assert (self._queue.back() is attr)
-                                    self._id2pathStr[id(attr)] = self._id2pathStr[id(parentObj)] + '[%s]' % index
+                                    self._id2pathStr[id(attr)] = self._id2pathStr[id(
+                                        parentObj)] + '[%s]' % index
                             index += 1
                         del attr
                     except StopIteration as e:
@@ -164,7 +170,8 @@ class ContainerReport(Job):
                         self._visitedIds.add(id(child))
                         if self._examine(child):
                             assert (self._queue.back() is child)
-                            self._id2pathStr[id(child)] = self._id2pathStr[id(parentObj)] + '.%s' % childName
+                            self._id2pathStr[id(child)] = self._id2pathStr[id(
+                                parentObj)] + '.%s' % childName
                 del childName
                 del child
                 continue
@@ -194,6 +201,7 @@ class ContainerReport(Job):
             self._id2container[objId] = obj
             self._type2id2len.setdefault(type(obj), {})
             self._type2id2len[type(obj)][objId] = length
+
     def _examine(self, obj):
         # return False if it's an object that can't contain or lead to other objects
         if type(obj) in (types.BooleanType, types.BuiltinFunctionType,
@@ -221,11 +229,11 @@ class ContainerReport(Job):
         count = 0
         stop = False
         for l in lengths:
-            #len2ids[l].sort()
+            # len2ids[l].sort()
             pathStrList = list()
             for id in len2ids[l]:
                 obj = self._id2container[id]
-                #print '%s: %s' % (l, self._id2pathStr[id])
+                # print '%s: %s' % (l, self._id2pathStr[id])
                 pathStrList.append(self._id2pathStr[id])
                 count += 1
                 if (count & 0x7f) == 0:
@@ -242,7 +250,8 @@ class ContainerReport(Job):
         for type in initialTypes:
             for i in self._outputType(type, **kArgs):
                 yield None
-        otherTypes = list(set(self._type2id2len.keys()).difference(set(initialTypes)))
+        otherTypes = list(set(self._type2id2len.keys()
+                              ).difference(set(initialTypes)))
         otherTypes.sort()
         for type in otherTypes:
             for i in self._outputType(type, **kArgs):

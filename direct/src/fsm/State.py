@@ -29,7 +29,7 @@ class State(DirectObject):
                 # Note: you can only replace methods currently
                 enterFunc = state.getEnterFunc()
                 exitFunc = state.getExitFunc()
-                # print 'testing: ', state, enterFunc, exitFunc, oldFunction
+                # print 'testing: ', state, enterFunc, exit_func, oldFunction
                 if type(enterFunc) == types.MethodType:
                     if enterFunc.__func__ == oldFunction:
                         # print 'found: ', enterFunc, oldFunction
@@ -43,7 +43,7 @@ class State(DirectObject):
                         count += 1
                 if type(exitFunc) == types.MethodType:
                     if exitFunc.__func__ == oldFunction:
-                        # print 'found: ', exitFunc, oldFunction
+                        # print 'found: ', exit_func, oldFunction
                         if sys.version_info >= (3, 0):
                             state.setExitFunc(types.MethodType(newFunction,
                                                                exitFunc.__self__))
@@ -54,9 +54,8 @@ class State(DirectObject):
                         count += 1
             return count
 
-
     def __init__(self, name, enterFunc=None, exitFunc=None,
-                 transitions=Any, inspectorPos = []):
+                 transitions=Any, inspectorPos=[]):
         """__init__(self, string, func, func, string[], inspectorPos = [])
         State constructor: takes name, enter func, exit func, and
         a list of states it can transition to (or State.Any)."""
@@ -73,19 +72,19 @@ class State(DirectObject):
     # setters and getters
 
     def getName(self):
-        return(self.__name)
+        return (self.__name)
 
     def setName(self, stateName):
         self.__name = stateName
 
     def getEnterFunc(self):
-        return(self.__enterFunc)
+        return (self.__enterFunc)
 
     def setEnterFunc(self, stateEnterFunc):
         self.__enterFunc = stateEnterFunc
 
     def getExitFunc(self):
-        return(self.__exitFunc)
+        return (self.__exitFunc)
 
     def setExitFunc(self, stateExitFunc):
         self.__exitFunc = stateExitFunc
@@ -130,7 +129,7 @@ class State(DirectObject):
     if __debug__:
         def getInspectorPos(self):
             """getInspectorPos(self)"""
-            return(self.__inspectorPos)
+            return (self.__inspectorPos)
 
         def setInspectorPos(self, inspectorPos):
             """setInspectorPos(self, [x, y])"""
@@ -142,7 +141,7 @@ class State(DirectObject):
         """
         Return the list of child FSMs
         """
-        return(self.__FSMList)
+        return (self.__FSMList)
 
     def setChildren(self, FSMList):
         """setChildren(self, ClassicFSM[])
@@ -196,7 +195,6 @@ class State(DirectObject):
         for fsm in self.__FSMList:
             fsm.request((fsm.getFinalState()).getName())
 
-
     # basic State functionality
 
     def enter(self, argList=[]):
@@ -223,4 +221,5 @@ class State(DirectObject):
 
     def __str__(self):
         return "State: name = %s, enter = %s, exit = %s, trans = %s, children = %s" %\
-               (self.__name, self.__enterFunc, self.__exitFunc, self.__transitions, self.__FSMList)
+               (self.__name, self.__enterFunc, self.__exitFunc,
+                self.__transitions, self.__FSMList)

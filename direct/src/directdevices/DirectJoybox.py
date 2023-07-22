@@ -35,12 +35,14 @@ JOYBOX_RANGE = JOYBOX_MAX - JOYBOX_MIN
 
 JOYBOX_TREAD_SEPERATION = 1.0
 
+
 class DirectJoybox(DirectObject):
     joyboxCount = 0
     xyzMultiplier = 1.0
     hprMultiplier = 1.0
-    def __init__(self, device = 'CerealBox', nodePath = base.direct.camera,
-                 headingNP = base.direct.camera):
+
+    def __init__(self, device='CerealBox', nodePath=base.direct.camera,
+                 headingNP=base.direct.camera):
         # See if device manager has been initialized
         if base.direct.deviceManager == None:
             base.direct.deviceManager = DirectDeviceManager()
@@ -71,9 +73,9 @@ class DirectJoybox(DirectObject):
         self.tempCS = base.direct.group.attachNewNode('JoyboxTempCS')
         # Text object to display current mode
         self.readout = OnscreenText.OnscreenText(
-            pos = (-0.9, 0.95),
-            font = base.direct.font,
-            mayChange = 1)
+            pos=(-0.9, 0.95),
+            font=base.direct.font,
+            mayChange=1)
         # List of functions to cycle through
         self.modeList = [self.joeMode, self.driveMode, self.orbitMode]
         # Pick initial mode
@@ -86,11 +88,9 @@ class DirectJoybox(DirectObject):
         # Spawn update task
         self.enable()
 
-
-    def setHeadingNodePath(self,np):
+    def setHeadingNodePath(self, np):
 
         self.headingNP = np
-
 
     def enable(self):
         # Kill existing task
@@ -125,24 +125,31 @@ class DirectJoybox(DirectObject):
 
     def getNodePath(self):
         return self.nodePath
+
     def setRefCS(self, refCS):
         self.refCS = refCS
+
     def getRefCS(self):
         return self.refCS
+
     def getEventName(self, index):
         return self.name + '-button-' + repr(index)
+
     def setXyzMultiplier(self, multiplier):
         DirectJoybox.xyzMultiplier = multiplier
+
     def getXyzMultiplier(self):
         return DirectJoybox.xyzMultiplier
+
     def setHprMultiplier(self, multiplier):
         DirectJoybox.hprMultiplier = multiplier
+
     def getHprMultiplier(self):
         return DirectJoybox.hprMultiplier
 
     def updateTask(self, state):
         # old optimization
-        #self.updateValsUnrolled()
+        # self.updateValsUnrolled()
         self.updateVals()
         self.updateFunc()
         return Task.cont
@@ -190,9 +197,10 @@ class DirectJoybox(DirectObject):
                 # That channel may not have been updated yet
                 self.bList[i] = 0
 
-    def acceptSwitchModeEvent(self, button = R_UPPER):
+    def acceptSwitchModeEvent(self, button=R_UPPER):
         self.accept(self.getEventName(button), self.switchMode)
-    def ignoreSwitchModeEvent(self, button = R_UPPER):
+
+    def ignoreSwitchModeEvent(self, button=R_UPPER):
         self.ignore(self.getEventName(button))
 
     def switchMode(self):
@@ -207,7 +215,7 @@ class DirectJoybox(DirectObject):
             pass
 
     def showMode(self, modeText):
-        def hideText(state, s = self):
+        def hideText(state, s=self):
             s.readout.setText('')
             return Task.done
         taskMgr.remove(self.name + '-showMode')
@@ -216,10 +224,11 @@ class DirectJoybox(DirectObject):
         t = taskMgr.doMethodLater(3.0, hideText, self.name + '-showMode')
         t.setUponDeath(hideText)
 
-    def acceptUprightCameraEvent(self, button = L_UPPER):
+    def acceptUprightCameraEvent(self, button=L_UPPER):
         self.accept(self.getEventName(button),
                     base.direct.cameraControl.orbitUprightCam)
-    def ignoreUprightCameraEvent(self, button = L_UPPER):
+
+    def ignoreUprightCameraEvent(self, button=L_UPPER):
         self.ignore(self.getEventName(button))
 
     def setMode(self, func, name):
@@ -229,12 +238,11 @@ class DirectJoybox(DirectObject):
         self.showMode(self.modeName)
         self.enable()
 
-
-    def setUseHeadingNP(self,enabled):
+    def setUseHeadingNP(self, enabled):
 
         self.useHeadingNP = enabled
 
-    def setRotateInPlace(self,enabled):
+    def setRotateInPlace(self, enabled):
 
         self.rotateInPlace = enabled
 
@@ -246,7 +254,8 @@ class DirectJoybox(DirectObject):
                     50.0 * DirectJoybox.hprMultiplier)
         posScale = ((self.aList[R_SLIDE] + 1.0) *
                     50.0 * DirectJoybox.xyzMultiplier)
-        def getAxisVal(index, s = self):
+
+        def getAxisVal(index, s=self):
             try:
                 return s.aList[s.mapping[index]]
             except IndexError:
@@ -274,13 +283,12 @@ class DirectJoybox(DirectObject):
             if (self.rotateInPlace):
                 parent = self.nodePath.getParent()
                 self.floatingNP.reparentTo(parent)
-                self.floatingNP.setPos(self.headingNP,0,0,0)
-                self.floatingNP.setHpr(0,0,0)
+                self.floatingNP.setPos(self.headingNP, 0, 0, 0)
+                self.floatingNP.setHpr(0, 0, 0)
                 self.nodePath.wrtReparentTo(self.floatingNP)
                 self.floatingNP.setHpr(hpr)
                 self.nodePath.wrtReparentTo(parent)
-                hpr = Vec3(0,0,0)
-
+                hpr = Vec3(0, 0, 0)
 
         self.nodePath.setPosHpr(self.nodePath, pos, hpr)
 
@@ -290,25 +298,23 @@ class DirectJoybox(DirectObject):
         self.modifier = [1, 1, 1, -1, -1, 0]
         self.setMode(self.joyboxFly, 'Joe Mode')
 
-
     def basicMode(self):
         self.mapping = [NULL_AXIS, R_FWD_BACK, NULL_AXIS,
                         R_LEFT_RIGHT, NULL_AXIS, NULL_AXIS]
-        self.modifier = [0,1,0,-1,0,0]
-        self.setMode(self.joyboxFly,'Basic Mode')
+        self.modifier = [0, 1, 0, -1, 0, 0]
+        self.setMode(self.joyboxFly, 'Basic Mode')
 
     def fpsMode(self):
-        self.mapping = [L_LEFT_RIGHT,R_FWD_BACK,L_FWD_BACK,
+        self.mapping = [L_LEFT_RIGHT, R_FWD_BACK, L_FWD_BACK,
                         R_LEFT_RIGHT, NULL_AXIS, NULL_AXIS]
-        self.modifier = [1,1,1,-1,0,0]
-        self.setMode(self.joyboxFly,'FPS Mode')
+        self.modifier = [1, 1, 1, -1, 0, 0]
+        self.setMode(self.joyboxFly, 'FPS Mode')
 
     def tankMode(self):
-        self.setMode(self.tankFly,'Tank Mode')
+        self.setMode(self.tankFly, 'Tank Mode')
 
     def nullMode(self):
-        self.setMode(self.nullFly,'Null Mode')
-
+        self.setMode(self.nullFly, 'Null Mode')
 
     def lucMode(self):
         self.mapping = [R_LEFT_RIGHT, R_FWD_BACK, L_FWD_BACK,
@@ -361,15 +367,14 @@ class DirectJoybox(DirectObject):
     def spaceMode(self):
         self.setMode(self.spaceFly, 'Space Mode')
 
-
     def nullFly(self):
         return
 
     def tankFly(self):
 
-        leftTreadSpeed  = (self.normalizeChannel(L_SLIDE,.1,100) *
-                           DirectJoybox.xyzMultiplier) * self.aList[L_FWD_BACK]
-        rightTreadSpeed = (self.normalizeChannel(R_SLIDE,.1,100) *
+        leftTreadSpeed = (self.normalizeChannel(L_SLIDE, .1, 100) *
+                          DirectJoybox.xyzMultiplier) * self.aList[L_FWD_BACK]
+        rightTreadSpeed = (self.normalizeChannel(R_SLIDE, .1, 100) *
                            DirectJoybox.xyzMultiplier) * self.aList[R_FWD_BACK]
 
         forwardSpeed = (leftTreadSpeed + rightTreadSpeed)*.5
@@ -380,12 +385,8 @@ class DirectJoybox(DirectObject):
         dh = -1.0*headingSpeed * self.deltaTime*.3
         dy = forwardSpeed * self.deltaTime
 
-        self.nodePath.setH(self.nodePath,dh)
-        self.nodePath.setY(self.nodePath,dy)
-
-
-
-
+        self.nodePath.setH(self.nodePath, dh)
+        self.nodePath.setY(self.nodePath, dy)
 
     def spaceFly(self):
         # Do nothing if no nodePath selected
@@ -402,7 +403,7 @@ class DirectJoybox(DirectObject):
         dy = posScale * self.aList[L_FWD_BACK] * self.deltaTime
         self.nodePath.setY(self.nodePath, dy)
 
-    def planetMode(self, auxData = []):
+    def planetMode(self, auxData=[]):
         self.auxData = auxData
         self.setMode(self.planetFly, 'Space Mode')
 
@@ -448,7 +449,7 @@ class DirectJoybox(DirectObject):
                     sf = max(1.0 - (max(above, 0.0)/(0.2 * radius)), 0.0)
                     # Subtract scaled radial component
                     dPlanet -= radialComponent * (sf * sf)
-                    #dPlanet -= radialComponent
+                    # dPlanet -= radialComponent
                     # Convert back to node path space
                     dPos.assign(planet.getMat(self.nodePath).xformVec(dPlanet))
         # Set pos accordingly
@@ -497,10 +498,10 @@ class DirectJoybox(DirectObject):
         # Restore the original hpr of the orbiter
         self.nodePath.setHpr(self.tempCS, 0, 0, 0)
 
-
     # We need to override the DirectAnalog normalizeChannel to
     # correct the ranges of the two twist axes of the joybox.
-    def normalizeChannel(self, chan, minVal = -1, maxVal = 1):
+
+    def normalizeChannel(self, chan, minVal=-1, maxVal=1):
         try:
             if (chan == L_TWIST) or (chan == R_TWIST):
                 # These channels have reduced range
@@ -511,5 +512,3 @@ class DirectJoybox(DirectObject):
                     self.analogs.getControlState(chan), minVal, maxVal)
         except IndexError:
             return 0.0
-
-

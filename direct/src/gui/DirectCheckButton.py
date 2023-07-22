@@ -12,13 +12,15 @@ from panda3d.core import *
 from .DirectButton import *
 from .DirectLabel import *
 
+
 class DirectCheckButton(DirectButton):
     """
     DirectCheckButton(parent) - Create a DirectGuiWidget which responds
     to mouse clicks by setting a state of on or off and execute a callback
     function (passing that state through) if defined
     """
-    def __init__(self, parent = None, **kw):
+
+    def __init__(self, parent=None, **kw):
         # Inherits from DirectButton
         # A Direct Frame can have:
         # - A background texture (pass in path to image, or Texture Card)
@@ -42,39 +44,39 @@ class DirectCheckButton(DirectButton):
             ('boxImageScale', 1, None),
             ('boxImageColor', None, None),
             ('boxRelief', 'sunken', None),
-            )
+        )
         # Merge keyword options with default options
         self.defineoptions(kw, optiondefs)
         # Initialize superclasses
         DirectButton.__init__(self, parent)
         self.indicator = self.createcomponent("indicator", (), None,
                                               DirectLabel, (self,),
-                                              numStates = 2,
-                                              image = self['boxImage'],
-                                              image_scale = self['boxImageScale'],
-                                              image_color = self['boxImageColor'],
-                                              state = 'disabled',
-                                              text = ('X', 'X'),
-                                              relief = self['boxRelief'],
+                                              numStates=2,
+                                              image=self['boxImage'],
+                                              image_scale=self['boxImageScale'],
+                                              image_color=self['boxImageColor'],
+                                              state='disabled',
+                                              text=('X', 'X'),
+                                              relief=self['boxRelief'],
                                               )
 
         # Call option initialization functions
         self.initialiseoptions(DirectCheckButton)
         # After initialization with X giving it the correct size, put back space
-        if self['boxImage'] ==  None:
+        if self['boxImage'] == None:
             self.indicator['text'] = (' ', '*')
             self.indicator['text_pos'] = (0, -.2)
         else:
             self.indicator['text'] = (' ', ' ')
-        if self['boxImageColor'] != None and self['boxImage'] !=  None:
+        if self['boxImageColor'] != None and self['boxImage'] != None:
             self.colors = [VBase4(0, 0, 0, 0), self['boxImageColor']]
             self.component('indicator')['image_color'] = VBase4(0, 0, 0, 0)
 
     # Override the resetFrameSize of DirectGuiWidget inorder to provide space for label
     def resetFrameSize(self):
-        self.setFrameSize(fClearFrame = 1)
+        self.setFrameSize(fClearFrame=1)
 
-    def setFrameSize(self, fClearFrame = 0):
+    def setFrameSize(self, fClearFrame=0):
 
         if self['frameSize']:
             # Use user specified bounds
@@ -107,33 +109,34 @@ class DirectCheckButton(DirectButton):
                     (self.bounds[3] - self.bounds[2]))
             # If background is smaller then indicator, enlarge background
             if diff > 0:
-                if self['boxPlacement'] == 'left':            #left
+                if self['boxPlacement'] == 'left':  # left
                     self.bounds[0] += -(indicatorWidth + (2*self['boxBorder']))
                     self.bounds[3] += diff/2
                     self.bounds[2] -= diff/2
-                elif self['boxPlacement'] == 'below':          #below
+                elif self['boxPlacement'] == 'below':  # below
                     self.bounds[2] += -(indicatorHeight+(2*self['boxBorder']))
-                elif self['boxPlacement'] == 'right':          #right
+                elif self['boxPlacement'] == 'right':  # right
                     self.bounds[1] += indicatorWidth + (2*self['boxBorder'])
                     self.bounds[3] += diff/2
                     self.bounds[2] -= diff/2
-                else:                                    #above
+                else:  # above
                     self.bounds[3] += indicatorHeight + (2*self['boxBorder'])
 
             # Else make space on correct side for indicator
             else:
-                if self['boxPlacement'] == 'left':            #left
+                if self['boxPlacement'] == 'left':  # left
                     self.bounds[0] += -(indicatorWidth + (2*self['boxBorder']))
-                elif self['boxPlacement'] == 'below':          #below
-                    self.bounds[2] += -(indicatorHeight + (2*self['boxBorder']))
-                elif self['boxPlacement'] == 'right':          #right
+                elif self['boxPlacement'] == 'below':  # below
+                    self.bounds[2] += -(indicatorHeight +
+                                        (2*self['boxBorder']))
+                elif self['boxPlacement'] == 'right':  # right
                     self.bounds[1] += indicatorWidth + (2*self['boxBorder'])
-                else:                                    #above
+                else:  # above
                     self.bounds[3] += indicatorHeight + (2*self['boxBorder'])
 
         # Set frame to new dimensions
         if ((frameType != PGFrameStyle.TNone) and
-            (frameType != PGFrameStyle.TFlat)):
+                (frameType != PGFrameStyle.TFlat)):
             bw = self['borderWidth']
         else:
             bw = (0, 0)
@@ -150,28 +153,30 @@ class DirectCheckButton(DirectButton):
             lbounds = self.indicator.bounds
             newpos = [0, 0, 0]
 
-            if self['boxPlacement'] == 'left':            #left
+            if self['boxPlacement'] == 'left':  # left
                 newpos[0] += bbounds[0]-lbounds[0] + self['boxBorder'] + ibw[0]
-                dropValue = (bbounds[3]-bbounds[2]-lbounds[3]+lbounds[2])/2 + self['boxBorder']
+                dropValue = (bbounds[3]-bbounds[2]-lbounds[3] +
+                             lbounds[2])/2 + self['boxBorder']
                 newpos[2] += (bbounds[3]-lbounds[3] + self['boxBorder'] -
                               dropValue)
-            elif self['boxPlacement'] == 'right':            #right
+            elif self['boxPlacement'] == 'right':  # right
                 newpos[0] += bbounds[1]-lbounds[1] - self['boxBorder'] - ibw[0]
-                dropValue = (bbounds[3]-bbounds[2]-lbounds[3]+lbounds[2])/2 + self['boxBorder']
+                dropValue = (bbounds[3]-bbounds[2]-lbounds[3] +
+                             lbounds[2])/2 + self['boxBorder']
                 newpos[2] += (bbounds[3]-lbounds[3] + self['boxBorder']
                               - dropValue)
-            elif self['boxPlacement'] == 'above':            #above
+            elif self['boxPlacement'] == 'above':  # above
                 newpos[2] += bbounds[3]-lbounds[3] - self['boxBorder'] - ibw[1]
-            else:                                      #below
+            else:  # below
                 newpos[2] += bbounds[2]-lbounds[2] + self['boxBorder'] + ibw[1]
 
             self.indicator.setPos(newpos[0], newpos[1], newpos[2])
 
-
     def commandFunc(self, event):
         self['indicatorValue'] = 1 - self['indicatorValue']
         if self.colors != None:
-            self.component('indicator')['image_color'] = self.colors[self['indicatorValue']]
+            self.component('indicator')[
+                'image_color'] = self.colors[self['indicatorValue']]
 
         if self['command']:
             # Pass any extra args to command
@@ -180,11 +185,5 @@ class DirectCheckButton(DirectButton):
     def setIndicatorValue(self):
         self.component('indicator').guiItem.setState(self['indicatorValue'])
         if self.colors != None:
-            self.component('indicator')['image_color'] = self.colors[self['indicatorValue']]
-
-
-
-
-
-
-
+            self.component('indicator')[
+                'image_color'] = self.colors[self['indicatorValue']]

@@ -31,11 +31,11 @@ sharedPackages = {}
 
 vfs = VirtualFileSystem.getGlobalPtr()
 
-compiledExtensions = [ 'pyc', 'pyo' ]
+compiledExtensions = ['pyc', 'pyo']
 if not __debug__:
     # In optimized mode, we prefer loading .pyo files over .pyc files.
     # We implement that by reversing the extension names.
-    compiledExtensions = [ 'pyo', 'pyc' ]
+    compiledExtensions = ['pyo', 'pyc']
 
 
 class VFSImporter:
@@ -50,12 +50,12 @@ class VFSImporter:
         else:
             self.dir_path = Filename.fromOsSpecific(path)
 
-    def find_module(self, fullname, path = None):
+    def find_module(self, fullname, path=None):
         if path is None:
             dir_path = self.dir_path
         else:
             dir_path = path
-        #print >>sys.stderr, "find_module(%s), dir_path = %s" % (fullname, dir_path)
+        # print >>sys.stderr, "find_module(%s), dir_path = %s" % (fullname, dir_path)
         basename = fullname.split('.')[-1]
         path = Filename(dir_path, basename)
 
@@ -101,8 +101,9 @@ class VFSImporter:
                 return VFSLoader(dir_path, vfile, filename, packagePath=path,
                                  desc=('.'+ext, 'rb', imp.PY_COMPILED))
 
-        #print >>sys.stderr, "not found."
+        # print >>sys.stderr, "not found."
         return None
+
 
 class VFSLoader:
     """ The second part of VFSImporter, this is created for a
@@ -117,8 +118,8 @@ class VFSLoader:
         self.desc = desc
         self.packagePath = packagePath
 
-    def load_module(self, fullname, loadingShared = False):
-        #print >>sys.stderr, "load_module(%s), dir_path = %s, filename = %s" % (fullname, self.dir_path, self.filename)
+    def load_module(self, fullname, loadingShared=False):
+        # print >>sys.stderr, "load_module(%s), dir_path = %s, filename = %s" % (fullname, self.dir_path, self.filename)
         if self.desc[2] == imp.PY_FROZEN:
             return self._import_frozen_module(fullname)
         if self.desc[2] == imp.C_EXTENSION:
@@ -133,7 +134,7 @@ class VFSLoader:
                 path = getattr(parent, '__path__', None)
                 importer = VFSSharedImporter()
                 sharedPackages[fullname] = True
-                loader = importer.find_module(fullname, path = path)
+                loader = importer.find_module(fullname, path=path)
                 assert loader
                 return loader.load_module(fullname)
 
@@ -146,7 +147,7 @@ class VFSLoader:
         mod.__loader__ = self
         if self.packagePath:
             mod.__path__ = [self.packagePath.toOsSpecific()]
-            #print >> sys.stderr, "loaded %s, path = %s" % (fullname, mod.__path__)
+            # print >> sys.stderr, "loaded %s, path = %s" % (fullname, mod.__path__)
 
         exec(code, mod.__dict__)
         return sys.modules[fullname]
@@ -215,7 +216,7 @@ class VFSLoader:
             # it to disk.  TODO: clean up this filename.
             filename = Filename.temporary('', self.filename.getBasenameWoExtension(),
                                           '.' + self.filename.getExtension(),
-                                          type = Filename.TDso)
+                                          type=Filename.TDso)
             filename.setExtension(self.filename.getExtension())
             filename.setBinary()
             sin = vfile.openReadFile(True)
@@ -235,7 +236,7 @@ class VFSLoader:
     def _import_frozen_module(self, fullname):
         """ Imports the frozen module without messing around with
         searching any more. """
-        #print >>sys.stderr, "importing frozen %s" % (fullname)
+        # print >>sys.stderr, "importing frozen %s" % (fullname)
         module = imp.load_module(fullname, None, fullname,
                                  ('', '', imp.PY_FROZEN))
 
@@ -301,14 +302,13 @@ class VFSLoader:
             data = data[12:]
         else:
             t = ord(data[4]) + (ord(data[5]) << 8) + \
-               (ord(data[6]) << 16) + (ord(data[7]) << 24)
+                (ord(data[6]) << 16) + (ord(data[7]) << 24)
             data = data[8:]
 
         if not timestamp or t == timestamp:
             return marshal.loads(data)
         else:
             raise ValueError("Timestamp wrong on %s" % (vfile))
-
 
     def _compile(self, filename, source):
         """ Compiles the Python source code to a code object and
@@ -352,8 +352,8 @@ class VFSSharedImporter:
     def __init__(self):
         pass
 
-    def find_module(self, fullname, path = None, reload = False):
-        #print >>sys.stderr, "shared find_module(%s), path = %s" % (fullname, path)
+    def find_module(self, fullname, path=None, reload=False):
+        # print >>sys.stderr, "shared find_module(%s), path = %s" % (fullname, path)
 
         if fullname not in sharedPackages:
             # Not a shared package; fall back to normal import.
@@ -401,7 +401,7 @@ class VFSSharedImporter:
 
         if not loaders:
             return None
-        return VFSSharedLoader(loaders, reload = reload)
+        return VFSSharedLoader(loaders, reload=reload)
 
     def getLoadedDirname(self, mod):
         """ Returns the directory name that the indicated
@@ -444,7 +444,7 @@ class VFSSharedLoader:
         self.reload = reload
 
     def load_module(self, fullname):
-        #print >>sys.stderr, "shared load_module(%s), loaders = %s" % (fullname, map(lambda l: l.dir_path, self.loaders))
+        # print >>sys.stderr, "shared load_module(%s), loaders = %s" % (fullname, map(lambda l: l.dir_path, self.loaders))
 
         mod = None
         message = None
@@ -460,7 +460,7 @@ class VFSSharedLoader:
 
         for loader in self.loaders:
             try:
-                mod = loader.load_module(fullname, loadingShared = True)
+                mod = loader.load_module(fullname, loadingShared=True)
             except ImportError:
                 etype, evalue, etraceback = sys.exc_info()
                 print("%s on %s: %s" % (etype.__name__, fullname, evalue))
@@ -483,12 +483,15 @@ class VFSSharedLoader:
         # Also set this special symbol, which records that this is a
         # shared package, and also lists the paths we have already
         # loaded.
-        mod._vfs_shared_path = vfs_shared_path + [l.dir_path for l in self.loaders]
+        mod._vfs_shared_path = vfs_shared_path + \
+            [l.dir_path for l in self.loaders]
 
         return mod
 
 
 _registered = False
+
+
 def register():
     """ Register the VFSImporter on the path_hooks, if it has not
     already been registered, so that future Python import statements
@@ -519,7 +522,7 @@ def reloadSharedPackage(mod):
         path = parent.__path__
 
     importer = VFSSharedImporter()
-    loader = importer.find_module(fullname, path = path, reload = True)
+    loader = importer.find_module(fullname, path=path, reload=True)
     if loader:
         loader.load_module(fullname)
 
@@ -540,7 +543,7 @@ def reloadSharedPackages():
     any modules on that list that have already been loaded.  This
     allows new directories to be added to the search path. """
 
-    #print >> sys.stderr, "reloadSharedPackages, path = %s, sharedPackages = %s" % (sys.path, sharedPackages.keys())
+    # print >> sys.stderr, "reloadSharedPackages, path = %s, sharedPackages = %s" % (sys.path, sharedPackages.keys())
 
     # Sort the list, just to make sure parent packages are reloaded
     # before child packages are.

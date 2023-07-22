@@ -8,7 +8,7 @@ __all__ = [
     'open', 'listdir', 'walk', 'join',
     'isfile', 'isdir', 'exists', 'lexists', 'getmtime', 'getsize',
     'execfile',
-    ]
+]
 
 from panda3d import core
 import sys
@@ -58,7 +58,8 @@ def open(file, mode='r', buffering=-1, encoding=None, errors=None, newline=None,
         raise ValueError("can't have text and binary mode at once")
 
     if creating + reading + writing + appending > 1:
-        raise ValueError("must have exactly one of create/read/write/append mode")
+        raise ValueError(
+            "must have exactly one of create/read/write/append mode")
 
     if binary:
         if encoding:
@@ -102,7 +103,8 @@ def open(file, mode='r', buffering=-1, encoding=None, errors=None, newline=None,
 
         if not vfile:
             if reading:
-                raise FileNotFoundError("No such file or directory: '%s'" % (filename))
+                raise FileNotFoundError(
+                    "No such file or directory: '%s'" % (filename))
 
             vfile = _vfs.createFile(filename)
             if not vfile:
@@ -146,7 +148,8 @@ def open(file, mode='r', buffering=-1, encoding=None, errors=None, newline=None,
                 raise IOError("Could not open %s for appending" % (filename))
 
         else:
-            raise ValueError("Must have exactly one of create/read/write/append mode and at most one plus")
+            raise ValueError(
+                "Must have exactly one of create/read/write/append mode and at most one plus")
 
         raw = StreamIOWrapper(stream, needsVfsClose=True)
         raw.mode = mode
@@ -275,7 +278,7 @@ class StreamIOWrapper(io.IOBase):
         self.__lastWrite = False
         return self.__reader.readline()
 
-    def seek(self, offset, whence = 0):
+    def seek(self, offset, whence=0):
         if self.__stream:
             self.__stream.clear()  # clear eof flag
         if self.__reader:
@@ -332,7 +335,8 @@ def listdir(path):
         files.append(file.getFilename().getBasename())
     return files
 
-def walk(top, topdown = True, onerror = None, followlinks = True):
+
+def walk(top, topdown=True, onerror=None, followlinks=True):
     """ Implements os.walk over vfs.
 
     Note: we don't support onerror or followlinks; errors are ignored
@@ -354,23 +358,28 @@ def walk(top, topdown = True, onerror = None, followlinks = True):
 
     for dir in dirnames:
         next = join(top, dir)
-        for tuple in walk(next, topdown = topdown):
+        for tuple in walk(next, topdown=topdown):
             yield tuple
 
     if not topdown:
         yield (top, dirnames, filenames)
 
+
 def isfile(path):
     return _vfs.isRegularFile(core.Filename.fromOsSpecific(path))
+
 
 def isdir(path):
     return _vfs.isDirectory(core.Filename.fromOsSpecific(path))
 
+
 def exists(path):
     return _vfs.exists(core.Filename.fromOsSpecific(path))
 
+
 def lexists(path):
     return _vfs.exists(core.Filename.fromOsSpecific(path))
+
 
 def getmtime(path):
     file = _vfs.getFile(core.Filename.fromOsSpecific(path), True)
@@ -378,11 +387,13 @@ def getmtime(path):
         raise os.error
     return file.getTimestamp()
 
+
 def getsize(path):
     file = _vfs.getFile(core.Filename.fromOsSpecific(path), True)
     if not file:
         raise os.error
     return file.getFileSize()
+
 
 def execfile(path, globals=None, locals=None):
     file = _vfs.getFile(core.Filename.fromOsSpecific(path), True)

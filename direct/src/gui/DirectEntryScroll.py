@@ -6,13 +6,14 @@ from .DirectScrolledFrame import *
 from .DirectFrame import *
 from .DirectEntry import *
 
+
 class DirectEntryScroll(DirectFrame):
-    def __init__(self, entry, parent = None, **kw):
+    def __init__(self, entry, parent=None, **kw):
         optiondefs = (
             ('pgFunc',         PGVirtualFrame,      None),
             ('relief', None, None),
             ('clipSize',     (-1, 1, -1, 1),        self.setClipSize),
-            )
+        )
 
         self.defineoptions(kw, optiondefs)
         DirectFrame.__init__(self, parent, **kw)
@@ -25,12 +26,12 @@ class DirectEntryScroll(DirectFrame):
 
         # don't set a scale on the entry
         # instead make it the correct size, use something like:
-           # text_scale = 0.035,
-           # frameSize = (-0.006, 3.2, -0.015, 0.036),
+        # text_scale = 0.035,
+        # frameSize = (-0.006, 3.2, -0.015, 0.036),
         # if you need to scale the entry scale it's parent instead
 
         self.canvas = NodePath(self.guiItem.getCanvasNode())
-        self.canvas.setPos(0,0,0)
+        self.canvas.setPos(0, 0, 0)
 
         self.entry = None
         if entry is not None:
@@ -60,7 +61,8 @@ class DirectEntryScroll(DirectFrame):
         detaches and unbinds the entry from the scroll frame and its
         events. You'll be responsible for destroying it.
         """
-        if self.entry is None: return
+        if self.entry is None:
+            return
         self.entry.unbind(DGG.CURSORMOVE)
         self.entry.detachNode()
         self.entry = None
@@ -80,7 +82,6 @@ class DirectEntryScroll(DirectFrame):
         if abs(distanceToCenter) > (clipExtent * 0.5):
             self.moveToCenterCursor()
 
-
     def moveToCenterCursor(self):
         cursorX = self.entry.guiItem.getCursorX() * self.entry['text_scale'][0]
         canvasX = self.canvas.getX()
@@ -95,14 +96,14 @@ class DirectEntryScroll(DirectFrame):
         entryExtent = self.entry['text_scale'][0] * self.entry['width']
         entryWiggle = entryExtent - clipExtent
 
-        if self.entry.guiItem.getCursorPosition() <= 0: #deals with the cursor jump bug
+        if self.entry.guiItem.getCursorPosition() <= 0:  # deals with the cursor jump bug
             newX = 0.0
         elif newX > 0.0:
             newX = 0.0
         elif newX < (-entryWiggle):
             newX = -entryWiggle
 
-        #print("CursorX %s CanvasX %s VisCenter %s Distance %s NewX %s Wiggle %s" % (cursorX, canvasX, visXCenter, distanceToCenter, newX, entryWiggle))
+        # print("CursorX %s CanvasX %s VisCenter %s Distance %s NewX %s Wiggle %s" % (cursorX, canvasX, visXCenter, distanceToCenter, newX, entryWiggle))
 
         self.canvas.setX(newX)
 
@@ -121,7 +122,6 @@ class DirectEntryScroll(DirectFrame):
         self.entry = None
         DirectFrame.destroy(self)
 
-
     def getCanvas(self):
         return self.canvas
 
@@ -135,5 +135,4 @@ class DirectEntryScroll(DirectFrame):
             self.resetCanvas()
 
     def resetCanvas(self):
-        self.canvas.setPos(0,0,0)
-
+        self.canvas.setPos(0, 0, 0)

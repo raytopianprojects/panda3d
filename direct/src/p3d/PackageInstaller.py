@@ -13,6 +13,7 @@ from direct.p3d.PackageInfo import PackageInfo
 from panda3d.core import TPLow, PStatCollector
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
+
 class PackageInstaller(DirectObject):
 
     """ This class is used in a p3d runtime environment to manage the
@@ -129,7 +130,6 @@ class PackageInstaller(DirectObject):
 
             return True
 
-
         def getDescFile(self, http):
             """ Synchronously downloads the desc files required for
             the package. """
@@ -156,7 +156,7 @@ class PackageInstaller(DirectObject):
 
             return True
 
-    def __init__(self, appRunner, taskChain = 'default'):
+    def __init__(self, appRunner, taskChain='default'):
         self.globalLock.acquire()
         try:
             self.uniqueId = PackageInstaller.nextUniqueId
@@ -171,8 +171,8 @@ class PackageInstaller(DirectObject):
         # the task chain hasn't yet been set up already, create the
         # default parameters now.
         if taskChain != 'default' and not taskMgr.hasTaskChain(self.taskChain):
-            taskMgr.setupTaskChain(self.taskChain, numThreads = 1,
-                                   threadPriority = TPLow)
+            taskMgr.setupTaskChain(self.taskChain, numThreads=1,
+                                   threadPriority=TPLow)
 
         self.callbackLock = Lock()
         self.calledDownloadStarted = False
@@ -239,7 +239,7 @@ class PackageInstaller(DirectObject):
 
         self.ignoreAll()
 
-    def addPackage(self, packageName, version = None, hostUrl = None):
+    def addPackage(self, packageName, version=None, hostUrl=None):
         """ Adds the named package to the list of packages to be
         downloaded.  Call donePackages() to finish the list. """
 
@@ -273,7 +273,7 @@ class PackageInstaller(DirectObject):
         if not self.descFileTask:
             self.descFileTask = taskMgr.add(
                 self.__getDescFileTask, 'getDescFile',
-                taskChain = self.taskChain)
+                taskChain=self.taskChain)
 
     def donePackages(self):
         """ After calling addPackage() for each package to be
@@ -329,7 +329,8 @@ class PackageInstaller(DirectObject):
         indicated package only.  The progress value ranges from 0
         (beginning) to 1 (complete). """
 
-        self.notify.debug("packageProgress: %s %s" % (package.packageName, progress))
+        self.notify.debug("packageProgress: %s %s" %
+                          (package.packageName, progress))
 
     def downloadProgress(self, overallProgress):
         """ This callback is made repeatedly between downloadStarted()
@@ -350,7 +351,8 @@ class PackageInstaller(DirectObject):
         *without* a corresponding call to packageStarted(), and may
         even be made before downloadStarted(). """
 
-        self.notify.info("packageFinished: %s %s" % (package.packageName, success))
+        self.notify.info("packageFinished: %s %s" %
+                         (package.packageName, success))
 
     def downloadFinished(self, success):
         """ This callback is made when all of the packages have been
@@ -379,7 +381,7 @@ class PackageInstaller(DirectObject):
         assert not self.downloadTask
         self.downloadTask = taskMgr.add(
             self.__downloadPackageTask, 'downloadPackage',
-            taskChain = self.taskChain)
+            taskChain=self.taskChain)
 
         assert not self.progressTask
         self.progressTask = taskMgr.add(
@@ -491,7 +493,6 @@ class PackageInstaller(DirectObject):
             self.callbackLock.release()
 
     def __getDescFileTask(self, task):
-
         """ This task runs on the aysynchronous task chain; each pass,
         it extracts one package from self.needsDescFile and downloads
         its desc file.  On success, it adds the package to
@@ -505,7 +506,7 @@ class PackageInstaller(DirectObject):
                 self.descFileTask = None
 
                 eventName = 'PackageInstaller-%s-allHaveDesc' % self.uniqueId
-                messenger.send(eventName, taskChain = 'default')
+                messenger.send(eventName, taskChain='default')
 
                 return task.done
             pp = self.needsDescFile[0]
@@ -536,7 +537,6 @@ class PackageInstaller(DirectObject):
         return task.cont
 
     def __downloadPackageTask(self, task):
-
         """ This task runs on the aysynchronous task chain; each pass,
         it extracts one package from self.needsDownload and downloads
         it. """
@@ -548,7 +548,8 @@ class PackageInstaller(DirectObject):
                 if self.state == self.S_done or not self.needsDownload:
                     self.downloadTask = None
                     self.packageLock.release()
-                    yield task.done; return
+                    yield task.done
+                    return
 
                 assert self.state == self.S_started
                 pp = self.needsDownload[0]
@@ -560,7 +561,7 @@ class PackageInstaller(DirectObject):
 
             # Now serve this one package.
             eventName = 'PackageInstaller-%s-packageStarted' % self.uniqueId
-            messenger.send(eventName, [pp], taskChain = 'default')
+            messenger.send(eventName, [pp], taskChain='default')
 
             if not pp.package.hasPackage:
                 for token in pp.package.downloadPackageGenerator(self.appRunner.http):
@@ -570,7 +571,8 @@ class PackageInstaller(DirectObject):
                         break
 
                 if token != pp.package.stepComplete:
-                    pc = PStatCollector(':App:PackageInstaller:donePackage:%s' % (pp.package.packageName))
+                    pc = PStatCollector(
+                        ':App:PackageInstaller:donePackage:%s' % (pp.package.packageName))
                     pc.start()
                     self.__donePackage(pp, False)
                     pc.stop()
@@ -578,7 +580,8 @@ class PackageInstaller(DirectObject):
                     continue
 
             # Successfully downloaded and installed.
-            pc = PStatCollector(':App:PackageInstaller:donePackage:%s' % (pp.package.packageName))
+            pc = PStatCollector(
+                ':App:PackageInstaller:donePackage:%s' % (pp.package.packageName))
             pc.start()
             self.__donePackage(pp, True)
             pc.stop()
@@ -592,7 +595,8 @@ class PackageInstaller(DirectObject):
         assert not pp.done
 
         if success:
-            pc = PStatCollector(':App:PackageInstaller:install:%s' % (pp.package.packageName))
+            pc = PStatCollector(
+                ':App:PackageInstaller:install:%s' % (pp.package.packageName))
             pc.start()
             pp.package.installPackage(self.appRunner)
             pc.stop()
@@ -609,7 +613,7 @@ class PackageInstaller(DirectObject):
             self.packageLock.release()
 
         eventName = 'PackageInstaller-%s-packageDone' % self.uniqueId
-        messenger.send(eventName, [pp], taskChain = 'default')
+        messenger.send(eventName, [pp], taskChain='default')
 
     def __progressTask(self, task):
         self.callbackLock.acquire()
@@ -628,7 +632,8 @@ class PackageInstaller(DirectObject):
             for pp in self.packages:
                 downloadEffort += pp.downloadEffort + pp.prevDownloadedEffort
                 packageProgress = pp.getProgress()
-                currentDownloadSize += pp.downloadEffort * packageProgress + pp.prevDownloadedEffort
+                currentDownloadSize += pp.downloadEffort * \
+                    packageProgress + pp.prevDownloadedEffort
                 if pp.calledPackageStarted and not pp.calledPackageFinished:
                     self.packageProgress(pp.package, packageProgress)
 
@@ -642,4 +647,3 @@ class PackageInstaller(DirectObject):
             self.callbackLock.release()
 
         return task.cont
-

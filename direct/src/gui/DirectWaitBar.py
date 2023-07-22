@@ -21,11 +21,12 @@ import DirectWaitBar
 d = DirectWaitBar(borderWidth=(0, 0))
 """
 
+
 class DirectWaitBar(DirectFrame):
     """ DirectWaitBar - A DirectWidget that shows progress completed
     towards a task.  """
 
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         # Inherits from DirectFrame
         # A Direct Frame can have:
         # - A background texture (pass in path to image, or Texture Card)
@@ -43,12 +44,12 @@ class DirectWaitBar(DirectFrame):
             ('barTexture',     None,               self.setBarTexture),
             ('barRelief',      DGG.FLAT,           self.setBarRelief),
             ('sortOrder',      DGG.NO_FADE_SORT_INDEX, None),
-            )
+        )
         if 'text' in kw:
             textoptiondefs = (
                 ('text_pos',    (0, -0.025),          None),
                 ('text_scale',  0.1,                 None)
-                )
+            )
         else:
             textoptiondefs = ()
         # Merge keyword options with default options
@@ -117,9 +118,9 @@ class DirectWaitBar(DirectFrame):
         # Render a frame out-of-sync with the igLoop to update the
         # window right now.  This allows the wait bar to be updated
         # even though we are not normally rendering frames.
-        base.graphicsEngine.renderFrame()
+        base.graphics_engine.renderFrame()
 
-    def finish(self, N = 10):
+    def finish(self, N=10):
         """Fill the bar in N frames. This call is blocking."""
         remaining = self['range'] - self['value']
         if remaining:
@@ -130,4 +131,3 @@ class DirectWaitBar(DirectFrame):
                 if count > self['range']:
                     count = self['range']
                 self.update(count)
-

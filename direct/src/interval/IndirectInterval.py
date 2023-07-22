@@ -8,6 +8,7 @@ from direct.directnotify.DirectNotifyGlobal import *
 from . import Interval
 from . import LerpBlendHelpers
 
+
 class IndirectInterval(Interval.Interval):
     """
     This class can be used to play samples of another interval, so
@@ -28,8 +29,8 @@ class IndirectInterval(Interval.Interval):
 
     # Class methods
     def __init__(self, interval,
-                 startT = 0, endT = None, playRate = 1,
-                 duration = None, blendType = 'noBlend', name = None):
+                 startT=0, endT=None, playRate=1,
+                 duration=None, blendType='noBlend', name=None):
         self.interval = interval
 
         self.startAtStart = (startT == 0)

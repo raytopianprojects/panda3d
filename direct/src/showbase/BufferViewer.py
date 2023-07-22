@@ -31,8 +31,10 @@ class BufferViewer(DirectObject):
         size = ConfigVariableDouble('buffer-viewer-size', '0 0')
         self.sizex = size[0]
         self.sizey = size[1]
-        self.position = ConfigVariableString('buffer-viewer-position', "lrcorner").getValue()
-        self.layout = ConfigVariableString('buffer-viewer-layout', "hline").getValue()
+        self.position = ConfigVariableString(
+            'buffer-viewer-position', "lrcorner").getValue()
+        self.layout = ConfigVariableString(
+            'buffer-viewer-layout', "hline").getValue()
         self.include = "all"
         self.exclude = "none"
         self.cullbin = "fixed"
@@ -43,7 +45,7 @@ class BufferViewer(DirectObject):
         self.cards = []
         self.cardindex = 0
         self.cardmaker = CardMaker("cubemaker")
-        self.cardmaker.setFrame(-1,1,-1,1)
+        self.cardmaker.setFrame(-1, 1, -1, 1)
         self.task = 0
         self.dirty = 1
         self.accept("render-texture-targets-changed", self.refreshReadout)
@@ -67,10 +69,10 @@ class BufferViewer(DirectObject):
         list of GraphicsOutput and Texture, or the keyword 'all'."""
         if (isinstance(x, list)):
             for elt in x:
-                if (self.isValidTextureSet(elt)==0):
+                if (self.isValidTextureSet(elt) == 0):
                     return 0
         else:
-            return (x=="all") or (isinstance(x, Texture)) or (isinstance(x, GraphicsOutput))
+            return (x == "all") or (isinstance(x, Texture)) or (isinstance(x, GraphicsOutput))
 
     def isEnabled(self):
         """Returns true if the buffer viewer is currently enabled."""
@@ -80,7 +82,8 @@ class BufferViewer(DirectObject):
         """Turn the buffer viewer on or off.  The initial state of the
         buffer viewer depends on the Config variable 'show-buffers'."""
         if (x != 0) and (x != 1):
-            BufferViewer.notify.error('invalid parameter to BufferViewer.enable')
+            BufferViewer.notify.error(
+                'invalid parameter to BufferViewer.enable')
             return
         self.enabled = x
         self.dirty = 1
@@ -103,7 +106,8 @@ class BufferViewer(DirectObject):
         to choose a reasonable size for the card.  The initial
         value is (0, 0)."""
         if (x < 0) or (y < 0):
-            BufferViewer.notify.error('invalid parameter to BufferViewer.setCardSize')
+            BufferViewer.notify.error(
+                'invalid parameter to BufferViewer.setCardSize')
             return
         self.sizex = x
         self.sizey = y
@@ -119,13 +123,16 @@ class BufferViewer(DirectObject):
         - *window* - put them in a separate window
 
         The initial value is 'lrcorner'."""
-        valid=["llcorner","lrcorner","ulcorner","urcorner","window"]
-        if (valid.count(pos)==0):
-            BufferViewer.notify.error('invalid parameter to BufferViewer.setPosition')
-            BufferViewer.notify.error('valid parameters are: llcorner, lrcorner, ulcorner, urcorner, window')
+        valid = ["llcorner", "lrcorner", "ulcorner", "urcorner", "window"]
+        if (valid.count(pos) == 0):
+            BufferViewer.notify.error(
+                'invalid parameter to BufferViewer.setPosition')
+            BufferViewer.notify.error(
+                'valid parameters are: llcorner, lrcorner, ulcorner, urcorner, window')
             return
         if (pos == "window"):
-            BufferViewer.notify.error('BufferViewer.setPosition - "window" mode not implemented yet.')
+            BufferViewer.notify.error(
+                'BufferViewer.setPosition - "window" mode not implemented yet.')
             return
         self.position = pos
         self.dirty = 1
@@ -140,10 +147,12 @@ class BufferViewer(DirectObject):
         - *cycle* - display one card at a time, using selectCard/advanceCard
 
         The default value is 'hline'."""
-        valid=["vline","hline","vgrid","hgrid","cycle"]
-        if (valid.count(lay)==0):
-            BufferViewer.notify.error('invalid parameter to BufferViewer.setLayout')
-            BufferViewer.notify.error('valid parameters are: vline, hline, vgrid, hgrid, cycle')
+        valid = ["vline", "hline", "vgrid", "hgrid", "cycle"]
+        if (valid.count(lay) == 0):
+            BufferViewer.notify.error(
+                'invalid parameter to BufferViewer.setLayout')
+            BufferViewer.notify.error(
+                'valid parameters are: vline, hline, vgrid, hgrid, cycle')
             return
         self.layout = lay
         self.dirty = 1
@@ -168,8 +177,9 @@ class BufferViewer(DirectObject):
         Valid inputs are the string 'all' (display every render-to-texture
         target), or a list of GraphicsOutputs or Textures.  The initial
         value is 'all'."""
-        if (self.isValidTextureSet(x)==0):
-            BufferViewer.notify.error('setInclude: must be list of textures and buffers, or "all"')
+        if (self.isValidTextureSet(x) == 0):
+            BufferViewer.notify.error(
+                'setInclude: must be list of textures and buffers, or "all"')
             return
         self.include = x
         self.dirty = 1
@@ -180,8 +190,9 @@ class BufferViewer(DirectObject):
         The exclude-set is subtracted from the include-set (so the excludes
         effectively override the includes.)  The initial value is the
         empty list."""
-        if (self.isValidTextureSet(x)==0):
-            BufferViewer.notify.error('setExclude: must be list of textures and buffers')
+        if (self.isValidTextureSet(x) == 0):
+            BufferViewer.notify.error(
+                'setExclude: must be list of textures and buffers')
             return
         self.exclude = x
         self.dirty = 1
@@ -216,10 +227,10 @@ class BufferViewer(DirectObject):
             for iwin in range(x.getNumWindows()):
                 win = x.getWindow(iwin)
                 self.analyzeTextureSet(win, set)
-        elif (x=="all"):
+        elif (x == "all"):
             self.analyzeTextureSet(self.engine, set)
-        else: return
-
+        else:
+            return
 
     def makeFrame(self, sizex, sizey):
         """Access: private.  Each texture card is displayed with
@@ -228,11 +239,11 @@ class BufferViewer(DirectObject):
         be precise so that the frame exactly aligns to pixel
         boundaries, and so that it doesn't overlap the card at all."""
 
-        format=GeomVertexFormat.getV3cp()
-        vdata=GeomVertexData('card-frame', format, Geom.UHDynamic)
+        format = GeomVertexFormat.getV3cp()
+        vdata = GeomVertexData('card-frame', format, Geom.UHDynamic)
 
-        vwriter=GeomVertexWriter(vdata, 'vertex')
-        cwriter=GeomVertexWriter(vdata, 'color')
+        vwriter = GeomVertexWriter(vdata, 'vertex')
+        cwriter = GeomVertexWriter(vdata, 'color')
 
         ringoffset = [0, 1, 1, 2]
         ringbright = [0, 0, 1, 1]
@@ -241,15 +252,15 @@ class BufferViewer(DirectObject):
             offsety = (ringoffset[ring]*2.0) / float(sizey)
             bright = ringbright[ring]
             vwriter.addData3f(Vec3F.rfu(-1 - offsetx, 0, -1 - offsety))
-            vwriter.addData3f(Vec3F.rfu( 1 + offsetx, 0, -1 - offsety))
-            vwriter.addData3f(Vec3F.rfu( 1 + offsetx, 0,  1 + offsety))
+            vwriter.addData3f(Vec3F.rfu(1 + offsetx, 0, -1 - offsety))
+            vwriter.addData3f(Vec3F.rfu(1 + offsetx, 0,  1 + offsety))
             vwriter.addData3f(Vec3F.rfu(-1 - offsetx, 0,  1 + offsety))
             cwriter.addData3f(bright, bright, bright)
             cwriter.addData3f(bright, bright, bright)
             cwriter.addData3f(bright, bright, bright)
             cwriter.addData3f(bright, bright, bright)
 
-        triangles=GeomTriangles(Geom.UHStatic)
+        triangles = GeomTriangles(Geom.UHStatic)
         for i in range(2):
             delta = i*8
             triangles.addVertices(0+delta, 4+delta, 1+delta)
@@ -262,12 +273,11 @@ class BufferViewer(DirectObject):
             triangles.addVertices(0+delta, 7+delta, 4+delta)
         triangles.closePrimitive()
 
-        geom=Geom(vdata)
+        geom = Geom(vdata)
         geom.addPrimitive(triangles)
-        geomnode=GeomNode("card-frame")
+        geomnode = GeomNode("card-frame")
         geomnode.addGeom(geom)
         return NodePath(geomnode)
-
 
     def maintainReadout(self, task):
         """Access: private.  Whenever necessary, rebuilds the entire
@@ -275,7 +285,7 @@ class BufferViewer(DirectObject):
         parameters have changed."""
 
         # If nothing has changed, don't update.
-        if (self.dirty==0):
+        if (self.dirty == 0):
             return Task.cont
         self.dirty = 0
 
@@ -320,7 +330,7 @@ class BufferViewer(DirectObject):
                             cards.append(card)
                     elif (tex.getTextureType() == Texture.TT2dTextureArray):
                         for layer in range(tex.getZSize()):
-                            self.cardmaker.setUvRange((0, 1, 1, 0), (0, 0, 1, 1),\
+                            self.cardmaker.setUvRange((0, 1, 1, 0), (0, 0, 1, 1),
                                                       (layer, layer, layer, layer))
                             card = NodePath(self.cardmaker.generate())
                             # 2D texture arrays are not supported by
@@ -336,7 +346,7 @@ class BufferViewer(DirectObject):
                     wins.append(win)
                     exclude[tex] = 1
         self.cards = cards
-        if (len(cards)==0):
+        if (len(cards) == 0):
             self.task = 0
             return Task.done
         ncards = len(cards)
@@ -351,18 +361,23 @@ class BufferViewer(DirectObject):
         elif (self.layout == "hgrid"):
             rows = int(math.sqrt(ncards))
             cols = rows
-            if (rows * cols < ncards): cols += 1
-            if (rows * cols < ncards): rows += 1
+            if (rows * cols < ncards):
+                cols += 1
+            if (rows * cols < ncards):
+                rows += 1
         elif (self.layout == "vgrid"):
             rows = int(math.sqrt(ncards))
             cols = rows
-            if (rows * cols < ncards): rows += 1
-            if (rows * cols < ncards): cols += 1
+            if (rows * cols < ncards):
+                rows += 1
+            if (rows * cols < ncards):
+                cols += 1
         elif (self.layout == "cycle"):
             rows = 1
             cols = 1
         else:
-            BufferViewer.notify.error('shouldnt ever get here in BufferViewer.maintainReadout')
+            BufferViewer.notify.error(
+                'shouldnt ever get here in BufferViewer.maintainReadout')
 
         # Choose an aspect ratio for the cards.  All card size
         # calculations are done in pixel-units, using integers,
@@ -385,7 +400,7 @@ class BufferViewer(DirectObject):
 
         bordersize = 4.0
 
-        if (float(self.sizex)==0.0) and (float(self.sizey)==0.0):
+        if (float(self.sizex) == 0.0) and (float(self.sizey) == 0.0):
             sizey = int(0.4266666667 * self.win.getYSize())
             sizex = (sizey * aspectx) // aspecty
             v_sizey = (self.win.getYSize() - (rows-1) - (rows*2)) // rows
@@ -395,7 +410,7 @@ class BufferViewer(DirectObject):
                 sizex = v_sizex
 
             adjustment = 2
-            h_sizex = float (self.win.getXSize() - adjustment) / float (cols)
+            h_sizex = float(self.win.getXSize() - adjustment) / float(cols)
 
             h_sizex -= bordersize
             if (h_sizex < 1.0):
@@ -408,8 +423,10 @@ class BufferViewer(DirectObject):
         else:
             sizex = int(self.sizex * 0.5 * self.win.getXSize())
             sizey = int(self.sizey * 0.5 * self.win.getYSize())
-            if (sizex == 0): sizex = (sizey*aspectx) // aspecty
-            if (sizey == 0): sizey = (sizex*aspecty) // aspectx
+            if (sizex == 0):
+                sizex = (sizey*aspectx) // aspecty
+            if (sizey == 0):
+                sizey = (sizex*aspecty) // aspectx
 
         # Convert from pixels to render2d-units.
         fsizex = (2.0 * sizex) / float(self.win.getXSize())
@@ -422,14 +439,14 @@ class BufferViewer(DirectObject):
             dirx = -1.0
             diry = -1.0
         elif (self.position == "lrcorner"):
-            dirx =  1.0
+            dirx = 1.0
             diry = -1.0
         elif (self.position == "ulcorner"):
             dirx = -1.0
-            diry =  1.0
+            diry = 1.0
         elif (self.position == "urcorner"):
-            dirx =  1.0
-            diry =  1.0
+            dirx = 1.0
+            diry = 1.0
         else:
             BufferViewer.notify.error('window mode not implemented yet')
 
@@ -445,8 +462,12 @@ class BufferViewer(DirectObject):
                 if (index < ncards):
                     index = (index + self.cardindex) % len(cards)
 
-                    posx = dirx * (1.0 - ((c + 0.5) * (fsizex + fpixelx * bordersize))) - (fpixelx * dirx)
-                    posy = diry * (1.0 - ((r + 0.5) * (fsizey + fpixely * bordersize))) - (fpixely * diry)
+                    posx = dirx * \
+                        (1.0 - ((c + 0.5) * (fsizex + fpixelx * bordersize))
+                         ) - (fpixelx * dirx)
+                    posy = diry * \
+                        (1.0 - ((r + 0.5) * (fsizey + fpixely * bordersize))
+                         ) - (fpixely * diry)
                     placer = NodePath("card-structure")
                     placer.setPos(Point3.rfu(posx, 0, posy))
                     placer.setScale(Vec3.rfu(fsizex*0.5, 1.0, fsizey*0.5))

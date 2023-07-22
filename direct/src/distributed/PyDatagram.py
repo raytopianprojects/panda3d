@@ -28,7 +28,7 @@ class PyDatagram(Datagram):
         STString: (Datagram.addString, None),
         STBlob: (Datagram.addBlob, None),
         STBlob32: (Datagram.addBlob32, None),
-        }
+    }
 
     addChannel = Datagram.addUint64
 
@@ -88,7 +88,8 @@ class PyDatagram(Datagram):
                     self.addUint32(int(i[0]))
                     self.addUint8(int(i[1]))
             else:
-                raise Exception("Error: No such type as: " + str(subatomicType))
+                raise Exception("Error: No such type as: " +
+                                str(subatomicType))
         else:
             funcSpecs = self.FuncDict.get(subatomicType)
             if funcSpecs:
@@ -126,4 +127,5 @@ class PyDatagram(Datagram):
                     self.addUint32(int(round(i[0]*divisor)))
                     self.addUint8(int(round(i[1]*divisor)))
             else:
-                raise Exception("Error: type does not accept divisor: " + str(subatomicType))
+                raise Exception(
+                    "Error: type does not accept divisor: " + str(subatomicType))

@@ -4,43 +4,45 @@ See the :ref:`onscreentext` page in the programming manual for explanation of
 this class.
 """
 
-__all__ = ['OnscreenText', 'Plain', 'ScreenTitle', 'ScreenPrompt', 'NameConfirm', 'BlackOnWhite']
+__all__ = ['OnscreenText', 'Plain', 'ScreenTitle',
+           'ScreenPrompt', 'NameConfirm', 'BlackOnWhite']
 
 from panda3d.core import *
 from . import DirectGuiGlobals as DGG
 import sys
 
-## These are the styles of text we might commonly see.  They set the
-## overall appearance of the text according to one of a number of
-## pre-canned styles.  You can further customize the appearance of the
-## text by specifying individual parameters as well.
+# These are the styles of text we might commonly see.  They set the
+# overall appearance of the text according to one of a number of
+# pre-canned styles.  You can further customize the appearance of the
+# text by specifying individual parameters as well.
 Plain = 1
 ScreenTitle = 2
 ScreenPrompt = 3
 NameConfirm = 4
 BlackOnWhite = 5
 
+
 class OnscreenText(NodePath):
 
-    def __init__(self, text = '',
-                 style = Plain,
-                 pos = (0, 0),
-                 roll = 0,
-                 scale = None,
-                 fg = None,
-                 bg = None,
-                 shadow = None,
-                 shadowOffset = (0.04, 0.04),
-                 frame = None,
-                 align = None,
-                 wordwrap = None,
-                 drawOrder = None,
-                 decal = 0,
-                 font = None,
-                 parent = None,
-                 sort = 0,
-                 mayChange = True,
-                 direction = None):
+    def __init__(self, text='',
+                 style=Plain,
+                 pos=(0, 0),
+                 roll=0,
+                 scale=None,
+                 fg=None,
+                 bg=None,
+                 shadow=None,
+                 shadowOffset=(0.04, 0.04),
+                 frame=None,
+                 align=None,
+                 wordwrap=None,
+                 drawOrder=None,
+                 decal=0,
+                 font=None,
+                 parent=None,
+                 sort=0,
+                 mayChange=True,
+                 direction=None):
         """
         Make a text node from string, put it into the 2d sg and set it
         up with all the indicated parameters.
@@ -192,7 +194,7 @@ class OnscreenText(NodePath):
         if shadow[3] != 0:
             # If we have a shadow color, create a shadow.
             # Can't use the *shadow interface because it might be a VBase4.
-            #textNode.setShadowColor(*shadow)
+            # textNode.setShadowColor(*shadow)
             textNode.setShadowColor(shadow[0], shadow[1], shadow[2], shadow[3])
             textNode.setShadow(*shadowOffset)
 
@@ -411,7 +413,7 @@ class OnscreenText(NodePath):
 
     roll = property(getRoll, setRoll)
 
-    def setTextScale(self, sx, sy = None):
+    def setTextScale(self, sx, sy=None):
         """setTextScale(self, float, float)
         Scale the text in 2d space.  You may specify either a single
         uniform scale, or two scales, or a tuple of two scales.
@@ -436,7 +438,7 @@ class OnscreenText(NodePath):
 
     text_scale = property(getTextScale, setTextScale)
 
-    def setScale(self, sx, sy = None):
+    def setScale(self, sx, sy=None):
         """setScale(self, float, float)
         Scale the text in 2d space.  You may specify either a single
         uniform scale, or two scales, or a tuple of two scales.
@@ -464,12 +466,12 @@ class OnscreenText(NodePath):
     scale = property(getScale, setScale)
 
     def updateTransformMat(self):
-        assert(isinstance(self.textNode, TextNode))
+        assert (isinstance(self.textNode, TextNode))
         mat = (
             Mat4.scaleMat(Vec3.rfu(self.__scale[0], 1, self.__scale[1])) *
             Mat4.rotateMat(self.__roll, Vec3.back()) *
             Mat4.translateMat(Point3.rfu(self.__pos[0], 0, self.__pos[1]))
-            )
+        )
         self.textNode.setTransform(mat)
 
     def setWordwrap(self, wordwrap):
@@ -516,7 +518,8 @@ class OnscreenText(NodePath):
     def setShadow(self, shadow):
         if shadow[3] != 0:
             # If we have a shadow color, create a shadow.
-            self.textNode.setShadowColor(shadow[0], shadow[1], shadow[2], shadow[3])
+            self.textNode.setShadowColor(
+                shadow[0], shadow[1], shadow[2], shadow[3])
             self.textNode.setShadow(0.04, 0.04)
         else:
             # Otherwise, remove the shadow.
@@ -574,4 +577,3 @@ class OnscreenText(NodePath):
 
     # Allow index style refererences
     __getitem__ = cget
-

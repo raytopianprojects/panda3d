@@ -25,7 +25,7 @@ import sys
 import os
 
 base = ShowBase()
-base.disableMouse()
+base.disable_mouse()
 base.camera.setPos(0, -10, 0)
 
 title = OnscreenText(text="Panda3D: Tutorial - Making a Cube Procedurally",

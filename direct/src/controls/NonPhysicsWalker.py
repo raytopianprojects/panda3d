@@ -23,9 +23,11 @@ from direct.showbase.InputStateGlobal import inputState
 from direct.task.Task import Task
 from panda3d.core import *
 
+
 class NonPhysicsWalker(DirectObject.DirectObject):
     notify = DirectNotifyGlobal.directNotify.newCategory("NonPhysicsWalker")
-    wantDebugIndicator = ConfigVariableBool('want-avatar-physics-indicator', False)
+    wantDebugIndicator = ConfigVariableBool(
+        'want-avatar-physics-indicator', False)
 
     # Ghost mode overrides this:
     slideName = "slide-is-disabled"
@@ -35,27 +37,27 @@ class NonPhysicsWalker(DirectObject.DirectObject):
         DirectObject.DirectObject.__init__(self)
         self.worldVelocity = Vec3.zero()
         self.collisionsActive = 0
-        self.speed=0.0
-        self.rotationSpeed=0.0
-        self.slideSpeed=0.0
-        self.vel=Vec3(0.0, 0.0, 0.0)
+        self.speed = 0.0
+        self.rotationSpeed = 0.0
+        self.slideSpeed = 0.0
+        self.vel = Vec3(0.0, 0.0, 0.0)
         self.stopThisFrame = 0
 
     def setWalkSpeed(self, forward, jump, reverse, rotate):
         assert self.debugPrint("setWalkSpeed()")
-        self.avatarControlForwardSpeed=forward
-        #self.avatarControlJumpForce=jump
-        self.avatarControlReverseSpeed=reverse
-        self.avatarControlRotateSpeed=rotate
+        self.avatarControlForwardSpeed = forward
+        # self.avatarControlJumpForce=jump
+        self.avatarControlReverseSpeed = reverse
+        self.avatarControlRotateSpeed = rotate
 
     def getSpeeds(self):
-        #assert self.debugPrint("getSpeeds()")
+        # assert self.debugPrint("getSpeeds()")
         return (self.speed, self.rotationSpeed, self.slideSpeed)
 
     def setAvatar(self, avatar):
         self.avatar = avatar
         if avatar is not None:
-            pass # setup the avatar
+            pass  # setup the avatar
 
     def setAirborneHeightFunc(self, getAirborneHeight):
         self.getAirborneHeight = getAirborneHeight
@@ -67,14 +69,14 @@ class NonPhysicsWalker(DirectObject.DirectObject):
         self.cRayBitMask = bitMask
 
     def swapFloorBitMask(self, oldMask, newMask):
-        self.cRayBitMask = self.cRayBitMask &~ oldMask
+        self.cRayBitMask = self.cRayBitMask & ~ oldMask
         self.cRayBitMask |= newMask
 
         if self.cRayNodePath and not self.cRayNodePath.isEmpty():
             self.cRayNodePath.node().setFromCollideMask(self.cRayBitMask)
 
     def initializeCollisions(self, collisionTraverser, avatarNodePath,
-            avatarRadius = 1.4, floorOffset = 1.0, reach = 1.0):
+                             avatarRadius=1.4, floorOffset=1.0, reach=1.0):
         """
         Set up the avatar for collisions
         """
@@ -99,7 +101,8 @@ class NonPhysicsWalker(DirectObject.DirectObject):
         # a higher or lower value depending on whether you want an avatar
         # that is outside of the world to step up to the floor when they
         # get under valid floor:
-        self.cRay = CollisionRay(0.0, 0.0, CollisionHandlerRayStart, 0.0, 0.0, -1.0)
+        self.cRay = CollisionRay(
+            0.0, 0.0, CollisionHandlerRayStart, 0.0, 0.0, -1.0)
         cRayNode = CollisionNode('NPW.cRayNode')
         cRayNode.addSolid(self.cRay)
         self.cRayNodePath = avatarNodePath.attachNewNode(cRayNode)
@@ -147,8 +150,8 @@ class NonPhysicsWalker(DirectObject.DirectObject):
     def setTag(self, key, value):
         self.cSphereNodePath.setTag(key, value)
 
-    def setCollisionsActive(self, active = 1):
-        assert self.debugPrint("setCollisionsActive(active%s)"%(active,))
+    def setCollisionsActive(self, active=1):
+        assert self.debugPrint("setCollisionsActive(active%s)" % (active,))
         if self.collisionsActive != active:
             self.collisionsActive = active
             if active:
@@ -202,7 +205,7 @@ class NonPhysicsWalker(DirectObject.DirectObject):
         turnLeft = inputState.isSet("turnLeft")
         turnRight = inputState.isSet("turnRight")
         slide = inputState.isSet(self.slideName) or 0
-        #jump = inputState.isSet("jump")
+        # jump = inputState.isSet("jump")
 
         # Check for Auto-Run
         if base.localAvatar.getAutoRun():
@@ -210,16 +213,16 @@ class NonPhysicsWalker(DirectObject.DirectObject):
             reverse = 0
 
         # Determine what the speeds are based on the buttons:
-        self.speed=(forward and self.avatarControlForwardSpeed or
-                    reverse and -self.avatarControlReverseSpeed)
+        self.speed = (forward and self.avatarControlForwardSpeed or
+                      reverse and -self.avatarControlReverseSpeed)
         # Should fSlide be renamed slideButton?
-        self.slideSpeed=slide and ((reverse and turnLeft and -self.avatarControlReverseSpeed*(0.75)) or
-                                   (reverse and turnRight and self.avatarControlReverseSpeed*(0.75)) or
-                                   (turnLeft and -self.avatarControlForwardSpeed*(0.75)) or
-                                   (turnRight and self.avatarControlForwardSpeed*(0.75)))
-        self.rotationSpeed=not slide and (
-                (turnLeft and self.avatarControlRotateSpeed) or
-                (turnRight and -self.avatarControlRotateSpeed))
+        self.slideSpeed = slide and ((reverse and turnLeft and -self.avatarControlReverseSpeed*(0.75)) or
+                                     (reverse and turnRight and self.avatarControlReverseSpeed*(0.75)) or
+                                     (turnLeft and -self.avatarControlForwardSpeed*(0.75)) or
+                                     (turnRight and self.avatarControlForwardSpeed*(0.75)))
+        self.rotationSpeed = not slide and (
+            (turnLeft and self.avatarControlRotateSpeed) or
+            (turnRight and -self.avatarControlRotateSpeed))
 
     def handleAvatarControls(self, task):
         """
@@ -234,14 +237,14 @@ class NonPhysicsWalker(DirectObject.DirectObject):
         if __debug__:
             debugRunning = inputState.isSet("debugRunning")
             if debugRunning:
-                self.speed*=4.0
-                self.slideSpeed*=4.0
-                self.rotationSpeed*=1.25
+                self.speed *= 4.0
+                self.slideSpeed *= 4.0
+                self.rotationSpeed *= 1.25
 
         if self.wantDebugIndicator:
             self.displayDebugInfo()
         # How far did we move based on the amount of time elapsed?
-        dt=ClockObject.getGlobalClock().getDt()
+        dt = ClockObject.getGlobalClock().getDt()
         # Check to see if we're moving at all:
         if self.speed or self.slideSpeed or self.rotationSpeed:
             if self.stopThisFrame:
@@ -255,14 +258,16 @@ class NonPhysicsWalker(DirectObject.DirectObject):
                 rotation = dt * self.rotationSpeed
 
             # Take a step in the direction of our previous heading.
-            self.vel=Vec3(Vec3.forward() * distance +
-                          Vec3.right() * slideDistance)
+            self.vel = Vec3(Vec3.forward() * distance +
+                            Vec3.right() * slideDistance)
             if self.vel != Vec3.zero():
                 # rotMat is the rotation matrix corresponding to
                 # our previous heading.
-                rotMat=Mat3.rotateMatNormaxis(self.avatarNodePath.getH(), Vec3.up())
-                step=rotMat.xform(self.vel)
-                self.avatarNodePath.setFluidPos(Point3(self.avatarNodePath.getPos()+step))
+                rotMat = Mat3.rotateMatNormaxis(
+                    self.avatarNodePath.getH(), Vec3.up())
+                step = rotMat.xform(self.vel)
+                self.avatarNodePath.setFluidPos(
+                    Point3(self.avatarNodePath.getPos()+step))
             self.avatarNodePath.setH(self.avatarNodePath.getH()+rotation)
             messenger.send("avatarMoving")
         else:
@@ -295,7 +300,7 @@ class NonPhysicsWalker(DirectObject.DirectObject):
         assert self.debugPrint("enableAvatarControls")
         assert self.collisionsActive
 
-        taskName = "AvatarControls-%s"%(id(self),)
+        taskName = "AvatarControls-%s" % (id(self),)
         # remove any old
         taskMgr.remove(taskName)
         # spawn the new task
@@ -306,16 +311,16 @@ class NonPhysicsWalker(DirectObject.DirectObject):
         Ignore the arrow keys, etc.
         """
         assert self.debugPrint("disableAvatarControls")
-        taskName = "AvatarControls-%s"%(id(self),)
+        taskName = "AvatarControls-%s" % (id(self),)
         taskMgr.remove(taskName)
 
     def flushEventHandlers(self):
-        if hasattr(self, 'cTrav'):
+        if hasattr(self, 'c_trav'):
             self.pusher.flush()
-        self.lifter.flush() # not currently defined or needed
+        self.lifter.flush()  # not currently defined or needed
 
     if __debug__:
         def debugPrint(self, message):
             """for debugging"""
             return self.notify.debug(
-                    str(id(self))+' '+message)
+                str(id(self))+' '+message)

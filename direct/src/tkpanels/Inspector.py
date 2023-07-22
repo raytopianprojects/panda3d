@@ -12,12 +12,14 @@ See :ref:`inspection-utilities` for more information.
 """
 
 
-__all__ = ['inspect', 'inspectorFor', 'Inspector', 'ModuleInspector', 'ClassInspector', 'InstanceInspector', 'FunctionInspector', 'InstanceMethodInspector', 'CodeInspector', 'ComplexInspector', 'DictionaryInspector', 'SequenceInspector', 'SliceInspector', 'InspectorWindow']
+__all__ = ['inspect', 'inspectorFor', 'Inspector', 'ModuleInspector', 'ClassInspector', 'InstanceInspector', 'FunctionInspector',
+           'InstanceMethodInspector', 'CodeInspector', 'ComplexInspector', 'DictionaryInspector', 'SequenceInspector', 'SliceInspector', 'InspectorWindow']
 
 from direct.showbase.TkGlobal import *
 import Pmw
 
-### public API
+# public API
+
 
 def inspect(anObject):
     """Opens up a window for visually inspecting the details of a given Python
@@ -28,7 +30,8 @@ def inspect(anObject):
     inspectorWindow.open()
     return inspectorWindow
 
-### private
+# private
+
 
 def inspectorFor(anObject):
     typeName = type(anObject).__name__.capitalize() + 'Type'
@@ -41,11 +44,12 @@ def inspectorFor(anObject):
     return inspector
 
 
-### initializing
+# initializing
 
 def initializeInspectorMap():
     global _InspectorMap
-    notFinishedTypes = ['BufferType',  'EllipsisType',  'FrameType', 'TracebackType', 'XRangeType']
+    notFinishedTypes = ['BufferType',  'EllipsisType',
+                        'FrameType', 'TracebackType', 'XRangeType']
 
     _InspectorMap = {
         'Builtin_function_or_methodType': 'FunctionInspector',
@@ -72,13 +76,13 @@ def initializeInspectorMap():
         'StringType': 'SequenceInspector',
         'TupleType': 'SequenceInspector',
         'TypeType': 'Inspector',
-         'UnboundMethodType': 'FunctionInspector'}
+        'UnboundMethodType': 'FunctionInspector'}
 
     for each in notFinishedTypes:
         _InspectorMap[each] = 'Inspector'
 
 
-### Classes
+# Classes
 
 class Inspector:
     def __init__(self, anObject):
@@ -96,7 +100,7 @@ class Inspector:
         keys.sort()
         for each in keys:
             self._partsList.append(each)
-            #if not callable(getattr(self.object, each)):
+            # if not callable(getattr(self.object, each)):
             #    self._partsList.append(each)
 
     def initializePartNames(self):
@@ -150,9 +154,11 @@ class Inspector:
 
 ###
 
+
 class ModuleInspector(Inspector):
     def namedParts(self):
         return ['__dict__']
+
 
 class ClassInspector(Inspector):
     def namedParts(self):
@@ -161,21 +167,26 @@ class ClassInspector(Inspector):
     def title(self):
         return self.object.__name__ + ' Class'
 
+
 class InstanceInspector(Inspector):
     def title(self):
         return self.object.__class__.__name__
+
     def namedParts(self):
         return ['__class__'] + dir(self.object)
 
 ###
 
+
 class FunctionInspector(Inspector):
     def title(self):
         return self.object.__name__ + "()"
 
+
 class InstanceMethodInspector(Inspector):
     def title(self):
         return str(self.object.__self__.__class__) + "." + self.object.__name__ + "()"
+
 
 class CodeInspector(Inspector):
     def title(self):
@@ -183,11 +194,13 @@ class CodeInspector(Inspector):
 
 ###
 
+
 class ComplexInspector(Inspector):
     def namedParts(self):
         return ['real', 'imag']
 
 ###
+
 
 class DictionaryInspector(Inspector):
 
@@ -208,6 +221,7 @@ class DictionaryInspector(Inspector):
         else:
             return getattr(self.object, key)
 
+
 class SequenceInspector(Inspector):
     def initializePartsList(self):
         Inspector.initializePartsList(self)
@@ -224,13 +238,15 @@ class SequenceInspector(Inspector):
         else:
             return getattr(self.object, index)
 
+
 class SliceInspector(Inspector):
     def namedParts(self):
         return ['start', 'stop', 'step']
 
 
-### Initialization
+# Initialization
 initializeInspectorMap()
+
 
 class InspectorWindow:
     def __init__(self, inspector):
@@ -246,19 +262,19 @@ class InspectorWindow:
         return self.topInspector().object
 
     def open(self):
-        self.top= Toplevel()
+        self.top = Toplevel()
         self.top.geometry('650x315')
         self.createViews()
         self.update()
 
-    #Private - view construction
+    # Private - view construction
     def createViews(self):
         self.createMenus()
         # Paned widget for dividing two halves
-        self.framePane = Pmw.PanedWidget(self.top, orient = HORIZONTAL)
+        self.framePane = Pmw.PanedWidget(self.top, orient=HORIZONTAL)
         self.createListWidget()
         self.createTextWidgets()
-        self.framePane.pack(expand = 1, fill = BOTH)
+        self.framePane.pack(expand=1, fill=BOTH)
 
     def setTitle(self):
         self.top.title('Inspecting: ' + self.topInspector().title())
@@ -266,37 +282,37 @@ class InspectorWindow:
     def createListWidget(self):
         listFrame = self.framePane.add('list')
         listWidget = self.listWidget = Pmw.ScrolledListBox(
-            listFrame, vscrollmode = 'static')
+            listFrame, vscrollmode='static')
         listWidget.pack(side=LEFT, fill=BOTH, expand=1)
         # If you click in the list box, take focus so you can navigate
         # with the cursor keys
         listbox = listWidget.component('listbox')
         listbox.bind('<ButtonPress-1>',
-                        lambda e, l = listbox: l.focus_set())
+                     lambda e, l=listbox: l.focus_set())
         listbox.bind('<ButtonRelease-1>',  self.listSelectionChanged)
         listbox.bind('<Double-Button-1>', self.popOrDive)
         listbox.bind('<ButtonPress-3>', self.popupMenu)
         listbox.bind('<KeyRelease-Up>',  self.listSelectionChanged)
         listbox.bind('<KeyRelease-Down>',  self.listSelectionChanged)
-        listbox.bind('<KeyRelease-Left>', lambda e, s = self: s.pop())
-        listbox.bind('<KeyRelease-Right>', lambda e, s = self: s.dive())
+        listbox.bind('<KeyRelease-Left>', lambda e, s=self: s.pop())
+        listbox.bind('<KeyRelease-Right>', lambda e, s=self: s.dive())
         listbox.bind('<Return>',  self.popOrDive)
 
     def createTextWidgets(self):
         textWidgetsFrame = self.framePane.add('textWidgets')
-        self.textPane = Pmw.PanedWidget(textWidgetsFrame, orient = VERTICAL)
-        textFrame = self.textPane.add('text', size = 200)
+        self.textPane = Pmw.PanedWidget(textWidgetsFrame, orient=VERTICAL)
+        textFrame = self.textPane.add('text', size=200)
         self.textWidget = Pmw.ScrolledText(
-            textFrame, vscrollmode = 'static', text_state = 'disabled')
+            textFrame, vscrollmode='static', text_state='disabled')
         self.textWidget.pack(fill=BOTH, expand=1)
         commandFrame = self.textPane.add('command')
         self.commandWidget = Pmw.ScrolledText(
-            commandFrame, vscrollmode = 'static')
+            commandFrame, vscrollmode='static')
         self.commandWidget.insert(1.0, '>>> ')
-        self.commandWidget.pack(fill = BOTH, expand = 1)
+        self.commandWidget.pack(fill=BOTH, expand=1)
         self.commandWidget.component('text').bind(
             '<KeyRelease-Return>', self.evalCommand)
-        self.textPane.pack(expand = 1, fill = BOTH)
+        self.textPane.pack(expand=1, fill=BOTH)
 
     def createMenus(self):
         self.menuBar = Menu(self.top)
@@ -322,10 +338,10 @@ class InspectorWindow:
         if partNumber == None:
             partNumber = 0
         string = self.topInspector().stringForPartNumber(partNumber)
-        self.textWidget.component('text').configure(state = 'normal')
+        self.textWidget.component('text').configure(state='normal')
         self.textWidget.delete('1.0', END)
         self.textWidget.insert(END, string)
-        self.textWidget.component('text').configure(state = 'disabled')
+        self.textWidget.component('text').configure(state='disabled')
 
     def popOrDive(self, event):
         """The list has been double-clicked. If the selection is 'self' then pop,
@@ -339,15 +355,15 @@ class InspectorWindow:
         """Eval text in commandWidget"""
         insertPt = self.commandWidget.index(INSERT)
         commandLineStart = self.commandWidget.search(
-            '>>> ', INSERT, backwards = 1)
+            '>>> ', INSERT, backwards=1)
         if commandLineStart:
             commandStart = self.commandWidget.index(
                 commandLineStart + ' + 4 chars')
             command = self.commandWidget.get(commandStart,
                                              commandStart + ' lineend')
             if command:
-                partDict = { 'this': self.selectedPart(),
-                             'object': self.topInspector().object }
+                partDict = {'this': self.selectedPart(),
+                            'object': self.topInspector().object}
                 result = eval(command, partDict)
                 self.commandWidget.insert(INSERT, repr(result) + '\n>>> ')
                 self.commandWidget.see(INSERT)
@@ -393,12 +409,12 @@ class InspectorWindow:
         frame = Frame(help)
         frame.pack()
         text = Label(
-            frame, justify = LEFT,
-            text = "ListBox shows selected object's attributes\nDouble click or use right arrow on an instance variable to dive down.\nDouble click self or use left arrow to pop back up.\nUse up and down arrow keys to move from item to item in the current level.\n\nValue box (upper right) shows current value of selected item\n\nCommand box (lower right) is used to evaluate python commands\nLocal variables 'object' and 'this' are defined as the current object being inspected\nand the current attribute selected."
-            )
+            frame, justify=LEFT,
+            text="ListBox shows selected object's attributes\nDouble click or use right arrow on an instance variable to dive down.\nDouble click self or use left arrow to pop back up.\nUse up and down arrow keys to move from item to item in the current level.\n\nValue box (upper right) shows current value of selected item\n\nCommand box (lower right) is used to evaluate python commands\nLocal variables 'object' and 'this' are defined as the current object being inspected\nand the current attribute selected."
+        )
         text.pack()
 
-    #Private
+    # Private
     def selectedIndex(self):
         indices = list(map(int, self.listWidget.curselection()))
         if len(indices) == 0:
@@ -441,9 +457,9 @@ class InspectorWindow:
                            event.widget.winfo_pointery())
 
     def createPopupMenu(self, part, menuList):
-        popupMenu = Menu(self.top, tearoff = 0)
+        popupMenu = Menu(self.top, tearoff=0)
         for item, func in menuList:
             popupMenu.add_command(
-                label = item,
-                command = lambda p = part, f = func: f(p))
+                label=item,
+                command=lambda p=part, f=func: f(p))
         return popupMenu

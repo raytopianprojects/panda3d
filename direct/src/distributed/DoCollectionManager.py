@@ -1,9 +1,9 @@
 from direct.distributed import DoHierarchy
 import re
 
-#hack:
-BAD_DO_ID = BAD_ZONE_ID = 0 # 0xFFFFFFFF
-BAD_CHANNEL_ID = 0 # 0xFFFFFFFFFFFFFFFF
+# hack:
+BAD_DO_ID = BAD_ZONE_ID = 0  # 0xFFFFFFFF
+BAD_CHANNEL_ID = 0  # 0xFFFFFFFFFFFFFFFF
 
 
 class DoCollectionManager:
@@ -11,7 +11,7 @@ class DoCollectionManager:
         # Dict of {DistributedObject ids: DistributedObjects}
         self.doId2do = {}
         # (parentId, zoneId) to dict of doId->DistributedObjectAI
-        ## self.zoneId2doIds={}
+        # self.zoneId2doIds={}
         if self.hasOwnerView():
             # Dict of {DistributedObject ids: DistributedObjects}
             # for 'owner' views of objects
@@ -44,7 +44,7 @@ class DoCollectionManager:
         if do is not None:
             callback(do)
         else:
-            pass #relatedObjectMgr(doId, allCallback=callback)
+            pass  # relatedObjectMgr(doId, allCallback=callback)
 
     def getDoTable(self, ownerView):
         if ownerView:
@@ -77,7 +77,7 @@ class DoCollectionManager:
         """
         matches = []
         for value in self.doId2do.values():
-            if re.search(str,repr(value)):
+            if re.search(str, repr(value)):
                 matches.append(value)
         return matches
 
@@ -130,12 +130,12 @@ class DoCollectionManager:
 
     if __debug__:
         def printObjects(self):
-            format="%10s %10s %10s %30s %20s"
-            title=format%("parentId", "zoneId", "doId", "dclass", "name")
+            format = "%10s %10s %10s %30s %20s"
+            title = format % ("parentId", "zoneId", "doId", "dclass", "name")
             print(title)
             print('-'*len(title))
             for distObj in self.doId2do.values():
-                print(format%(
+                print(format % (
                     distObj.__dict__.get("parentId"),
                     distObj.__dict__.get("zoneId"),
                     distObj.__dict__.get("doId"),
@@ -181,10 +181,12 @@ class DoCollectionManager:
         strToReturn = '==== OBJECT COUNT ====\n'
         if self.hasOwnerView():
             strToReturn = '%s == doId2do\n' % (strToReturn)
-        strToReturn = '%s%s' % (strToReturn, self._returnObjects(self.getDoTable(ownerView=False)))
+        strToReturn = '%s%s' % (strToReturn, self._returnObjects(
+            self.getDoTable(ownerView=False)))
         if self.hasOwnerView():
             strToReturn = '%s\n== doId2ownerView\n' % (strToReturn)
-            strToReturn = '%s%s' % (strToReturn, self._returnObjects(self.getDoTable(ownerView=False)))
+            strToReturn = '%s%s' % (strToReturn, self._returnObjects(
+                self.getDoTable(ownerView=False)))
         return strToReturn
 
     def printObjectCount(self):
@@ -212,7 +214,7 @@ class DoCollectionManager:
         otherwise the list is filtered to only include objects of that type.
         """
         return [self.doId2do.get(i)
-            for i in self.getDoIdList(parentId, zoneId, classType)]
+                for i in self.getDoIdList(parentId, zoneId, classType)]
 
     def getDoIdList(self, parentId, zoneId=None, classType=None):
         return self._doHierarchy.getDoIds(self.getDo,
@@ -249,7 +251,6 @@ class DoCollectionManager:
                 count += 1
         return count
 
-
     def getAllOfType(self, type):
         # Returns a list of all DistributedObjects in the repository
         # of a particular type.
@@ -266,7 +267,7 @@ class DoCollectionManager:
                 return obj
         return None
 
-    #----------------------------------
+    # ----------------------------------
 
     def deleteDistributedObjects(self):
         # Get rid of all the distributed objects
@@ -290,7 +291,7 @@ class DoCollectionManager:
         obj = self.doId2do.get(doId)
         if obj is not None:
             self.notify.debug(
-                "handleObjectLocation: doId: %s parentId: %s zoneId: %s"%
+                "handleObjectLocation: doId: %s parentId: %s zoneId: %s" %
                 (doId, parentId, zoneId))
             # Let the object finish the job
             # calls storeObjectLocation()
@@ -309,7 +310,8 @@ class DoCollectionManager:
         if distObj is not None:
             distObj.setLocation(parentId, zoneId)
         else:
-            self.notify.warning('handleSetLocation: object %s not present' % self.getMsgChannel())
+            self.notify.warning(
+                'handleSetLocation: object %s not present' % self.getMsgChannel())
 
     def storeObjectLocation(self, object, parentId, zoneId):
         oldParentId = object.parentId
@@ -332,7 +334,7 @@ class DoCollectionManager:
             return
 
         if ((parentId is None) or (zoneId is None) or
-            (parentId == zoneId == 0)):
+                (parentId == zoneId == 0)):
             # Do not store null values
             object.parentId = None
             object.zoneId = None
@@ -341,12 +343,11 @@ class DoCollectionManager:
             self._doHierarchy.storeObjectLocation(object, parentId, zoneId)
             # this check doesn't work because of global UD objects;
             # should they have a location?
-            #assert len(self._doHierarchy) == len(self.doId2do)
+            # assert len(self._doHierarchy) == len(self.doId2do)
 
             # Set the new parent and zone on the object
             object.parentId = parentId
             object.zoneId = zoneId
-
 
         if oldParentId != parentId:
             # Give the parent a chance to run code when a new child
@@ -369,14 +370,14 @@ class DoCollectionManager:
     def deleteObjectLocation(self, object, parentId, zoneId):
         # Do not worry about null values
         if ((parentId is None) or (zoneId is None) or
-            (parentId == zoneId == 0)):
+                (parentId == zoneId == 0)):
             return
 
         self._doHierarchy.deleteObjectLocation(object, parentId, zoneId)
 
     def addDOToTables(self, do, location=None, ownerView=False):
         assert self.notify.debugStateCall(self)
-        #assert not hasattr(do, "isQueryAllResponse") or not do.isQueryAllResponse
+        # assert not hasattr(do, "isQueryAllResponse") or not do.isQueryAllResponse
         if not ownerView:
             if location is None:
                 location = (do.parentId, do.zoneId)
@@ -393,19 +394,19 @@ class DoCollectionManager:
                 do.doId, tableName, do.__class__.__name__,
                 doTable[do.doId].__class__.__name__))
 
-        doTable[do.doId]=do
+        doTable[do.doId] = do
 
         if not ownerView:
             if self.isValidLocationTuple(location):
                 self.storeObjectLocation(do, location[0], location[1])
-                ##assert do.doId not in self.zoneId2doIds.get(location, {})
-                ##self.zoneId2doIds.setdefault(location, {})
-                ##self.zoneId2doIds[location][do.doId]=do
+                # assert do.doId not in self.zoneId2doIds.get(location, {})
+                # self.zoneId2doIds.setdefault(location, {})
+                # self.zoneId2doIds[location][do.doId]=do
 
     def isValidLocationTuple(self, location):
         return (location is not None
-            and location != (0xffffffff, 0xffffffff)
-            and location != (0, 0))
+                and location != (0xffffffff, 0xffffffff)
+                and location != (0, 0))
 
     if __debug__:
         def isInDoTables(self, doId):
@@ -414,51 +415,51 @@ class DoCollectionManager:
 
     def removeDOFromTables(self, do):
         assert self.notify.debugStateCall(self)
-        #assert not hasattr(do, "isQueryAllResponse") or not do.isQueryAllResponse
-        #assert do.doId in self.doId2do
+        # assert not hasattr(do, "isQueryAllResponse") or not do.isQueryAllResponse
+        # assert do.doId in self.doId2do
         location = do.getLocation()
         if location:
-           oldParentId, oldZoneId = location
-           oldParentObj = self.doId2do.get(oldParentId)
-           if oldParentObj:
-               oldParentObj.handleChildLeave(do, oldZoneId)
+            oldParentId, oldZoneId = location
+            oldParentObj = self.doId2do.get(oldParentId)
+            if oldParentObj:
+                oldParentObj.handleChildLeave(do, oldZoneId)
         self.deleteObjectLocation(do, do.parentId, do.zoneId)
-        ## location = do.getLocation()
-        ## if location is not None:
-        ##     if location not in self.zoneId2doIds:
-        ##         self.notify.warning(
-        ##             'dobj %s (%s) has invalid location: %s' %
-        ##             (do, do.doId, location))
-        ##     else:
-        ##         assert do.doId in self.zoneId2doIds[location]
-        ##         del self.zoneId2doIds[location][do.doId]
-        ##         if len(self.zoneId2doIds[location]) == 0:
-        ##             del self.zoneId2doIds[location]
+        # location = do.getLocation()
+        # if location is not None:
+        # if location not in self.zoneId2doIds:
+        # self.notify.warning(
+        # 'dobj %s (%s) has invalid location: %s' %
+        # (do, do.doId, location))
+        # else:
+        # assert do.doId in self.zoneId2doIds[location]
+        # del self.zoneId2doIds[location][do.doId]
+        # if len(self.zoneId2doIds[location]) == 0:
+        # del self.zoneId2doIds[location]
         if do.doId in self.doId2do:
             del self.doId2do[do.doId]
 
-    ## def changeDOZoneInTables(self, do, newParentId, newZoneId, oldParentId, oldZoneId):
-    ##     if 1:
-    ##         self.storeObjectLocation(do.doId, newParentId, newZoneId)
-    ##     else:
-    ##         #assert not hasattr(do, "isQueryAllResponse") or not do.isQueryAllResponse
-    ##         oldLocation = (oldParentId, oldZoneId)
-    ##         newLocation = (newParentId, newZoneId)
-    ##         # HACK: DistributedGuildMemberUD starts in -1, -1, which isnt ever put in the
-    ##         # zoneId2doIds table
-    ##         if self.isValidLocationTuple(oldLocation):
-    ##             assert self.notify.debugStateCall(self)
-    ##             assert oldLocation in self.zoneId2doIds
-    ##             assert do.doId in self.zoneId2doIds[oldLocation]
-    ##             assert do.doId not in self.zoneId2doIds.get(newLocation, {})
-    ##             # remove from old zone
-    ##             del(self.zoneId2doIds[oldLocation][do.doId])
-    ##             if len(self.zoneId2doIds[oldLocation]) == 0:
-    ##                 del self.zoneId2doIds[oldLocation]
-    ##         if self.isValidLocationTuple(newLocation):
-    ##             # add to new zone
-    ##             self.zoneId2doIds.setdefault(newLocation, {})
-    ##             self.zoneId2doIds[newLocation][do.doId]=do
+    # def changeDOZoneInTables(self, do, newParentId, newZoneId, oldParentId, oldZoneId):
+    # if 1:
+    # self.storeObjectLocation(do.doId, newParentId, newZoneId)
+    # else:
+    # assert not hasattr(do, "isQueryAllResponse") or not do.isQueryAllResponse
+    # oldLocation = (oldParentId, oldZoneId)
+    # newLocation = (newParentId, newZoneId)
+    # HACK: DistributedGuildMemberUD starts in -1, -1, which isnt ever put in the
+    # zoneId2doIds table
+    # if self.isValidLocationTuple(oldLocation):
+    # assert self.notify.debugStateCall(self)
+    # assert oldLocation in self.zoneId2doIds
+    # assert do.doId in self.zoneId2doIds[oldLocation]
+    # assert do.doId not in self.zoneId2doIds.get(newLocation, {})
+    # remove from old zone
+    # del(self.zoneId2doIds[oldLocation][do.doId])
+    # if len(self.zoneId2doIds[oldLocation]) == 0:
+    # del self.zoneId2doIds[oldLocation]
+    # if self.isValidLocationTuple(newLocation):
+    # add to new zone
+    # self.zoneId2doIds.setdefault(newLocation, {})
+    # self.zoneId2doIds[newLocation][do.doId]=do
 
     def getObjectsInZone(self, parentId, zoneId):
         """

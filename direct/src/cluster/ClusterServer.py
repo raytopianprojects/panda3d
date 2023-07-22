@@ -8,11 +8,12 @@ from direct.task import Task
 # NOTE: This assumes the following variables are set via bootstrap command line
 # arguments on server startup:
 #     clusterServerPort
-#     clusterSyncFlag
+#     cluster_sync_flag
 #     clusterDaemonClient
 #     clusterDaemonPort
 # Also, I'm not sure multiple camera-group configurations are working for the
 # cluster system.
+
 
 class ClusterServer(DirectObject.DirectObject):
     notify = DirectNotifyGlobal.directNotify.newCategory("ClusterServer")
@@ -49,19 +50,19 @@ class ClusterServer(DirectObject.DirectObject):
             clusterSyncFlag = 0
         if clusterSyncFlag:
             self.startSwapCoordinator()
-            base.graphicsEngine.setAutoFlip(0)
+            base.graphics_engine.setAutoFlip(0)
         # Set global clock mode to slave mode
         globalClock.setMode(ClockObject.MSlave)
         # Send verification of startup to client
         self.daemon = DirectD()
 
-        self.objectMappings  = {}
-        self.objectHasColor  = {}
+        self.objectMappings = {}
+        self.objectHasColor = {}
         self.controlMappings = {}
         self.controlPriorities = {}
-        self.controlOffsets  = {}
-        self.messageQueue    = []
-        self.sortedControlMappings   = []
+        self.controlOffsets = {}
+        self.messageQueue = []
+        self.sortedControlMappings = []
 
         # These must be passed in as bootstrap arguments and stored in
         # the __builtins__ namespace
@@ -74,8 +75,6 @@ class ClusterServer(DirectObject.DirectObject):
         except NameError:
             clusterDaemonPort = CLUSTER_DAEMON_PORT
         self.daemon.serverReady(clusterDaemonClient, clusterDaemonPort)
-
-
 
     def startListenerPollTask(self):
         # Run this task near the start of frame, sometime after the dataLoop
@@ -91,7 +90,7 @@ class ClusterServer(DirectObject.DirectObject):
             newConnection = PointerToConnection()
             if self.qcl.getNewConnection(rendezvous, netAddress, newConnection):
                 # Crazy dereferencing
-                newConnection=newConnection.p()
+                newConnection = newConnection.p()
                 self.qcr.addConnection(newConnection)
                 self.lastConnection = newConnection
                 self.notify.info("Got a connection!")
@@ -99,19 +98,17 @@ class ClusterServer(DirectObject.DirectObject):
                 self.notify.warning("getNewConnection returned false")
         return Task.cont
 
-
-    def addNamedObjectMapping(self,object,name,hasColor = True,
-                              priority = 0):
+    def addNamedObjectMapping(self, object, name, hasColor=True,
+                              priority=0):
         if (name not in self.objectMappings):
             self.objectMappings[name] = object
             self.objectHasColor[name] = hasColor
         else:
             self.notify.debug('attempt to add duplicate named object: '+name)
 
-    def removeObjectMapping(self,name):
+    def removeObjectMapping(self, name):
         if (name in self.objectMappings):
             self.objectMappings.pop(name)
-
 
     def redoSortedPriorities(self):
 
@@ -122,66 +119,64 @@ class ClusterServer(DirectObject.DirectObject):
 
         self.sortedControlMappings.sort()
 
-
-    def addControlMapping(self,objectName,controlledName, offset = None,
-                          priority = 0):
+    def addControlMapping(self, objectName, controlledName, offset=None,
+                          priority=0):
         if (objectName not in self.controlMappings):
             self.controlMappings[objectName] = controlledName
             if (offset == None):
-                offset = Vec3(0,0,0)
-            self.controlOffsets[objectName]  = offset
+                offset = Vec3(0, 0, 0)
+            self.controlOffsets[objectName] = offset
             self.controlPriorities[objectName] = priority
             self.redoSortedPriorities()
         else:
-            self.notify.debug('attempt to add duplicate controlled object: ' + objectName)
+            self.notify.debug(
+                'attempt to add duplicate controlled object: ' + objectName)
 
-    def setControlMappingOffset(self,objectName,offset):
+    def setControlMappingOffset(self, objectName, offset):
         if (objectName in self.controlMappings):
             self.controlOffsets[objectName] = offset
 
-
-    def removeControlMapping(self,name):
+    def removeControlMapping(self, name):
         if (name in self.controlMappings):
             self.controlMappings.pop(name)
             self.controlPriorities.pop(name)
         self.redoSortedPriorities()
 
-
     def startControlObjectTask(self):
         self.notify.debug("moving control objects")
-        taskMgr.add(self.controlObjectTask,"controlObjectTask",50)
+        taskMgr.add(self.controlObjectTask, "controlObjectTask", 50)
 
     def controlObjectTask(self, task):
-        #print "running control object task"
+        # print "running control object task"
         for pair in self.sortedControlPriorities:
             object = pair[1]
-            name   = self.controlMappings[object]
+            name = self.controlMappings[object]
             if (object in self.objectMappings):
-                self.moveObject(self.objectMappings[object],name,self.controlOffsets[object],
+                self.moveObject(self.objectMappings[object], name, self.controlOffsets[object],
                                 self.objectHasColor[object])
 
         self.sendNamedMovementDone()
         return Task.cont
 
-
     def sendNamedMovementDone(self):
 
         self.notify.debug("named movement done")
         datagram = self.msgHandler.makeNamedMovementDone()
-        self.cw.send(datagram,self.lastConnection)
+        self.cw.send(datagram, self.lastConnection)
 
     def moveObject(self, nodePath, object, offset, hasColor):
         self.notify.debug('moving object '+object)
-        #print "moving object",object
+        # print "moving object",object
         xyz = nodePath.getPos(render) + offset
         hpr = nodePath.getHpr(render)
         scale = nodePath.getScale(render)
         if (hasColor):
             color = nodePath.getColor()
         else:
-            color = [1,1,1,1]
+            color = [1, 1, 1, 1]
         hidden = nodePath.isHidden()
-        datagram = self.msgHandler.makeNamedObjectMovementDatagram(xyz,hpr,scale,color,hidden,object)
+        datagram = self.msgHandler.makeNamedObjectMovementDatagram(
+            xyz, hpr, scale, color, hidden, object)
         self.cw.send(datagram, self.lastConnection)
 
     def startReaderPollTask(self):
@@ -263,16 +258,17 @@ class ClusterServer(DirectObject.DirectObject):
             pass
         elif (type == CLUSTER_SWAP_NOW):
             self.notify.debug('swapping')
-            base.graphicsEngine.flipFrame()
+            base.graphics_engine.flipFrame()
         elif (type == CLUSTER_TIME_DATA):
             self.notify.debug('time data')
             self.handleTimeData(dgi)
         elif (type == CLUSTER_NAMED_OBJECT_MOVEMENT):
-            self.messageQueue.append(self.msgHandler.parseNamedMovementDatagram(dgi))
-            #self.handleNamedMovement(dgi)
+            self.messageQueue.append(
+                self.msgHandler.parseNamedMovementDatagram(dgi))
+            # self.handleNamedMovement(dgi)
         elif (type == CLUSTER_NAMED_MOVEMENT_DONE):
-            #print "got done",self.messageQueue
-            #if (len(self.messageQueue) > 0):
+            # print "got done",self.messageQueue
+            # if (len(self.messageQueue) > 0):
             #    print self.messageQueue[0]
             #    print dir(self.messageQueue)
             self.handleMessageQueue()
@@ -284,7 +280,7 @@ class ClusterServer(DirectObject.DirectObject):
     def handleCamOffset(self, dgi):
         """ Set offset of camera from cameraJig """
         (x, y, z, h, p, r) = self.msgHandler.parseCamOffsetDatagram(dgi)
-        self.camera.setPos(x,y,z)
+        self.camera.setPos(x, y, z)
         self.lens.setViewHpr(h, p, r)
 
     def handleCamFrustum(self, dgi):
@@ -296,11 +292,11 @@ class ClusterServer(DirectObject.DirectObject):
 
     def handleNamedMovement(self, data):
         """ Update cameraJig position to reflect latest position """
-        (name,x, y, z, h, p, r,sx,sy,sz, red, g, b, a, hidden) = data
+        (name, x, y, z, h, p, r, sx, sy, sz, red, g, b, a, hidden) = data
         if (name in self.objectMappings):
             self.objectMappings[name].setPosHpr(render, x, y, z, h, p, r)
-            self.objectMappings[name].setScale(render,sx,sy,sz)
-            self.objectMappings[name].setColor(red,g,b,a)
+            self.objectMappings[name].setScale(render, sx, sy, sz)
+            self.objectMappings[name].setColor(red, g, b, a)
             if (hidden):
                 self.objectMappings[name].hide()
             else:
@@ -308,12 +304,11 @@ class ClusterServer(DirectObject.DirectObject):
         else:
             self.notify.debug("recieved unknown named object command: "+name)
 
-
     def handleMessageQueue(self):
 
-        #print self.messageQueue
+        # print self.messageQueue
         for data in self.messageQueue:
-            #print "in queue",dgi
+            # print "in queue",dgi
             self.handleNamedMovement(data)
 
         self.messageQueue = []
@@ -346,5 +341,3 @@ class ClusterServer(DirectObject.DirectObject):
             exec(command, __builtins__)
         except:
             pass
-
-

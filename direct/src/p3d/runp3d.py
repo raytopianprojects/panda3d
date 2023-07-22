@@ -30,6 +30,7 @@ from .AppRunner import AppRunner, ArgumentError
 from direct.task.TaskManagerGlobal import taskMgr
 from panda3d.core import Filename
 
+
 def parseSysArgs():
     """ Handles sys.argv, if there are any local arguments, and
     returns a new argv suitable for passing into the
@@ -56,23 +57,25 @@ def parseSysArgs():
 
     return [arg0] + args[1:]
 
+
 def runPackedApp(pathname):
     runner = AppRunner()
     runner.gotWindow = True
     try:
-        runner.setP3DFilename(pathname, tokens = [], argv = [],
-                              instanceId = 0, interactiveConsole = False)
+        runner.setP3DFilename(pathname, tokens=[], argv=[],
+                              instanceId=0, interactiveConsole=False)
     except ArgumentError as e:
         print(e.args[0])
         sys.exit(1)
+
 
 if __name__ == '__main__':
     runner = AppRunner()
     runner.gotWindow = True
     try:
         argv = parseSysArgs()
-        runner.setP3DFilename(argv[0], tokens = [], argv = argv,
-                              instanceId = 0, interactiveConsole = False)
+        runner.setP3DFilename(argv[0], tokens=[], argv=argv,
+                              instanceId=0, interactiveConsole=False)
     except ArgumentError as e:
         print(e.args[0])
         sys.exit(1)

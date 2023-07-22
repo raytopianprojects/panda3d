@@ -18,12 +18,14 @@ d = DirectSlider(borderWidth=(0, 0))
 
 """
 
+
 class DirectSlider(DirectFrame):
     """
     DirectSlider -- a widget which represents a slider that the
     user can pull left and right to represent a continuous value.
     """
-    def __init__(self, parent = None, **kw):
+
+    def __init__(self, parent=None, **kw):
         optiondefs = (
             # Define type of DirectGuiWidget
             ('pgFunc',         PGSliderBar,        None),
@@ -39,20 +41,20 @@ class DirectSlider(DirectFrame):
             # Function to be called repeatedly as slider is moved
             ('command',        None,               None),
             ('extraArgs',      [],                 None),
-            )
+        )
 
         if kw.get('orientation') == DGG.VERTICAL:
             # These are the default options for a vertical layout.
             optiondefs += (
                 ('frameSize',      (-0.08, 0.08, -1, 1),   None),
                 ('frameVisibleScale', (0.25, 1),         None),
-                )
+            )
         else:
             # These are the default options for a horizontal layout.
             optiondefs += (
                 ('frameSize',      (-1, 1, -0.08, 0.08),  None),
                 ('frameVisibleScale', (1, 0.25),        None),
-                )
+            )
 
         # Merge keyword options with default options
         self.defineoptions(kw, optiondefs)
@@ -62,7 +64,7 @@ class DirectSlider(DirectFrame):
 
         self.thumb = self.createcomponent("thumb", (), None,
                                           DirectButton, (self,),
-                                          borderWidth = self['borderWidth'])
+                                          borderWidth=self['borderWidth'])
         if self.thumb['frameSize'] == None and \
            self.thumb.bounds == [0.0, 0.0, 0.0, 0.0]:
             # Compute a default frameSize for the thumb.
@@ -119,11 +121,12 @@ class DirectSlider(DirectFrame):
         elif self['orientation'] == DGG.VERTICAL:
             self.guiItem.setAxis(Vec3(0, 0, 1))
         else:
-            raise ValueError('Invalid value for orientation: %s' % (self['orientation']))
+            raise ValueError('Invalid value for orientation: %s' %
+                             (self['orientation']))
 
     def destroy(self):
         if (hasattr(self, 'thumb')):
-            self.thumb.destroy() # ow!
+            self.thumb.destroy()  # ow!
             del self.thumb
         DirectFrame.destroy(self)
 

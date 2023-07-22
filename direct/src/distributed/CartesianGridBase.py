@@ -1,11 +1,12 @@
 from panda3d.core import Vec3
 # Utility functions that are useful to both AI and client CartesianGrid code
 
+
 class CartesianGridBase:
     def isValidZone(self, zoneId):
         def checkBounds(self=self, zoneId=zoneId):
             if ((zoneId < self.startingZone) or
-                (zoneId > self.startingZone + self.gridSize * self.gridSize - 1)):
+                    (zoneId > self.startingZone + self.gridSize * self.gridSize - 1)):
                 return 0
             return 1
         if self.style == "Cartesian":
@@ -30,7 +31,7 @@ class CartesianGridBase:
         zoneId = int(self.startingZone + ((row * self.gridSize) + col))
 
         if (wantRowAndCol):
-            return (zoneId,col,row)
+            return (zoneId, col, row)
         else:
             return zoneId
 
@@ -49,7 +50,7 @@ class CartesianGridBase:
         # expect to see any objects on it.
         xMax = abs(spherePos[0])+sphereRadius
         yMax = abs(spherePos[1])+sphereRadius
-        sphereRadius = Vec3(xMax,yMax,0).length()
+        sphereRadius = Vec3(xMax, yMax, 0).length()
 
         # sphereRadius = max(sphereRadius, gridRadius*cellWidth)
         return max(2 * (sphereRadius // cellWidth), 1)
@@ -79,7 +80,7 @@ class CartesianGridBase:
 
         return (x, y, 0)
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Function:   utility function to get all zones in a ring of given radius
     #               around the given zoneId (so if given a zoneId 34342 and a
     #               radius of 3, a list of all zones exactly 3 grids away from
@@ -88,11 +89,11 @@ class CartesianGridBase:
     #             radius, how far from zoneId to find zones of for it them
     # Changes:
     # Returns:
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     def getConcentricZones(self, zoneId, radius):
         zones = []
-        #currZone = zoneId + radius
-        #numZones = (2 * radius * 8) + 2
+        # currZone = zoneId + radius
+        # numZones = (2 * radius * 8) + 2
         # start at upper left
         zone = zoneId - self.startingZone
         row = zone // self.gridSize
@@ -103,9 +104,9 @@ class CartesianGridBase:
         topOffset = min(row, radius)
         bottomOffset = min(self.gridSize - (row + 1), radius)
 
-        #print "starting examination of grid circle of radius %s"%radius
+        # print "starting examination of grid circle of radius %s"%radius
         ulZone = zoneId - leftOffset - topOffset * self.gridSize
-        #print "left offset is %s and radius is %s"%(leftOffset,radius)
+        # print "left offset is %s and radius is %s"%(leftOffset,radius)
         for currCol in range(int(rightOffset + leftOffset + 1)):
             if ((currCol == 0 and leftOffset == radius) or (currCol == rightOffset + leftOffset and rightOffset == radius)):
                 # at either left or right edge of area, look at all rows
@@ -117,9 +118,9 @@ class CartesianGridBase:
                     possibleRows.append(0)
                 if (bottomOffset == radius):
                     possibleRows.append(bottomOffset + topOffset)
-            #print "on column %s and looking at rows %s"%(currCol,possibleRows)
+            # print "on column %s and looking at rows %s"%(currCol,possibleRows)
             for currRow in possibleRows:
                 newZone = ulZone + (currRow * self.gridSize) + currCol
                 zones.append(int(newZone))
-                #print "   examining zone %s"%newZone
+                # print "   examining zone %s"%newZone
         return zones

@@ -3,6 +3,7 @@
 from direct.directnotify.DirectNotifyGlobal import *
 from direct.distributed.DistributedObject import *
 
+
 class SampleObject(DistributedObject):
 
     notify = directNotify.newCategory("SampleObject")
@@ -13,7 +14,7 @@ class SampleObject(DistributedObject):
 #        self.green = 0
 #        self.blue = 0
 
-    def setColor(self, red = 0, green = 0, blue = 0):
+    def setColor(self, red=0, green=0, blue=0):
         self.red = red
         self.green = green
         self.blue = blue

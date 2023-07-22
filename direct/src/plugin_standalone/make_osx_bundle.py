@@ -17,10 +17,12 @@ import shutil
 import direct
 from panda3d.core import Filename, DSearchPath, getModelPath, ExecutionEnvironment
 
-def usage(code, msg = ''):
+
+def usage(code, msg=''):
     sys.stderr.write(__doc__)
     sys.stderr.write(msg + '\n')
     sys.exit(code)
+
 
 def makeBundle(startDir):
     fstartDir = Filename.fromOsSpecific(startDir)
@@ -69,7 +71,8 @@ def makeBundle(startDir):
     iconFilename.makeDir()
 
     # Copy in Info.plist, the icon file, and the compiled executable.
-    shutil.copyfile(Filename(fstartDir, "panda3d_mac.plist").toOsSpecific(), plistFilename.toOsSpecific())
+    shutil.copyfile(Filename(
+        fstartDir, "panda3d_mac.plist").toOsSpecific(), plistFilename.toOsSpecific())
     shutil.copyfile(icons.toOsSpecific(), iconFilename.toOsSpecific())
     print('%s %s' % (panda3d_mac, exeFilename))
     shutil.copyfile(panda3d_mac.toOsSpecific(), exeFilename.toOsSpecific())
@@ -78,6 +81,7 @@ def makeBundle(startDir):
     # All done!
     bundleFilename.touch()
     print(bundleFilename.toOsSpecific())
+
 
 if __name__ == '__main__':
     try:
@@ -94,4 +98,3 @@ if __name__ == '__main__':
 
     startDir = os.path.split(sys.argv[0])[0]
     makeBundle(startDir)
-

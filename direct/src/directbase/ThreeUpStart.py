@@ -1,10 +1,10 @@
 
+from direct.showbase import ThreeUpShow
+from direct.showbase.PythonUtil import *
+from panda3d.core import *
 print('ThreeUpStart: Starting up environment.')
 
-from panda3d.core import *
 
-from direct.showbase.PythonUtil import *
-from direct.showbase import ThreeUpShow
 ThreeUpShow.ThreeUpShow()
 
 # Put an axis in the world:
@@ -15,8 +15,8 @@ if 0:
     # Enable drive mode but turn it off, and reset the camera
     # This is here because ShowBase sets up a drive interface, this
     # can be removed if ShowBase is changed to not set that up.
-    base.useDrive()
-    base.disableMouse()
+    base.use_drive()
+    base.disable_mouse()
     if base.mouseInterface:
         base.mouseInterface.reparentTo(base.dataUnused)
     if base.mouse2cam:
@@ -24,12 +24,12 @@ if 0:
     # end of hack.
 
 camera.setPosHpr(0, -10.0, 0, 0, 0, 0)
-base.camLens.setFov(52.0)
-base.camLens.setNearFar(1.0, 10000.0)
+base.cam_lens.setFov(52.0)
+base.cam_lens.setNearFar(1.0, 10000.0)
 
 globalClock.setMaxDt(0.2)
 base.enableParticles()
 base.addAngularIntegrator()
 
 # Force the screen to update:
-base.graphicsEngine.renderFrame()
+base.graphics_engine.renderFrame()

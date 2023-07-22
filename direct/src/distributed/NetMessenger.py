@@ -15,7 +15,7 @@ else:
 # in this list, it is reduced to an integer index and
 # the message string is not sent.  Otherwise, the message
 # string is sent in the datagram.
-MESSAGE_TYPES=(
+MESSAGE_TYPES = (
     "avatarOnline",
     "avatarOffline",
     "create",
@@ -25,9 +25,9 @@ MESSAGE_TYPES=(
 
 # This is the reverse look up for the recipient of the
 # datagram:
-MESSAGE_STRINGS={}
+MESSAGE_STRINGS = {}
 for i in zip(MESSAGE_TYPES, range(1, len(MESSAGE_TYPES)+1)):
-    MESSAGE_STRINGS[i[0]]=i[1]
+    MESSAGE_STRINGS[i[0]] = i[1]
 
 
 class NetMessenger(Messenger):
@@ -45,8 +45,8 @@ class NetMessenger(Messenger):
         """
         assert self.notify.debugCall()
         Messenger.__init__(self)
-        self.air=air
-        self.channels=channels
+        self.air = air
+        self.channels = channels
         for i in self.channels:
             self.air.registerForChannel(i)
 
@@ -69,11 +69,11 @@ class NetMessenger(Messenger):
         datagram.addChannel(self.channels[0])
         # From:
         datagram.addChannel(self.air.ourChannel)
-        #if 1: # We send this just because the air expects it:
+        # if 1: # We send this just because the air expects it:
         #    # Add an 'A' for AI
         #    datagram.addUint8(ord('A'))
 
-        messageType=MESSAGE_STRINGS.get(message, 0)
+        messageType = MESSAGE_STRINGS.get(message, 0)
         datagram.addUint16(messageType)
         if messageType:
             datagram.addString(str(dumps(sentArgs)))
@@ -88,12 +88,10 @@ class NetMessenger(Messenger):
         (messageString, sendArgsList).
         """
         assert self.notify.debugCall()
-        messageType=self.air.getMsgType()
+        messageType = self.air.getMsgType()
         if messageType:
-            message=MESSAGE_TYPES[messageType-1]
-            sentArgs=loads(pickleData)
+            message = MESSAGE_TYPES[messageType-1]
+            sentArgs = loads(pickleData)
         else:
             (message, sentArgs) = loads(pickleData)
         Messenger.send(self, message, sentArgs=sentArgs)
-
-

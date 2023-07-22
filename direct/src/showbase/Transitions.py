@@ -12,6 +12,7 @@ from direct.interval.LerpInterval import LerpColorScaleInterval, LerpColorInterv
 from direct.interval.MetaInterval import Sequence, Parallel
 from direct.interval.FunctionInterval import Func
 
+
 class Transitions:
 
     # These may be reassigned before the fade or iris transitions are
@@ -74,13 +75,13 @@ class Transitions:
             # so that it will also obscure mouse events for objects
             # positioned behind it.
             self.fade = DirectFrame(
-                parent = ShowBaseGlobal.hidden,
-                guiId = 'fade',
-                relief = None,
-                image = self.fadeModel,
-                image_scale = (4, 2, 2),
-                state = DGG.NORMAL,
-                )
+                parent=ShowBaseGlobal.hidden,
+                guiId='fade',
+                relief=None,
+                image=self.fadeModel,
+                image_scale=(4, 2, 2),
+                state=DGG.NORMAL,
+            )
             if not self.fadeModel:
                 # No fade model was given, so we make this the fade model.
                 self.fade["relief"] = DGG.FLAT
@@ -88,7 +89,7 @@ class Transitions:
                 self.fade["frameColor"] = (0, 0, 0, 1)
                 self.fade.setTransparency(TransparencyAttrib.MAlpha)
             self.fade.setBin('unsorted', 0)
-            self.fade.setColor(0,0,0,0)
+            self.fade.setColor(0, 0, 0, 0)
 
         self.fade.setScale(max(base.a2dRight, base.a2dTop))
 
@@ -97,18 +98,19 @@ class Transitions:
         Returns an interval without starting it.  This is particularly useful in
         cutscenes, so when the cutsceneIval is escaped out of we can finish the fade immediately
         """
-        #self.noTransitions() masad: this creates a one frame pop, is it necessary?
+        # self.noTransitions() masad: this creates a one frame pop, is it necessary?
         self.loadFade()
 
         transitionIval = Sequence(Func(self.fade.reparentTo, aspect2d, DGG.FADE_SORT_INDEX),
-                                  Func(self.fade.showThrough),  # in case aspect2d is hidden for some reason
+                                  # in case aspect2d is hidden for some reason
+                                  Func(self.fade.showThrough),
                                   self.lerpFunc(self.fade, t,
                                                 self.alphaOff,
                                                 # self.alphaOn,
                                                 blendType=blendType
                                                 ),
                                   Func(self.fade.detachNode),
-                                  name = self.fadeTaskName,
+                                  name=self.fadeTaskName,
                                   )
         if finishIval:
             transitionIval.append(finishIval)
@@ -123,13 +125,14 @@ class Transitions:
         self.loadFade()
 
         transitionIval = Sequence(Func(self.fade.reparentTo, aspect2d, DGG.FADE_SORT_INDEX),
-                                  Func(self.fade.showThrough),  # in case aspect2d is hidden for some reason
+                                  # in case aspect2d is hidden for some reason
+                                  Func(self.fade.showThrough),
                                   self.lerpFunc(self.fade, t,
                                                 self.alphaOn,
                                                 # self.alphaOff,
                                                 blendType=blendType
                                                 ),
-                                  name = self.fadeTaskName,
+                                  name=self.fadeTaskName,
                                   )
         if finishIval:
             transitionIval.append(finishIval)
@@ -146,13 +149,13 @@ class Transitions:
         if gsg:
             # If we're about to fade in from black, go ahead and
             # preload all the textures etc.
-            base.graphicsEngine.renderFrame()
+            base.graphics_engine.renderFrame()
             render.prepareScene(gsg)
             render2d.prepareScene(gsg)
 
         if (t == 0):
             # Fade in immediately with no lerp
-            #print "transitiosn: fadeIn 0.0"
+            # print "transitiosn: fadeIn 0.0"
             self.noTransitions()
             self.loadFade()
             self.fade.detachNode()
@@ -211,7 +214,7 @@ class Transitions:
         to darken out the world. Useful for drawing attention to
         a dialog box for instance
         """
-        #print "transitiosn: fadeScreen"
+        # print "transitiosn: fadeScreen"
         self.noTransitions()
         self.loadFade()
 
@@ -227,7 +230,7 @@ class Transitions:
         to darken out the world. Useful for drawing attention to
         a dialog box for instance
         """
-        #print "transitiosn: fadeScreenColor"
+        # print "transitiosn: fadeScreenColor"
         self.noTransitions()
         self.loadFade()
 
@@ -238,7 +241,7 @@ class Transitions:
         """
         Removes any current fade tasks and parents the fade polygon away
         """
-        #print "transitiosn: noFade"
+        # print "transitiosn: noFade"
         if self.transitionIval:
             self.transitionIval.pause()
             self.transitionIval = None
@@ -254,7 +257,6 @@ class Transitions:
         self.alphaOn.set(r, g, b, 1)
         self.alphaOff.set(r, g, b, 0)
 
-
     ##################################################
     # Iris
     ##################################################
@@ -264,7 +266,7 @@ class Transitions:
             self.iris = loader.loadModel(self.IrisModelName)
             self.iris.setPos(0, 0, 0)
 
-    def irisIn(self, t=0.5, finishIval=None, blendType = 'noBlend'):
+    def irisIn(self, t=0.5, finishIval=None, blendType='noBlend'):
         """
         Play an iris in transition over t seconds.
         Places a polygon on the aspect2d plane then lerps the scale
@@ -283,13 +285,13 @@ class Transitions:
 
             scale = 0.18 * max(base.a2dRight, base.a2dTop)
             self.transitionIval = Sequence(LerpScaleInterval(self.iris, t,
-                                                   scale = scale,
-                                                   startScale = 0.01,
-                                                   blendType=blendType),
-                                 Func(self.iris.detachNode),
-                                 Func(self.__finishTransition),
-                                 name = self.irisTaskName,
-                                 )
+                                                             scale=scale,
+                                                             startScale=0.01,
+                                                             blendType=blendType),
+                                           Func(self.iris.detachNode),
+                                           Func(self.__finishTransition),
+                                           name=self.irisTaskName,
+                                           )
             self.__transitionFuture = AsyncFuture()
             if finishIval:
                 self.transitionIval.append(finishIval)
@@ -318,15 +320,15 @@ class Transitions:
 
             scale = 0.18 * max(base.a2dRight, base.a2dTop)
             self.transitionIval = Sequence(LerpScaleInterval(self.iris, t,
-                                                   scale = 0.01,
-                                                   startScale = scale,
-                                                   blendType=blendType),
-                                 Func(self.iris.detachNode),
-                                 # Use the fade to cover up the hole that the iris would leave
-                                 Func(self.fadeOut, 0),
-                                 Func(self.__finishTransition),
-                                 name = self.irisTaskName,
-                                 )
+                                                             scale=0.01,
+                                                             startScale=scale,
+                                                             blendType=blendType),
+                                           Func(self.iris.detachNode),
+                                           # Use the fade to cover up the hole that the iris would leave
+                                           Func(self.fadeOut, 0),
+                                           Func(self.__finishTransition),
+                                           name=self.irisTaskName,
+                                           )
             self.__transitionFuture = AsyncFuture()
             if finishIval:
                 self.transitionIval.append(finishIval)
@@ -382,46 +384,46 @@ class Transitions:
             # TODO: This model isn't available everywhere.  We should
             # pass it in as a parameter.
             button = loader.loadModel('models/gui/toplevel_gui',
-                                      okMissing = True)
+                                      okMissing=True)
 
             barImage = None
             if button:
                 barImage = button.find('**/generic_button')
 
             self.letterboxTop = DirectFrame(
-                parent = self.letterbox,
-                guiId = 'letterboxTop',
-                relief = DGG.FLAT,
-                state = DGG.NORMAL,
-                frameColor = (0, 0, 0, 1),
-                borderWidth = (0, 0),
-                frameSize = (-1, 1, 0, 0.2),
-                pos = (0, 0, 1.0),
-                image = barImage,
-                image_scale = (2.25,1,.5),
-                image_pos = (0,0,.1),
-                image_color = (0.3,0.3,0.3,1),
-                sortOrder = 0,
-                )
+                parent=self.letterbox,
+                guiId='letterboxTop',
+                relief=DGG.FLAT,
+                state=DGG.NORMAL,
+                frameColor=(0, 0, 0, 1),
+                borderWidth=(0, 0),
+                frameSize=(-1, 1, 0, 0.2),
+                pos=(0, 0, 1.0),
+                image=barImage,
+                image_scale=(2.25, 1, .5),
+                image_pos=(0, 0, .1),
+                image_color=(0.3, 0.3, 0.3, 1),
+                sortOrder=0,
+            )
             self.letterboxBottom = DirectFrame(
-                parent = self.letterbox,
-                guiId = 'letterboxBottom',
-                relief = DGG.FLAT,
-                state = DGG.NORMAL,
-                frameColor = (0, 0, 0, 1),
-                borderWidth = (0, 0),
-                frameSize = (-1, 1, 0, 0.2),
-                pos = (0, 0, -1.2),
-                image = barImage,
-                image_scale = (2.25,1,.5),
-                image_pos = (0,0,.1),
-                image_color = (0.3,0.3,0.3,1),
-                sortOrder = 0,
-                )
+                parent=self.letterbox,
+                guiId='letterboxBottom',
+                relief=DGG.FLAT,
+                state=DGG.NORMAL,
+                frameColor=(0, 0, 0, 1),
+                borderWidth=(0, 0),
+                frameSize=(-1, 1, 0, 0.2),
+                pos=(0, 0, -1.2),
+                image=barImage,
+                image_scale=(2.25, 1, .5),
+                image_pos=(0, 0, .1),
+                image_color=(0.3, 0.3, 0.3, 1),
+                sortOrder=0,
+            )
 
             # masad: always place these at the bottom of render
-            self.letterboxTop.setBin('sorted',0)
-            self.letterboxBottom.setBin('sorted',0)
+            self.letterboxTop.setBin('sorted', 0)
+            self.letterboxBottom.setBin('sorted', 0)
             self.letterbox.reparentTo(render2d, -1)
             self.letterboxOff(0)
 
@@ -461,20 +463,20 @@ class Transitions:
             self.letterboxIval = Sequence(Parallel(
                 LerpPosInterval(self.letterboxBottom,
                                 t,
-                                pos = Vec3(0, 0, -1),
-                                #startPos = Vec3(0, 0, -1.2),
+                                pos=Vec3(0, 0, -1),
+                                # startPos = Vec3(0, 0, -1.2),
                                 blendType=blendType
                                 ),
                 LerpPosInterval(self.letterboxTop,
                                 t,
-                                pos = Vec3(0, 0, 0.8),
+                                pos=Vec3(0, 0, 0.8),
                                 # startPos = Vec3(0, 0, 1),
                                 blendType=blendType
                                 ),
-                ),
-                                          Func(self.__finishLetterbox),
-                                          name = self.letterboxTaskName,
-                                          )
+            ),
+                Func(self.__finishLetterbox),
+                name=self.letterboxTaskName,
+            )
             if finishIval:
                 self.letterboxIval.append(finishIval)
             self.letterboxIval.start()
@@ -497,22 +499,22 @@ class Transitions:
             self.letterboxIval = Sequence(Parallel(
                 LerpPosInterval(self.letterboxBottom,
                                 t,
-                                pos = Vec3(0, 0, -1.2),
+                                pos=Vec3(0, 0, -1.2),
                                 # startPos = Vec3(0, 0, -1),
                                 blendType=blendType
                                 ),
                 LerpPosInterval(self.letterboxTop,
                                 t,
-                                pos = Vec3(0, 0, 1),
+                                pos=Vec3(0, 0, 1),
                                 # startPos = Vec3(0, 0, 0.8),
                                 blendType=blendType
                                 ),
-                ),
-                                          Func(self.letterbox.stash),
-                                          Func(self.__finishLetterbox),
-                                          Func(messenger.send,'letterboxOff'),
-                                          name = self.letterboxTaskName,
-                                          )
+            ),
+                Func(self.letterbox.stash),
+                Func(self.__finishLetterbox),
+                Func(messenger.send, 'letterboxOff'),
+                name=self.letterboxTaskName,
+            )
             if finishIval:
                 self.letterboxIval.append(finishIval)
             self.letterboxIval.start()

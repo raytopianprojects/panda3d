@@ -16,14 +16,15 @@ and in the populate function you can define ObjectPalette tree structure.
 
 from .ObjectPaletteBase import *
 
+
 class ObjectProp(ObjectBase):
     def __init__(self, *args, **kw):
         ObjectBase.__init__(self, *args, **kw)
-        self.properties['Abc'] =[OG.PROP_UI_RADIO, # UI type
-                                 OG.PROP_STR,      # data type
-                                 None,             # update function
-                                 'a',              # default value
-                                 ['a', 'b', 'c']]  # value range
+        self.properties['Abc'] = [OG.PROP_UI_RADIO,  # UI type
+                                  OG.PROP_STR,      # data type
+                                  None,             # update function
+                                  'a',              # default value
+                                  ['a', 'b', 'c']]  # value range
 
 
 class ObjectSmiley(ObjectProp):
@@ -40,17 +41,17 @@ class ObjectDoubleSmileys(ObjectProp):
     def __init__(self, *args, **kw):
         ObjectProp.__init__(self, *args, **kw)
         self.properties['Distance'] = [OG.PROP_UI_SLIDE,
-                                                    OG.PROP_FLOAT,
-                                                    ('.updateDoubleSmiley',
-                                                     {'val':OG.ARG_VAL, 'obj':OG.ARG_OBJ}),
-                                                    # In this case, an update function for property is defined
-                                                    # so whenever you change the value of this property from UI
-                                                    # this update function will be called with these arguments.
-                                                    # OG.ARG_VAL will be replaced by the value from UI.
-                                                    # OG.ARG_OBJ will be replaced by object data structure.
-                                                    # When an update function is starting with .
-                                                    # it means this function belongs to the default objectHandler.
-                                                    1.0, [0, 10, 0.1]]
+                                       OG.PROP_FLOAT,
+                                       ('.updateDoubleSmiley',
+                                        {'val': OG.ARG_VAL, 'obj': OG.ARG_OBJ}),
+                                       # In this case, an update function for property is defined
+                                       # so whenever you change the value of this property from UI
+                                       # this update function will be called with these arguments.
+                                       # OG.ARG_VAL will be replaced by the value from UI.
+                                       # OG.ARG_OBJ will be replaced by object data structure.
+                                       # When an update function is starting with .
+                                       # it means this function belongs to the default objectHandler.
+                                       1.0, [0, 10, 0.1]]
 
 
 class ObjectPalette(ObjectPaletteBase):
@@ -74,39 +75,39 @@ class ObjectPalette(ObjectPaletteBase):
                               # when an object is just a simple geometry, you can define
                               # model, and models like this
                               # instead of defining createFunction
-                              properties={'Happy':[OG.PROP_UI_CHECK,
-                                                   OG.PROP_BOOL,
-                                                   None,
-                                                   True],
-                                          'Number':[OG.PROP_UI_SPIN,
-                                                    OG.PROP_INT,
-                                                    ('.updateSmiley',
-                                                     {'val':OG.ARG_VAL, 'obj':OG.ARG_OBJ}),
-                                                    1, [1, 10]],
-                                        }),
-                 'Prop') # This object type will be added under the 'Prop' group.
+                              properties={'Happy': [OG.PROP_UI_CHECK,
+                                                    OG.PROP_BOOL,
+                                                    None,
+                                                    True],
+                                          'Number': [OG.PROP_UI_SPIN,
+                                                     OG.PROP_INT,
+                                                     ('.updateSmiley',
+                                                      {'val': OG.ARG_VAL, 'obj': OG.ARG_OBJ}),
+                                                     1, [1, 10]],
+                                          }),
+                 'Prop')  # This object type will be added under the 'Prop' group.
         self.add(ObjectDoubleSmileys(name='H Double Smiley',
-                                     createFunction = ('.createDoubleSmiley', {})),
-                                     # When the createFunction is defined like this,
-                                     # this function will be called to create the object.
-                                     # When a create function is starting with .
-                                     # it means this function belongs to the default objectHandler.
+                                     createFunction=('.createDoubleSmiley', {})),
+                 # When the createFunction is defined like this,
+                 # this function will be called to create the object.
+                 # When a create function is starting with .
+                 # it means this function belongs to the default objectHandler.
                  'Double Smileys')
 
         self.add(ObjectDoubleSmileys(name='V Double Smiley',
-                                     createFunction = ('.createDoubleSmiley', {'horizontal':False})),
-                                     # You can specify argument for the create function, too
+                                     createFunction=('.createDoubleSmiley', {'horizontal': False})),
+                 # You can specify argument for the create function, too
                  'Double Smileys')
 
         self.add('Animal')
         self.add(ObjectBase(name='Panda',
-                            createFunction = ('.createPanda', {}),
-                            anims = ['models/panda-walk4.egg',],
-                            properties = {}),
+                            createFunction=('.createPanda', {}),
+                            anims=['models/panda-walk4.egg',],
+                            properties={}),
                  'Animal')
 
         self.add('BG')
         self.add(ObjectBase(name='Grass',
-                            createFunction = ('.createGrass', {}),
-                            properties = {}),
+                            createFunction=('.createGrass', {}),
+                            properties={}),
                  'BG')

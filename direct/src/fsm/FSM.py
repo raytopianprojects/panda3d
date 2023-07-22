@@ -171,7 +171,7 @@ class FSM(DirectObject):
         if __debug__:
             from direct.fsm.ClassicFSM import _debugFsms
             import weakref
-            _debugFsms[name]=weakref.ref(self)
+            _debugFsms[name] = weakref.ref(self)
 
     def cleanup(self):
         # A convenience function to force the FSM to clean itself up
@@ -186,6 +186,7 @@ class FSM(DirectObject):
 
     def set_broadcast_state_changes(self, doBroadcast):
         self._broadcastStateChanges = doBroadcast
+
     def get_state_change_event(self):
         # if set_broadcast_state_changes(True), this event will be sent through
         # the messenger on every state change. The new and old states are
@@ -195,7 +196,8 @@ class FSM(DirectObject):
 
     def get_current_filter(self):
         if not self.state:
-            error = "FSM cannot determine current filter while in transition (%s -> %s)." % (self.oldState, self.newState)
+            error = "FSM cannot determine current filter while in transition (%s -> %s)." % (
+                self.oldState, self.newState)
             raise AlreadyInTransition(error)
 
         filter = getattr(self, "filter" + self.state, None)
@@ -282,7 +284,8 @@ class FSM(DirectObject):
                 return
 
             if not self.request(request, *args):
-                raise RequestDenied("%s (from state: %s)" % (request, self.state))
+                raise RequestDenied("%s (from state: %s)" %
+                                    (request, self.state))
         finally:
             self.fsmLock.release()
 
@@ -387,11 +390,13 @@ class FSM(DirectObject):
             # request) not listed in defaultTransitions and not
             # handled by an earlier filter.
             if request[0].isupper():
-                raise RequestDenied("%s (from state: %s)" % (request, self.state))
+                raise RequestDenied("%s (from state: %s)" %
+                                    (request, self.state))
 
         # In either case, we quietly ignore unhandled command
         # (lowercase) requests.
-        assert self.notify.debug("%s ignoring request %s from state %s." % (self._name, request, self.state))
+        assert self.notify.debug("%s ignoring request %s from state %s." % (
+            self._name, request, self.state))
         return None
 
     def filter_off(self, request, args):
@@ -422,7 +427,7 @@ class FSM(DirectObject):
                     self.request(self.stateArray[new_index], args)
             else:
                 assert self.notifier.debug(
-                                    "stateArray empty. Can't switch to next.")
+                    "stateArray empty. Can't switch to next.")
 
         finally:
             self.fsmLock.release()
@@ -440,7 +445,7 @@ class FSM(DirectObject):
                     self.request(self.stateArray[new_index], args)
             else:
                 assert self.notifier.debug(
-                                    "stateArray empty. Can't switch to next.")
+                    "stateArray empty. Can't switch to next.")
         finally:
             self.fsmLock.release()
 
@@ -480,7 +485,8 @@ class FSM(DirectObject):
 
         if self.__requestQueue:
             request = self.__requestQueue.pop(0)
-            assert self.notify.debug("%s continued queued request." % (self._name))
+            assert self.notify.debug(
+                "%s continued queued request." % (self._name))
             request()
 
     def __call_enter_func(self, name, *args):
@@ -500,7 +506,7 @@ class FSM(DirectObject):
         # a new state, if it exists.
         assert self.state is None and self.oldState == oldState and self.newState == newState
 
-        func = getattr(self, "from%sTo%s" % (oldState,newState), None)
+        func = getattr(self, "from%sTo%s" % (oldState, newState), None)
         if func:
             func(*args)
             return True
@@ -529,9 +535,11 @@ class FSM(DirectObject):
         try:
             className = self.__class__.__name__
             if self.state:
-                _str = ('%s FSM:%s in state "%s"' % (className, self._name, self.state))
+                _str = ('%s FSM:%s in state "%s"' %
+                        (className, self._name, self.state))
             else:
-                _str = ('%s FSM:%s in transition from \'%s\' to \'%s\'' % (className, self._name, self.oldState, self.newState))
+                _str = ('%s FSM:%s in transition from \'%s\' to \'%s\'' %
+                        (className, self._name, self.oldState, self.newState))
             return _str
         finally:
             self.fsmLock.release()

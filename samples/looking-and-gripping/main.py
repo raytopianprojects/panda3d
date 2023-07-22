@@ -61,7 +61,7 @@ class LookingGrippingDemo(ShowBase):
         self.accept('3', self.switchObject, [2])
         self.accept('4', self.switchObject, [3])
 
-        base.disableMouse()  # Disable mouse-based camera-control
+        base.disable_mouse()  # Disable mouse-based camera-control
         camera.setPos(0, -15, 2)  # Position the camera
 
         self.eve = Actor("models/eve",  # Load our animated charachter

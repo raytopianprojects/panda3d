@@ -2,18 +2,19 @@
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObjectBase import DistributedObjectBase
 
-#from PyDatagram import PyDatagram
-#from PyDatagramIterator import PyDatagramIterator
+# from PyDatagram import PyDatagram
+# from PyDatagramIterator import PyDatagramIterator
 
 # Values for DistributedObjectOV.activeState
 # these should match DistributedObject.ES*
 
-ESNew          = 1
-ESDeleted      = 2
-ESDisabling    = 3
-ESDisabled     = 4  # values here and lower are considered "disabled"
-ESGenerating   = 5  # values here and greater are considered "generated"
-ESGenerated    = 6
+ESNew = 1
+ESDeleted = 2
+ESDisabling = 3
+ESDisabled = 4  # values here and lower are considered "disabled"
+ESGenerating = 5  # values here and greater are considered "generated"
+ESGenerated = 6
+
 
 class DistributedObjectOV(DistributedObjectBase):
     """
@@ -58,7 +59,6 @@ class DistributedObjectOV(DistributedObjectBase):
                     spaces, self.doId, self.parentId, self.zoneId, flagStr))
             except Exception as e:
                 print("%serror printing status %s" % (spaces, e))
-
 
     def getDelayDeleteCount(self):
         # OV objects cannot be delayDeleted
@@ -132,7 +132,7 @@ class DistributedObjectOV(DistributedObjectBase):
         assert self.notify.debugStateCall(self)
         self.activeState = ESGenerating
         # this has already been set at this point
-        #self.cr.storeObjectLocation(self, self.parentId, self.zoneId)
+        # self.cr.storeObjectLocation(self, self.parentId, self.zoneId)
 
     def generateInit(self):
         """
@@ -151,7 +151,6 @@ class DistributedObjectOV(DistributedObjectBase):
         if self.activeState != ESGenerated:
             self.activeState = ESGenerated
             messenger.send(self.uniqueName("generate"), [self])
-
 
     def updateRequiredFields(self, dclass, di):
         dclass.receiveUpdateBroadcastRequired(self, di)
@@ -177,13 +176,14 @@ class DistributedObjectOV(DistributedObjectBase):
     def getCacheable(self):
         return False
 
-    def sendUpdate(self, fieldName, args = [], sendToId = None):
+    def sendUpdate(self, fieldName, args=[], sendToId=None):
         if self.cr:
             dg = self.dclass.clientFormatUpdate(
                 fieldName, sendToId or self.doId, args)
             self.cr.send(dg)
         else:
-            self.notify.warning("sendUpdate failed, because self.cr is not set")
+            self.notify.warning(
+                "sendUpdate failed, because self.cr is not set")
 
     def taskName(self, taskString):
         return ('%s-%s-OV' % (taskString, self.getDoId()))

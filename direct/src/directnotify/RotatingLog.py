@@ -55,9 +55,9 @@ class RotatingLog:
         return 0
 
     def filePath(self):
-        dateString=time.strftime("%Y_%m_%d_%H", time.localtime())
+        dateString = time.strftime("%Y_%m_%d_%H", time.localtime())
         for i in range(26):
-            path="%s_%s_%s.log"%(self.path, dateString, chr(i+97))
+            path = "%s_%s_%s.log" % (self.path, dateString, chr(i+97))
             if not os.path.exists(path) or os.stat(path)[6] < self.sizeLimit:
                 return path
         # Hmm, 26 files are full?  throw the rest in z:
@@ -69,26 +69,26 @@ class RotatingLog:
         Rotate the log now.  You normally shouldn't need to call this.
         See write().
         """
-        path=self.filePath()
-        file=open(path, "a")
+        path = self.filePath()
+        file = open(path, "a")
         if file:
             self.close()
             # This should be redundant with "a" open() mode,
             # but on some platforms tell() will return 0
             # until the first write:
             file.seek(0, 2)
-            self.file=file
+            self.file = file
 
             # Some of these data members may be expected by some of our clients:
             self.closed = self.file.closed
             self.mode = self.file.mode
             self.name = self.file.name
             self.softspace = self.file.softspace
-            #self.encoding = self.file.encoding # Python 2.3
-            #self.newlines = self.file.newlines # Python 2.3, maybe
+            # self.encoding = self.file.encoding # Python 2.3
+            # self.newlines = self.file.newlines # Python 2.3, maybe
 
             if self.timeLimit is not None and time.time() > self.timeLimit:
-                self.timeLimit=time.time()+self.timeInterval
+                self.timeLimit = time.time()+self.timeInterval
         else:
             # We'll keep writing to the old file, if available.
             print("RotatingLog error: Unable to open new log file \"%s\"." % (path,))

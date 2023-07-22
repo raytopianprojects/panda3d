@@ -5,8 +5,9 @@ from direct.distributed.DistributedObjectBase import DistributedObjectBase
 from direct.showbase import PythonUtil
 from panda3d.core import *
 from panda3d.direct import *
-#from PyDatagram import PyDatagram
-#from PyDatagramIterator import PyDatagramIterator
+# from PyDatagram import PyDatagram
+# from PyDatagramIterator import PyDatagramIterator
+
 
 class DistributedObjectUD(DistributedObjectBase):
     notify = directNotify.newCategory("DistributedObjectUD")
@@ -45,7 +46,7 @@ class DistributedObjectUD(DistributedObjectBase):
             self.__generates = 0
 
     # Uncomment if you want to debug DO leaks
-    #def __del__(self):
+    # def __del__(self):
     #    """
     #    For debugging purposes, this just prints out what got deleted
     #    """
@@ -96,12 +97,14 @@ class DistributedObjectUD(DistributedObjectBase):
         """
         self.__generates -= 1
         if self.__generates < 0:
-            self.notify.debug('DistributedObjectUD: delete() called more times than generate()')
+            self.notify.debug(
+                'DistributedObjectUD: delete() called more times than generate()')
         if self.__generates == 0:
             # prevent this code from executing multiple times
             if self.air is not None:
                 # self.doId may not exist.  The __dict__ syntax works around that.
-                assert self.notify.debug('delete(): %s' % (self.__dict__.get("doId")))
+                assert self.notify.debug(
+                    'delete(): %s' % (self.__dict__.get("doId")))
 
                 if not self._DOUD_requestedDelete:
                     # this logs every delete that was not requested by us.
@@ -130,10 +133,10 @@ class DistributedObjectUD(DistributedObjectBase):
 
                 # Asad: As per Roger's suggestion, turn off the following block until a solution is
                 # Thought out of how to prevent this delete message or to handle this message better
-##              if not hasattr(self, "doNotDeallocateChannel"):
-##                  if self.air:
-##                      self.air.deallocateChannel(self.doId)
-##              self.air = None
+# if not hasattr(self, "doNotDeallocateChannel"):
+# if self.air:
+# self.air.deallocateChannel(self.doId)
+# self.air = None
                 self.parentId = None
                 self.zoneId = None
                 self.__generated = False
@@ -264,7 +267,7 @@ class DistributedObjectUD(DistributedObjectBase):
     def getCollTrav(self, *args, **kArgs):
         return self.air.getCollTrav(self.zoneId, *args, **kArgs)
 
-    def sendUpdate(self, fieldName, args = []):
+    def sendUpdate(self, fieldName, args=[]):
         assert self.notify.debugStateCall(self)
         if self.air:
             self.air.sendUpdate(self, fieldName, args)
@@ -321,9 +324,10 @@ class DistributedObjectUD(DistributedObjectBase):
             self.__preallocDoId = 0
 
         # The repository is the one that really does the work
-        self.air.generateWithRequiredAndId(self, doId, parentId, zoneId, optionalFields)
-        ## self.parentId = parentId
-        ## self.zoneId = zoneId
+        self.air.generateWithRequiredAndId(
+            self, doId, parentId, zoneId, optionalFields)
+        # self.parentId = parentId
+        # self.zoneId = zoneId
         self.generate()
         self.announceGenerate()
         self.postGenerateMessage()
@@ -342,13 +346,14 @@ class DistributedObjectUD(DistributedObjectBase):
         else:
             self.doId = doId
         # Put the new DO in the dictionaries
-        self.air.addDOToTables(self, location = (parentId, zoneId))
+        self.air.addDOToTables(self, location=(parentId, zoneId))
         # Send a generate message
-        self.sendGenerateWithRequired(self.air, parentId, zoneId, optionalFields)
+        self.sendGenerateWithRequired(
+            self.air, parentId, zoneId, optionalFields)
 
-        ## assert not hasattr(self, 'parentId') or self.parentId is None
-        ## self.parentId = parentId
-        ## self.zoneId = zoneId
+        # assert not hasattr(self, 'parentId') or self.parentId is None
+        # self.parentId = parentId
+        # self.zoneId = zoneId
         self.generate()
 
     def generate(self):
@@ -378,7 +383,7 @@ class DistributedObjectUD(DistributedObjectBase):
         assert self.notify.debugStateCall(self)
         dg = self.dclass.aiFormatGenerate(
             self, self.doId, parentId, zoneId,
-            #repository.serverId,
+            # repository.serverId,
             self.generateTargetChannel(repository),
             repository.ourChannel,
             optionalFields)
@@ -403,7 +408,8 @@ class DistributedObjectUD(DistributedObjectBase):
             doId = "none"
             if hasattr(self, "doId"):
                 doId = self.doId
-            self.notify.warning("Tried to delete a %s (doId %s) that is already deleted" % (self.__class__, doId))
+            self.notify.warning(
+                "Tried to delete a %s (doId %s) that is already deleted" % (self.__class__, doId))
             return
         self.air.requestDelete(self)
         self._DOUD_requestedDelete = True
@@ -433,12 +439,13 @@ class DistributedObjectUD(DistributedObjectBase):
         # We assume the context number is passed as a uint16.
         self.__nextBarrierContext = (self.__nextBarrierContext + 1) & 0xffff
 
-        assert self.notify.debug('beginBarrier(%s, %s, %s, %s)' % (context, name, avIds, timeout))
+        assert self.notify.debug(
+            'beginBarrier(%s, %s, %s, %s)' % (context, name, avIds, timeout))
 
         if avIds:
             barrier = Barrier.Barrier(
                 name, self.uniqueName(name), avIds, timeout,
-                doneFunc = PythonUtil.Functor(
+                doneFunc=PythonUtil.Functor(
                     self.__barrierCallback, context, callback))
             self.__barriers[context] = barrier
 
@@ -491,7 +498,8 @@ class DistributedObjectUD(DistributedObjectBase):
             del self.__barriers[context]
             callback(avIds)
         else:
-            self.notify.warning("Unexpected completion from barrier %s" % (context))
+            self.notify.warning(
+                "Unexpected completion from barrier %s" % (context))
 
     def isGridParent(self):
         # If this distributed object is a DistributedGrid return 1.  0 by default

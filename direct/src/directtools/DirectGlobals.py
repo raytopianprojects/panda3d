@@ -45,18 +45,19 @@ LE_FRONT_CAM_MASK = BitMask32.bit(1)
 LE_LEFT_CAM_MASK = BitMask32.bit(2)
 LE_PERSP_CAM_MASK = BitMask32.bit(3)
 
-LE_CAM_MASKS = {'persp':LE_PERSP_CAM_MASK,
-                 'left':LE_LEFT_CAM_MASK,
-                 'front':LE_FRONT_CAM_MASK,
-                 'top':LE_TOP_CAM_MASK}
+LE_CAM_MASKS = {'persp': LE_PERSP_CAM_MASK,
+                'left': LE_LEFT_CAM_MASK,
+                'front': LE_FRONT_CAM_MASK,
+                'top': LE_TOP_CAM_MASK}
+
 
 def LE_showInAllCam(nodePath):
     for camName in LE_CAM_MASKS:
         nodePath.show(LE_CAM_MASKS[camName])
+
 
 def LE_showInOneCam(nodePath, thisCamName):
     LE_showInAllCam(nodePath)
     for camName in LE_CAM_MASKS:
         if camName != thisCamName:
             nodePath.hide(LE_CAM_MASKS[camName])
-

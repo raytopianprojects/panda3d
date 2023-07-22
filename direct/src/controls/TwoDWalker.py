@@ -16,13 +16,14 @@ class TwoDWalker(GravityWalker):
     customizable input list.
     """
     notify = directNotify.newCategory("TwoDWalker")
-    wantDebugIndicator = ConfigVariableBool('want-avatar-physics-indicator', False)
+    wantDebugIndicator = ConfigVariableBool(
+        'want-avatar-physics-indicator', False)
     wantFloorSphere = ConfigVariableBool('want-floor-sphere', False)
     earlyEventSphere = ConfigVariableBool('early-event-sphere', False)
 
     # special methods
-    def __init__(self, gravity = -32.1740, standableGround=0.707,
-            hardLandingForce=16.0):
+    def __init__(self, gravity=-32.1740, standableGround=0.707,
+                 hardLandingForce=16.0):
         assert self.notify.debugStateCall(self)
         self.notify.debug('Constructing TwoDWalker')
         GravityWalker.__init__(self)
@@ -43,7 +44,8 @@ class TwoDWalker(GravityWalker):
             self.priorParent = Vec3.zero()
         else:
             if self.isAirborne == 0:
-                assert self.debugPrint("isAirborne 1 due to isOnGround() false")
+                assert self.debugPrint(
+                    "isAirborne 1 due to isOnGround() false")
             self.isAirborne = 1
 
         return Task.cont

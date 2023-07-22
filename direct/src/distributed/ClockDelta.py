@@ -23,7 +23,7 @@ NetworkTimePrecision = 100.0
 
 # These values are derived from the above.
 NetworkTimeMask = (1 << NetworkTimeBits) - 1
-NetworkTimeSignedMask = NetworkTimeMask >> 1 # the max absolute value bits.
+NetworkTimeSignedMask = NetworkTimeMask >> 1  # the max absolute value bits.
 NetworkTimeTopBits = 32 - NetworkTimeBits
 MaxTimeDelta = NetworkTimeSignedMask / NetworkTimePrecision
 
@@ -37,6 +37,7 @@ ClockDriftPerSecond = ClockDriftPerHour / 3600.0
 # How many seconds to insist on waiting before accepting a second
 # resync request from another client.
 P2PResyncDelay = 10.0
+
 
 class ClockDelta(DirectObject.DirectObject):
     """
@@ -110,7 +111,7 @@ class ClockDelta(DirectObject.DirectObject):
         self.lastResync = 0.0
 
     def resynchronize(self, localTime, networkTime, newUncertainty,
-                      trustNew = 1):
+                      trustNew=1):
         """resynchronize(self, float localTime, int32 networkTime,
                          float newUncertainty)
 
@@ -120,9 +121,9 @@ class ClockDelta(DirectObject.DirectObject):
         delta accordingly.
         """
         newDelta = (float(localTime) -
-            (float(networkTime) / NetworkTimePrecision))
+                    (float(networkTime) / NetworkTimePrecision))
         self.newDelta(
-            localTime, newDelta, newUncertainty, trustNew = trustNew)
+            localTime, newDelta, newUncertainty, trustNew=trustNew)
 
     def peerToPeerResync(self, avId, timestamp, serverTime, uncertainty):
         """
@@ -177,12 +178,12 @@ class ClockDelta(DirectObject.DirectObject):
             delta -= elapsed / 2.0
             uncertainty += elapsed / 2.0
 
-            gotSync = self.newDelta(local, delta, uncertainty, trustNew = 0)
+            gotSync = self.newDelta(local, delta, uncertainty, trustNew=0)
 
         return gotSync
 
     def newDelta(self, localTime, newDelta, newUncertainty,
-                 trustNew = 1):
+                 trustNew=1):
         """
         Accepts a new delta and uncertainty pair, understood to
         represent time as of localTime.  Improves our current notion
@@ -232,7 +233,7 @@ class ClockDelta(DirectObject.DirectObject):
 
     ### Primary interface functions ###
 
-    def networkToLocalTime(self, networkTime, now = None, bits = 16,
+    def networkToLocalTime(self, networkTime, now=None, bits=16,
                            ticksPerSec=NetworkTimePrecision):
         """networkToLocalTime(self, int networkTime)
 
@@ -267,7 +268,7 @@ class ClockDelta(DirectObject.DirectObject):
 
         return now + float(diff) / ticksPerSec
 
-    def localToNetworkTime(self, localTime, bits = 16,
+    def localToNetworkTime(self, localTime, bits=16,
                            ticksPerSec=NetworkTimePrecision):
         """localToNetworkTime(self, float localTime)
 
@@ -282,7 +283,6 @@ class ClockDelta(DirectObject.DirectObject):
             # to sign-extend.  32 bits gives us about 227 days of
             # continuous timestamp.
             return ntime
-
 
     ### Convenience functions ###
 

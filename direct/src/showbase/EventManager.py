@@ -10,11 +10,12 @@ from direct.task.TaskManagerGlobal import taskMgr
 from panda3d.core import PStatCollector, EventQueue, EventHandler
 from panda3d.core import ConfigVariableBool
 
+
 class EventManager:
 
     notify = None
 
-    def __init__(self, eventQueue = None):
+    def __init__(self, eventQueue=None):
         """
         Create a C++ event queue and handler
         """
@@ -136,7 +137,8 @@ class EventManager:
             hyphen = name.find('-')
             if hyphen >= 0:
                 name = name[0:hyphen]
-            pstatCollector = PStatCollector('App:Show code:eventManager:' + name)
+            pstatCollector = PStatCollector(
+                'App:Show code:eventManager:' + name)
             pstatCollector.start()
             if self.eventHandler:
                 cppPstatCollector = PStatCollector(

@@ -48,11 +48,11 @@ class World(DirectObject):
         self.inst_u = addInstructions(0.36, 'U : toggle updating the shadow map')
         self.inst_x = addInstructions(0.42, 'Left/Right Arrow : switch camera angles')
 
-        base.setBackgroundColor(0, 0, 0.2, 1)
+        base.set_background_color(0, 0, 0.2, 1)
 
-        base.camLens.setNearFar(1.0, 10000)
-        base.camLens.setFov(75)
-        base.disableMouse()
+        base.cam_lens.setNearFar(1.0, 10000)
+        base.cam_lens.setFov(75)
+        base.disable_mouse()
 
         # Load the scene.
         floorTex = loader.loadTexture('maps/envir-ground.jpg')

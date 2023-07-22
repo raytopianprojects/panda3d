@@ -7,6 +7,7 @@ __all__ = ["InstalledHostData"]
 
 from panda3d.core import URLSpec
 
+
 class InstalledHostData:
     """ A list of instances of this class is returned by
     AppRunner.scanInstalledPackages().  Each of these corresponds to a

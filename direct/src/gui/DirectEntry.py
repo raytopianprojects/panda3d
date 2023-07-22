@@ -18,9 +18,10 @@ import encodings.utf_8
 from direct.showbase.DirectObject import DirectObject
 
 # DirectEntry States:
-ENTRY_FOCUS_STATE    = PGEntry.SFocus      # 0
+ENTRY_FOCUS_STATE = PGEntry.SFocus      # 0
 ENTRY_NO_FOCUS_STATE = PGEntry.SNoFocus    # 1
 ENTRY_INACTIVE_STATE = PGEntry.SInactive   # 2
+
 
 class DirectEntry(DirectFrame):
     """
@@ -35,7 +36,7 @@ class DirectEntry(DirectFrame):
                             "Mac", "St", "Te", "Ten", "Van", "Von", )
     ForceCapNamePrefixes = ("D'", "DeLa", "Dell'", "L'", "M'", "Mc", "O'", )
 
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         # Inherits from DirectFrame
         # A Direct Frame can have:
         # - A background texture (pass in path to image, or Texture Card)
@@ -71,7 +72,7 @@ class DirectEntry(DirectFrame):
             ('extraArgs',      [],                None),
             # Command to be called when enter is hit but we fail to submit
             ('failedCommand',  None,              None),
-            ('failedExtraArgs',[],                None),
+            ('failedExtraArgs', [],                None),
             # commands to be called when focus is gained or lost
             ('focusInCommand', None,              None),
             ('focusInExtraArgs', [],              None),
@@ -83,7 +84,7 @@ class DirectEntry(DirectFrame):
             ('autoCapitalize',  0,                self.autoCapitalizeFunc),
             ('autoCapitalizeAllowPrefixes', DirectEntry.AllowCapNamePrefixes, None),
             ('autoCapitalizeForcePrefixes', DirectEntry.ForceCapNamePrefixes, None),
-            )
+        )
         # Merge keyword options with default options
         self.defineoptions(kw, optiondefs)
 
@@ -99,15 +100,15 @@ class DirectEntry(DirectFrame):
         self.onscreenText = self.createcomponent(
             'text', (), None,
             OnscreenText,
-            (), parent = ShowBaseGlobal.hidden,
+            (), parent=ShowBaseGlobal.hidden,
             # Pass in empty text to avoid extra work, since its really
             # The PGEntry which will use the TextNode to generate geometry
-            text = '',
-            align = TextNode.ALeft,
-            font = font,
-            scale = 1,
+            text='',
+            align=TextNode.ALeft,
+            font=font,
+            scale=1,
             # Don't get rid of the text node
-            mayChange = 1)
+            mayChange=1)
 
         # We can get rid of the node path since we're just using the
         # onscreenText as an easy way to access a text node as a
@@ -201,8 +202,10 @@ class DirectEntry(DirectFrame):
 
     def autoCapitalizeFunc(self):
         if self['autoCapitalize']:
-            self._autoCapListener.accept(self.guiItem.getTypeEvent(), self._handleTyping)
-            self._autoCapListener.accept(self.guiItem.getEraseEvent(), self._handleErasing)
+            self._autoCapListener.accept(
+                self.guiItem.getTypeEvent(), self._handleTyping)
+            self._autoCapListener.accept(
+                self.guiItem.getEraseEvent(), self._handleErasing)
         else:
             self._autoCapListener.ignore(self.guiItem.getTypeEvent())
             self._autoCapListener.ignore(self.guiItem.getEraseEvent())
@@ -216,6 +219,7 @@ class DirectEntry(DirectFrame):
 
     def _handleTyping(self, guiEvent):
         self._autoCapitalize()
+
     def _handleErasing(self, guiEvent):
         self._autoCapitalize()
 
@@ -285,7 +289,7 @@ class DirectEntry(DirectFrame):
             else:
                 self.guiItem.setText(text)
 
-    def get(self, plain = False):
+    def get(self, plain=False):
         """ Returns the text currently showing in the typable region.
         If plain is True, the returned text will not include any
         formatting characters like nested color-change codes. """
@@ -313,7 +317,8 @@ class DirectEntry(DirectFrame):
 
     def setCursorPosition(self, pos):
         if (pos < 0):
-            self.guiItem.setCursorPosition(self.guiItem.getNumCharacters() + pos)
+            self.guiItem.setCursorPosition(
+                self.guiItem.getNumCharacters() + pos)
         else:
             self.guiItem.setCursorPosition(pos)
 
@@ -328,7 +333,7 @@ class DirectEntry(DirectFrame):
     def getFont(self):
         return self.onscreenText.getFont()
 
-    def getBounds(self, state = 0):
+    def getBounds(self, state=0):
         # Compute the width and height for the entry itself, ignoring
         # geometry etc.
         tn = self.onscreenText.textNode
@@ -359,17 +364,17 @@ class DirectEntry(DirectFrame):
         vec_right = Vec3.right()
         vec_up = Vec3.up()
         left = (vec_right[0] * self.ll[0]
-              + vec_right[1] * self.ll[1]
-              + vec_right[2] * self.ll[2])
+                + vec_right[1] * self.ll[1]
+                + vec_right[2] * self.ll[2])
         right = (vec_right[0] * self.ur[0]
-               + vec_right[1] * self.ur[1]
-               + vec_right[2] * self.ur[2])
+                 + vec_right[1] * self.ur[1]
+                 + vec_right[2] * self.ur[2])
         bottom = (vec_up[0] * self.ll[0]
-                + vec_up[1] * self.ll[1]
-                + vec_up[2] * self.ll[2])
+                  + vec_up[1] * self.ll[1]
+                  + vec_up[2] * self.ll[2])
         top = (vec_up[0] * self.ur[0]
-             + vec_up[1] * self.ur[1]
-             + vec_up[2] * self.ur[2])
+               + vec_up[1] * self.ur[1]
+               + vec_up[2] * self.ur[2])
         self.ll = Point3(left, 0.0, bottom)
         self.ur = Point3(right, 0.0, top)
 

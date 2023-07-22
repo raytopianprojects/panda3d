@@ -2,7 +2,7 @@ from __future__ import print_function
 from panda3d.core import TrueClock
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.showbase.PythonUtil import (
-    StdoutCapture, _installProfileCustomFuncs,_removeProfileCustomFuncs,
+    StdoutCapture, _installProfileCustomFuncs, _removeProfileCustomFuncs,
     _getProfileResultFileInfo, _setProfileResultsFileInfo)
 import profile
 import pstats
@@ -30,7 +30,8 @@ class PercentStats(pstats.Stats):
     def print_stats(self, *amount):
         for filename in self.files:
             print(filename)
-        if self.files: print()
+        if self.files:
+            print()
         indent = ' ' * 8
         for func in self.top_level:
             print(indent, pstats.func_get_function_name(func))
@@ -39,10 +40,11 @@ class PercentStats(pstats.Stats):
         if self.total_calls != self.prim_calls:
             print("(%d primitive calls)" % self.prim_calls, end=' ')
         # DCR
-        #print "in %.3f CPU seconds" % self.total_tt
+        # print "in %.3f CPU seconds" % self.total_tt
         print("in %s CPU milliseconds" % (self.total_tt * 1000.))
         if self._totalTime != self.total_tt:
-            print(indent, 'percentages are of %s CPU milliseconds' % (self._totalTime * 1000))
+            print(indent, 'percentages are of %s CPU milliseconds' %
+                  (self._totalTime * 1000))
         print()
         width, list = self.get_print_list(amount)
         if list:
@@ -51,7 +53,7 @@ class PercentStats(pstats.Stats):
                 self.print_line(func)
             print()
             # DCR
-            #print
+            # print
         return self
 
     def f8(self, x):
@@ -61,7 +63,7 @@ class PercentStats(pstats.Stats):
         return "%7.2f%%" % ((x*100.) / self._totalTime)
 
     @staticmethod
-    def func_std_string(func_name): # match what old profile produced
+    def func_std_string(func_name):  # match what old profile produced
         return "%s:%d(%s)" % func_name
 
     def print_line(self, func):
@@ -83,8 +85,9 @@ class PercentStats(pstats.Stats):
         else:
             print(f8(ct/cc), end=' ')
         # DCR
-        #print func_std_string(func)
+        # print func_std_string(func)
         print(PercentStats.func_std_string(func))
+
 
 class ProfileSession:
     # class that encapsulates a profile of a single callable using Python's standard
@@ -122,6 +125,7 @@ class ProfileSession:
 
     def acquire(self):
         self._refCount += 1
+
     def release(self):
         self._refCount -= 1
         if not self._refCount:
@@ -244,43 +248,52 @@ class ProfileSession:
 
     def setName(self, name):
         self._name = name
+
     def getName(self):
         return self._name
 
     def setFunc(self, func):
         self._func = func
+
     def getFunc(self):
         return self._func
 
     def setAggregate(self, aggregate):
         self._aggregate = aggregate
+
     def getAggregate(self):
         return self._aggregate
 
     def setLogAfterProfile(self, logAfterProfile):
         self._logAfterProfile = logAfterProfile
+
     def getLogAfterProfile(self):
         return self._logAfterProfile
 
     def setLines(self, lines):
         self._lines = lines
+
     def getLines(self):
         return self._lines
 
     def setSorts(self, sorts):
         self._sorts = sorts
+
     def getSorts(self):
         return self._sorts
 
     def setShowCallInfo(self, showCallInfo):
         self._showCallInfo = showCallInfo
+
     def getShowCallInfo(self):
         return self._showCallInfo
 
     def setTotalTime(self, totalTime=None):
         self._totalTime = totalTime
+
     def resetTotalTime(self):
         self._totalTime = None
+
     def getTotalTime(self):
         return self._totalTime
 
@@ -373,4 +386,3 @@ class ProfileSession:
                 self._resultCache[k] = output
 
         return output
-

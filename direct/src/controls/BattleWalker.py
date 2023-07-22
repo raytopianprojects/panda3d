@@ -6,13 +6,16 @@ from . import GravityWalker
 
 BattleStrafe = 0
 
+
 def ToggleStrafe():
     global BattleStrafe
     BattleStrafe = not BattleStrafe
 
+
 def SetStrafe(status):
     global BattleStrafe
     BattleStrafe = status
+
 
 class BattleWalker(GravityWalker.GravityWalker):
     def __init__(self):
@@ -43,21 +46,21 @@ class BattleWalker(GravityWalker.GravityWalker):
             reverse = 0
 
         # Determine what the speeds are based on the buttons:
-        self.speed=(forward and self.avatarControlForwardSpeed or
-                    reverse and -self.avatarControlReverseSpeed)
+        self.speed = (forward and self.avatarControlForwardSpeed or
+                      reverse and -self.avatarControlReverseSpeed)
         # Slide speed is a scaled down version of forward speed
-        self.slideSpeed=(slideLeft and -self.avatarControlForwardSpeed or
-                         slideRight and self.avatarControlForwardSpeed) * 0.5
-        self.rotationSpeed=not (slideLeft or slideRight) and (
-                (turnLeft and self.avatarControlRotateSpeed) or
-                (turnRight and -self.avatarControlRotateSpeed))
+        self.slideSpeed = (slideLeft and -self.avatarControlForwardSpeed or
+                           slideRight and self.avatarControlForwardSpeed) * 0.5
+        self.rotationSpeed = not (slideLeft or slideRight) and (
+            (turnLeft and self.avatarControlRotateSpeed) or
+            (turnRight and -self.avatarControlRotateSpeed))
 
         debugRunning = inputState.isSet("debugRunning")
 
-        if(debugRunning):
-            self.speed*=base.debugRunningMultiplier
-            self.slideSpeed*=base.debugRunningMultiplier
-            self.rotationSpeed*=1.25
+        if (debugRunning):
+            self.speed *= base.debugRunningMultiplier
+            self.slideSpeed *= base.debugRunningMultiplier
+            self.rotationSpeed *= 1.25
 
         if self.needToDeltaPos:
             self.setPriorParentVector()
@@ -88,16 +91,18 @@ class BattleWalker(GravityWalker.GravityWalker):
                 assert self.debugPrint("isAirborne 1 due to jump")
         else:
             if self.isAirborne == 0:
-                assert self.debugPrint("isAirborne 1 due to isOnGround() false")
+                assert self.debugPrint(
+                    "isAirborne 1 due to isOnGround() false")
             self.isAirborne = 1
 
         self.__oldPosDelta = self.avatarNodePath.getPosDelta(render)
         # How far did we move based on the amount of time elapsed?
         self.__oldDt = ClockObject.getGlobalClock().getDt()
-        dt=self.__oldDt
+        dt = self.__oldDt
 
         # Check to see if we're moving at all:
-        self.moving = self.speed or self.slideSpeed or self.rotationSpeed or (self.priorParent!=Vec3.zero())
+        self.moving = self.speed or self.slideSpeed or self.rotationSpeed or (
+            self.priorParent != Vec3.zero())
         if self.moving:
             distance = dt * self.speed
             slideDistance = dt * self.slideSpeed
@@ -107,7 +112,8 @@ class BattleWalker(GravityWalker.GravityWalker):
             if distance or slideDistance or self.priorParent != Vec3.zero():
                 # rotMat is the rotation matrix corresponding to
                 # our previous heading.
-                rotMat=Mat3.rotateMatNormaxis(self.avatarNodePath.getH(), Vec3.up())
+                rotMat = Mat3.rotateMatNormaxis(
+                    self.avatarNodePath.getH(), Vec3.up())
                 if self.isAirborne:
                     forward = Vec3.forward()
                 else:
@@ -120,7 +126,7 @@ class BattleWalker(GravityWalker.GravityWalker):
                     # the slope (i.e. it is multiplied by the sign as a
                     # side effect of the cross product above).
                     forward.normalize()
-                self.vel=Vec3(forward * distance)
+                self.vel = Vec3(forward * distance)
                 if slideDistance:
                     if self.isAirborne:
                         right = Vec3.right()
@@ -128,11 +134,11 @@ class BattleWalker(GravityWalker.GravityWalker):
                         right = forward.cross(contact)
                         # See note above for forward.normalize()
                         right.normalize()
-                    self.vel=Vec3(self.vel + (right * slideDistance))
-                self.vel=Vec3(rotMat.xform(self.vel))
-                step=self.vel + (self.priorParent * dt)
+                    self.vel = Vec3(self.vel + (right * slideDistance))
+                self.vel = Vec3(rotMat.xform(self.vel))
+                step = self.vel + (self.priorParent * dt)
                 self.avatarNodePath.setFluidPos(Point3(
-                        self.avatarNodePath.getPos()+step))
+                    self.avatarNodePath.getPos()+step))
             self.avatarNodePath.setH(self.avatarNodePath.getH()+rotation)
         else:
             self.vel.set(0.0, 0.0, 0.0)
@@ -159,22 +165,22 @@ class BattleWalker(GravityWalker.GravityWalker):
             slide = inputState.isSet("slide")
             jump = inputState.isSet("jump")
             # Determine what the speeds are based on the buttons:
-            self.advanceSpeed=(forward and self.avatarControlForwardSpeed or
-                               reverse and -self.avatarControlReverseSpeed)
-            if run and self.advanceSpeed>0.0:
-                self.advanceSpeed*=2.0 #*#
+            self.advanceSpeed = (forward and self.avatarControlForwardSpeed or
+                                 reverse and -self.avatarControlReverseSpeed)
+            if run and self.advanceSpeed > 0.0:
+                self.advanceSpeed *= 2.0  # *#
             # Should fSlide be renamed slideButton?
-            self.slideSpeed=.15*(turnLeft and -self.avatarControlForwardSpeed or
-                                 turnRight and self.avatarControlForwardSpeed)
+            self.slideSpeed = .15*(turnLeft and -self.avatarControlForwardSpeed or
+                                   turnRight and self.avatarControlForwardSpeed)
             print('slideSpeed: %s' % self.slideSpeed)
-            self.rotationSpeed=0
-            self.speed=0
+            self.rotationSpeed = 0
+            self.speed = 0
 
             debugRunning = inputState.isSet("debugRunning")
             if debugRunning:
-                self.advanceSpeed*=4.0
-                self.slideSpeed*=4.0
-                self.rotationSpeed*=1.25
+                self.advanceSpeed *= 4.0
+                self.slideSpeed *= 4.0
+                self.rotationSpeed *= 1.25
 
             if self.needToDeltaPos:
                 self.setPriorParentVector()
@@ -184,7 +190,8 @@ class BattleWalker(GravityWalker.GravityWalker):
             if self.lifter.isOnGround():
                 if self.isAirborne:
                     self.isAirborne = 0
-                    assert self.debugPrint("isAirborne 0 due to isOnGround() true")
+                    assert self.debugPrint(
+                        "isAirborne 0 due to isOnGround() true")
                     impact = self.lifter.getImpactVelocity()
                     if impact < -30.0:
                         messenger.send("jumpHardLand")
@@ -205,13 +212,14 @@ class BattleWalker(GravityWalker.GravityWalker):
                     assert self.debugPrint("isAirborne 1 due to jump")
             else:
                 if self.isAirborne == 0:
-                    assert self.debugPrint("isAirborne 1 due to isOnGround() false")
+                    assert self.debugPrint(
+                        "isAirborne 1 due to isOnGround() false")
                 self.isAirborne = 1
 
             self.__oldPosDelta = self.avatarNodePath.getPosDelta(render)
             # How far did we move based on the amount of time elapsed?
             self.__oldDt = ClockObject.getGlobalClock().getDt()
-            dt=self.__oldDt
+            dt = self.__oldDt
 
             # Before we do anything with position or orientation, make the avatar
             # face it's target.  Only allow rMax degrees rotation per frame, so
@@ -223,13 +231,14 @@ class BattleWalker(GravityWalker.GravityWalker):
             rMax = 10
             if delH < -rMax:
                 self.avatarNodePath.setH(curH-rMax)
-                self.rotationSpeed=-self.avatarControlRotateSpeed
+                self.rotationSpeed = -self.avatarControlRotateSpeed
             elif delH > rMax:
                 self.avatarNodePath.setH(curH+rMax)
-                self.rotationSpeed=self.avatarControlRotateSpeed
+                self.rotationSpeed = self.avatarControlRotateSpeed
 
             # Check to see if we're moving at all:
-            self.moving = self.speed or self.slideSpeed or self.rotationSpeed or (self.priorParent!=Vec3.zero())
+            self.moving = self.speed or self.slideSpeed or self.rotationSpeed or (
+                self.priorParent != Vec3.zero())
             if self.moving:
                 distance = dt * self.speed
                 slideDistance = dt * self.slideSpeed
@@ -237,16 +246,17 @@ class BattleWalker(GravityWalker.GravityWalker):
                 rotation = dt * self.rotationSpeed
 
                 # Take a step in the direction of our previous heading.
-                self.vel=Vec3(Vec3.forward() * distance +
-                              Vec3.right() * slideDistance)
+                self.vel = Vec3(Vec3.forward() * distance +
+                                Vec3.right() * slideDistance)
                 if self.vel != Vec3.zero() or self.priorParent != Vec3.zero():
                     if 1:
                         # rotMat is the rotation matrix corresponding to
                         # our previous heading.
-                        rotMat=Mat3.rotateMatNormaxis(self.avatarNodePath.getH(), Vec3.up())
-                        step=(self.priorParent * dt) + rotMat.xform(self.vel)
+                        rotMat = Mat3.rotateMatNormaxis(
+                            self.avatarNodePath.getH(), Vec3.up())
+                        step = (self.priorParent * dt) + rotMat.xform(self.vel)
                         self.avatarNodePath.setFluidPos(Point3(
-                                self.avatarNodePath.getPos()+step))
+                            self.avatarNodePath.getPos()+step))
                 self.avatarNodePath.setH(self.avatarNodePath.getH()+rotation)
             else:
                 self.vel.set(0.0, 0.0, 0.0)
@@ -284,5 +294,3 @@ class BattleWalker(GravityWalker.GravityWalker):
             if self.moving or jump:
                 messenger.send("avatarMoving")
             return Task.cont
-
-

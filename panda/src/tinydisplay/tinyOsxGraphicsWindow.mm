@@ -995,7 +995,7 @@ bool TinyOsxGraphicsWindow::OSOpenWindow(WindowProperties &req_properties) {
 
       // [childWindow setFrameOrigin:origin]; [childWindow
       // setAcceptsMouseMovedEvents:YES]; [childWindow
-      // setBackgroundColor:[NSColor blackColor]]; this seems to block till
+      // set_background_color:[NSColor blackColor]]; this seems to block till
       // the parent accepts the connection ? [parentWindow
       // addChildWindow:childWindow ordered:NSWindowAbove]; [childWindow
       // orderFront:nil];

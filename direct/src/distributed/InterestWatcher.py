@@ -2,6 +2,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.showbase.DirectObject import DirectObject
 from direct.showbase.EventGroup import EventGroup
 
+
 class InterestWatcher(DirectObject):
     """Object that observes all interests adds/removes over a period of time,
     and sends out an event when all of those interests have closed"""
@@ -27,8 +28,10 @@ class InterestWatcher(DirectObject):
     def startCollect(self, mustCollect=False):
         self._mustCollect = mustCollect
 
-        self.accept(self._interestMgr._getAddInterestEvent(), self._handleInterestOpenEvent)
-        self.accept(self._interestMgr._getRemoveInterestEvent(), self._handleInterestCloseEvent)
+        self.accept(self._interestMgr._getAddInterestEvent(),
+                    self._handleInterestOpenEvent)
+        self.accept(self._interestMgr._getRemoveInterestEvent(),
+                    self._handleInterestCloseEvent)
 
     def stopCollect(self):
         self.ignore(self._interestMgr._getAddInterestEvent())
@@ -57,12 +60,14 @@ class InterestWatcher(DirectObject):
 
     def getName(self):
         return self._eGroup.getName()
+
     def getDoneEvent(self):
         return self._doneEvent
 
     def _handleInterestOpenEvent(self, event):
         self._gotEvent = True
         self._eGroup.addEvent(event)
+
     def _handleInterestCloseEvent(self, event, parentId, zoneIdList):
         self._gotEvent = True
         self._eGroup.addEvent(event)

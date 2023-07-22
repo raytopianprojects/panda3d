@@ -24,13 +24,15 @@ from direct.showbase.TkGlobal import *
 from panda3d.core import *
 
 # Initialize icon directory
-ICONDIR = ConfigVariableSearchPath('model-path').findFile(Filename('icons')).toOsSpecific()
+ICONDIR = ConfigVariableSearchPath(
+    'model-path').findFile(Filename('icons')).toOsSpecific()
 if not os.path.isdir(ICONDIR):
     raise RuntimeError("can't find DIRECT icon directory (%s)" % repr(ICONDIR))
 
+
 class TreeNode:
 
-    def __init__(self, canvas, parent, item, menuList = []):
+    def __init__(self, canvas, parent, item, menuList=[]):
         self.canvas = canvas
         self.parent = parent
         self.item = item
@@ -39,7 +41,7 @@ class TreeNode:
         self.children = {}
         self.kidKeys = []
         self.x = self.y = None
-        self.iconimages = {} # cache of PhotoImage instances for icons
+        self.iconimages = {}  # cache of PhotoImage instances for icons
         self.menuList = menuList
         if self.menuList:
             if self.menuList[-1] == 'Separator':
@@ -47,10 +49,10 @@ class TreeNode:
         self.menuVar = IntVar()
         self.menuVar.set(0)
         self._popupMenu = None
-        self.fSortChildren = False # [gjeon] flag for sorting children or not
-        self.fModeChildrenTag = 0 # [gjeon] flag for using filter or not
-        self.childrenTag = None # [gjeon] filter dictionary for
-        self.setAsTarget = 0 # [gjeon] to visualize reparent target
+        self.fSortChildren = False  # [gjeon] flag for sorting children or not
+        self.fModeChildrenTag = 0  # [gjeon] flag for using filter or not
+        self.childrenTag = None  # [gjeon] filter dictionary for
+        self.setAsTarget = 0  # [gjeon] to visualize reparent target
 
     # [gjeon] to set fSortChildren
     def setFSortChildren(self, fSortChildren):
@@ -122,18 +124,18 @@ class TreeNode:
 
     def createPopupMenu(self):
         if self.menuList:
-            self._popupMenu = Menu(self.canvas, tearoff = 0)
+            self._popupMenu = Menu(self.canvas, tearoff=0)
             for i in range(len(self.menuList)):
                 item = self.menuList[i]
                 if item == 'Separator':
                     self._popupMenu.add_separator()
                 else:
                     self._popupMenu.add_radiobutton(
-                        label = item,
-                        variable = self.menuVar,
-                        value = i,
-                        indicatoron = 0,
-                        command = self.popupMenuCommand)
+                        label=item,
+                        variable=self.menuVar,
+                        value=i,
+                        indicatoron=0,
+                        command=self.popupMenuCommand)
 
     def popupMenu(self, event=None):
         if not self._popupMenu:
@@ -207,7 +209,7 @@ class TreeNode:
             return self
 
     # [gjeon] function to expand or collapse all the tree nodes
-    def updateAll(self, fMode, depth = 0, fUseCachedChildren = 1):
+    def updateAll(self, fMode, depth=0, fUseCachedChildren=1):
         depth = depth + 1
         if not self.item.IsExpandable():
             return
@@ -234,7 +236,7 @@ class TreeNode:
         # Remove unused children
         for key in list(self.children.keys()):
             if key not in self.kidKeys:
-                del(self.children[key])
+                del (self.children[key])
 
         for key in self.kidKeys:
             child = self.children[key]
@@ -245,9 +247,9 @@ class TreeNode:
             self.update()
             self.view()
 
-    def update(self, fUseCachedChildren = 1, fExpandMode = 0):
+    def update(self, fUseCachedChildren=1, fExpandMode=0):
         if self.parent:
-            self.parent.update(fUseCachedChildren, fExpandMode = fExpandMode)
+            self.parent.update(fUseCachedChildren, fExpandMode=fExpandMode)
         else:
             oldcursor = self.canvas['cursor']
             self.canvas['cursor'] = "watch"
@@ -258,7 +260,7 @@ class TreeNode:
             self.canvas.configure(scrollregion=(0, 0, x1, y1))
             self.canvas['cursor'] = oldcursor
 
-    def draw(self, x, y, fUseCachedChildren = 1):
+    def draw(self, x, y, fUseCachedChildren=1):
         # XXX This hard-codes too many geometry constants!
         self.x, self.y = x, y
         self.drawicon()
@@ -282,7 +284,7 @@ class TreeNode:
                     return 1
                 elif (textX == textY):
                     return 0
-                else: # textX < textY
+                else:  # textX < textY
                     return -1
             sublist.sort(compareText)
         for item in sublist:
@@ -312,7 +314,7 @@ class TreeNode:
         # Remove unused children
         for key in list(self.children.keys()):
             if key not in self.kidKeys:
-                del(self.children[key])
+                del (self.children[key])
         cx = x+20
         cy = y+17
         cylast = 0
@@ -334,9 +336,9 @@ class TreeNode:
                 self.canvas.tag_bind(id, "<1>", callback)
                 self.canvas.tag_bind(id, "<Double-1>", lambda x: None)
         id = self.canvas.create_line(x+9, y+10, x+9, cylast+7,
-            ##stipple="gray50",     # XXX Seems broken in Tk 8.0.x
-            fill="gray50")
-        self.canvas.tag_lower(id) # XXX .lower(id) before Python 1.5.2
+                                     # stipple="gray50",     # XXX Seems broken in Tk 8.0.x
+                                     fill="gray50")
+        self.canvas.tag_lower(id)  # XXX .lower(id) before Python 1.5.2
         return cy
 
     def drawicon(self):
@@ -465,6 +467,7 @@ class TreeNode:
         # Not here
         return None
 
+
 class TreeItem:
 
     """Abstract class representing tree items.
@@ -520,6 +523,3 @@ class TreeItem:
 
     def OnSelect(self):
         """Called when item selected."""
-
-
-

@@ -26,7 +26,7 @@ class PyDatagramIterator(DatagramIterator):
         STString: DatagramIterator.getString,
         STBlob: DatagramIterator.getBlob,
         STBlob32: DatagramIterator.getBlob32,
-        }
+    }
 
     getChannel = DatagramIterator.getUint64
 
@@ -76,7 +76,8 @@ class PyDatagramIterator(DatagramIterator):
                     b = self.getUint8()
                     retVal.append((a, b))
             else:
-                raise Exception("Error: No such type as: " + str(subatomicType))
+                raise Exception("Error: No such type as: " +
+                                str(subatomicType))
         else:
             # See if it is in the handy dict
             getFunc = self.FuncDict.get(subatomicType)
@@ -120,6 +121,7 @@ class PyDatagramIterator(DatagramIterator):
                     b = self.getUint8()
                     retVal.append((a / float(divisor), b / float(divisor)))
             else:
-                raise Exception("Error: No such type as: " + str(subatomicType))
+                raise Exception("Error: No such type as: " +
+                                str(subatomicType))
 
         return retVal

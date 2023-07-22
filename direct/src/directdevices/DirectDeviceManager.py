@@ -11,7 +11,7 @@ ANALOG_CENTER = 0.0
 
 
 class DirectDeviceManager(VrpnClient, DirectObject):
-    def __init__(self, server = None):
+    def __init__(self, server=None):
 
         # Determine which server to use
         if server != None:
@@ -19,7 +19,8 @@ class DirectDeviceManager(VrpnClient, DirectObject):
             self.server = server
         else:
             # Check config file, if that fails, use default
-            self.server = ConfigVariableString('vrpn-server', 'spacedyne').getValue()
+            self.server = ConfigVariableString(
+                'vrpn-server', 'spacedyne').getValue()
 
         # Create a vrpn client
         VrpnClient.__init__(self, self.server)
@@ -39,8 +40,10 @@ class DirectDeviceManager(VrpnClient, DirectObject):
     def createTimecodeReader(self, device):
         return DirectTimecodeReader(self, device)
 
+
 class DirectButtons(ButtonNode, DirectObject):
     buttonCount = 0
+
     def __init__(self, vrpnClient, device):
         # Keep track of number of buttons created
         DirectButtons.buttonCount += 1
@@ -54,7 +57,7 @@ class DirectButtons(ButtonNode, DirectObject):
             self._base = base
         except:
             self._base = simbase
-        self.nodePath = self._base.dataRoot.attachNewNode(self)
+        self.nodePath = self._base.data_root.attachNewNode(self)
 
     def __getitem__(self, index):
         if (index < 0) or (index >= self.getNumButtons()):
@@ -65,7 +68,7 @@ class DirectButtons(ButtonNode, DirectObject):
         return self.getNumButtons()
 
     def enable(self):
-        self.nodePath.reparentTo(self._base.dataRoot)
+        self.nodePath.reparentTo(self._base.data_root)
 
     def disable(self):
         self.nodePath.reparentTo(self._base.dataUnused)
@@ -82,10 +85,12 @@ class DirectButtons(ButtonNode, DirectObject):
             str = str + '%d' % val + ' '
         return str
 
+
 class DirectAnalogs(AnalogNode, DirectObject):
     analogCount = 0
 
-    _analogDeadband = ConfigVariableDouble('vrpn-analog-deadband', ANALOG_DEADBAND)
+    _analogDeadband = ConfigVariableDouble(
+        'vrpn-analog-deadband', ANALOG_DEADBAND)
     _analogMin = ConfigVariableDouble('vrpn-analog-min', ANALOG_MIN)
     _analogMax = ConfigVariableDouble('vrpn-analog-max', ANALOG_MAX)
     _analogCenter = ConfigVariableDouble('vrpn-analog-center', ANALOG_CENTER)
@@ -103,7 +108,7 @@ class DirectAnalogs(AnalogNode, DirectObject):
             self._base = base
         except:
             self._base = simbase
-        self.nodePath = self._base.dataRoot.attachNewNode(self)
+        self.nodePath = self._base.data_root.attachNewNode(self)
 
         # See if any of the general analog parameters are dconfig'd
         self.analogDeadband = self._analogDeadband.getValue()
@@ -121,12 +126,12 @@ class DirectAnalogs(AnalogNode, DirectObject):
         return self.getNumControls()
 
     def enable(self):
-        self.nodePath.reparentTo(self._base.dataRoot)
+        self.nodePath.reparentTo(self._base.data_root)
 
     def disable(self):
         self.nodePath.reparentTo(self._base.dataUnused)
 
-    def normalizeWithoutCentering(self, val, minVal = -1, maxVal = 1):
+    def normalizeWithoutCentering(self, val, minVal=-1, maxVal=1):
         #
         # This is the old code that doesn't incorporate the centering fix
         #
@@ -143,8 +148,7 @@ class DirectAnalogs(AnalogNode, DirectObject):
         return (((maxVal - minVal) *
                  ((val - self.analogMin) / float(self.analogRange))) + minVal)
 
-
-    def normalize(self, rawValue, minVal = -1, maxVal = 1, sf = 1.0):
+    def normalize(self, rawValue, minVal=-1, maxVal=1, sf=1.0):
         aMax = self.analogMax
         aMin = self.analogMin
         center = self.analogCenter
@@ -157,17 +161,17 @@ class DirectAnalogs(AnalogNode, DirectObject):
         if (rawValue >= center):
             # Convert positive values to range 0 to 1
             val = min(rawValue * sf, aMax)
-            percentVal = ((val - (center + deadband))/
+            percentVal = ((val - (center + deadband)) /
                           float(aMax - (center + deadband)))
         else:
             # Convert negative values to range -1 to 0
             val = max(rawValue * sf, aMin)
-            percentVal = -((val - (center - deadband))/
+            percentVal = -((val - (center - deadband)) /
                            float(aMin - (center - deadband)))
         # Normalize values to given minVal and maxVal range
         return (((maxVal - minVal) * ((percentVal + 1)/2.0)) + minVal)
 
-    def normalizeChannel(self, chan, minVal = -1, maxVal = 1, sf = 1.0):
+    def normalizeChannel(self, chan, minVal=-1, maxVal=1, sf=1.0):
         try:
             return self.normalize(self[chan], minVal, maxVal, sf)
         except IndexError:
@@ -185,8 +189,10 @@ class DirectAnalogs(AnalogNode, DirectObject):
             str = str + '%.3f' % val + ' '
         return str
 
+
 class DirectTracker(TrackerNode, DirectObject):
     trackerCount = 0
+
     def __init__(self, vrpnClient, device):
         # Keep track of number of trackers created
         DirectTracker.trackerCount += 1
@@ -200,10 +206,10 @@ class DirectTracker(TrackerNode, DirectObject):
             self._base = base
         except:
             self._base = simbase
-        self.nodePath = self._base.dataRoot.attachNewNode(self)
+        self.nodePath = self._base.data_root.attachNewNode(self)
 
     def enable(self):
-        self.nodePath.reparentTo(self._base.dataRoot)
+        self.nodePath.reparentTo(self._base.data_root)
 
     def disable(self):
         self.nodePath.reparentTo(self._base.dataUnused)
@@ -217,8 +223,10 @@ class DirectTracker(TrackerNode, DirectObject):
     def __repr__(self):
         return self.name
 
+
 class DirectDials(DialNode, DirectObject):
     dialCount = 0
+
     def __init__(self, vrpnClient, device):
         # Keep track of number of dials created
         DirectDials.dialCount += 1
@@ -232,7 +240,7 @@ class DirectDials(DialNode, DirectObject):
             self._base = base
         except:
             self._base = simbase
-        self.nodePath = self._base.dataRoot.attachNewNode(self)
+        self.nodePath = self._base.data_root.attachNewNode(self)
 
     def __getitem__(self, index):
         """
@@ -245,7 +253,7 @@ class DirectDials(DialNode, DirectObject):
         return self.getNumDials()
 
     def enable(self):
-        self.nodePath.reparentTo(self._base.dataRoot)
+        self.nodePath.reparentTo(self._base.data_root)
 
     def disable(self):
         self.nodePath.reparentTo(self._base.dataUnused)
@@ -262,8 +270,10 @@ class DirectDials(DialNode, DirectObject):
             str = str + '%.3f' % self[i] + ' '
         return str
 
+
 class DirectTimecodeReader(AnalogNode, DirectObject):
     timecodeReaderCount = 0
+
     def __init__(self, vrpnClient, device):
         # Keep track of number of timecodeReader created
         DirectTimecodeReader.timecodeReaderCount += 1
@@ -283,10 +293,10 @@ class DirectTimecodeReader(AnalogNode, DirectObject):
             self._base = base
         except:
             self._base = simbase
-        self.nodePath = self._base.dataRoot.attachNewNode(self)
+        self.nodePath = self._base.data_root.attachNewNode(self)
 
     def enable(self):
-        self.nodePath.reparentTo(self._base.dataRoot)
+        self.nodePath.reparentTo(self._base.data_root)
 
     def disable(self):
         self.nodePath.reparentTo(self._base.dataUnused)

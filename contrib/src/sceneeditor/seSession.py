@@ -327,7 +327,7 @@ class SeSession(DirectObject):  ### Customized DirectSession
                 messenger.send('shift-f')
         elif input == 'b':
             messenger.send('SEditor-ToggleBackface')
-            base.toggleBackface()
+            base.toggle_backface()
         #elif input == 'control-f':
         #    self.flash(last)
         elif input == 'shift-l':
@@ -350,12 +350,12 @@ class SeSession(DirectObject):  ### Customized DirectSession
                 self.select(self.selected.last)
         elif input == 't':
             messenger.send('SEditor-ToggleTexture')
-            base.toggleTexture()
+            base.toggle_texture()
         elif input == 'shift-a':
             self.selected.toggleVisAll()
         elif input == 'w':
             messenger.send('SEditor-ToggleWireframe')
-            base.toggleWireframe()
+            base.toggle_wireframe()
         elif (input == '[') or (input == '{'):
             self.undo()
         elif (input == ']') or (input == '}'):
@@ -897,8 +897,8 @@ class DisplayRegionList(DirectObject):
                 # a display region for each real display region, and then
                 # keep track of which are currently active (e.g. use a flag)
                 # processing only them.
-                for camIndex in range(len(base.camList)):
-                    cam = base.camList[camIndex]
+                for camIndex in range(len(base.cam_list)):
+                    cam = base.cam_list[camIndex]
                     if cam.getName()=='<noname>':
                         cam.setName('Camera%d' % camIndex)
                     drc = DisplayRegionContext(cam)

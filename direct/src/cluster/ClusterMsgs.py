@@ -8,21 +8,21 @@ from direct.distributed.PyDatagram import PyDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator
 import time
 
-#these are the types of messages that are currently supported.
-CLUSTER_NONE                  = 0
-CLUSTER_CAM_OFFSET            = 1
-CLUSTER_CAM_FRUSTUM           = 2
-CLUSTER_CAM_MOVEMENT          = 3
-CLUSTER_SWAP_READY            = 4
-CLUSTER_SWAP_NOW              = 5
-CLUSTER_COMMAND_STRING        = 6
-CLUSTER_SELECTED_MOVEMENT     = 7
-CLUSTER_TIME_DATA             = 8
+# these are the types of messages that are currently supported.
+CLUSTER_NONE = 0
+CLUSTER_CAM_OFFSET = 1
+CLUSTER_CAM_FRUSTUM = 2
+CLUSTER_CAM_MOVEMENT = 3
+CLUSTER_SWAP_READY = 4
+CLUSTER_SWAP_NOW = 5
+CLUSTER_COMMAND_STRING = 6
+CLUSTER_SELECTED_MOVEMENT = 7
+CLUSTER_TIME_DATA = 8
 CLUSTER_NAMED_OBJECT_MOVEMENT = 9
-CLUSTER_NAMED_MOVEMENT_DONE   = 10
-CLUSTER_EXIT                  = 100
+CLUSTER_NAMED_MOVEMENT_DONE = 10
+CLUSTER_EXIT = 100
 
-#Port number for cluster rendering
+# Port number for cluster rendering
 # DAEMON PORT IS PORT USED FOR STARTUP MESSAGE EXCHANGE
 # CAN BE OVERRIDEN WITH cluster-daemon-client-port for client
 # and cluster-daemon-server-port for server
@@ -40,13 +40,15 @@ SERVER_STARTUP_STRING = (
     '"import __builtin__; ' +
     '__builtin__.clusterMode = \'server\';' +
     '__builtin__.clusterServerPort = %s;' +
-    '__builtin__.clusterSyncFlag = %d;' +
+    '__builtin__.cluster_sync_flag = %d;' +
     '__builtin__.clusterDaemonClient = \'%s\';' +
     '__builtin__.clusterDaemonPort = %d;'
     'from direct.directbase.DirectStart import *; run()"')
 
+
 class ClusterMsgHandler:
     """ClusterMsgHandler: wrapper for PC clusters/multi-piping networking"""
+
     def __init__(self, packetStart, notify):
         # packetStart can be used to distinguish which ClusterMsgHandler
         # sends a given packet.
@@ -115,12 +117,12 @@ class ClusterMsgHandler:
         return datagram
 
     def parseCamOffsetDatagram(self, dgi):
-        x=dgi.getFloat32()
-        y=dgi.getFloat32()
-        z=dgi.getFloat32()
-        h=dgi.getFloat32()
-        p=dgi.getFloat32()
-        r=dgi.getFloat32()
+        x = dgi.getFloat32()
+        y = dgi.getFloat32()
+        z = dgi.getFloat32()
+        h = dgi.getFloat32()
+        p = dgi.getFloat32()
+        r = dgi.getFloat32()
         self.notify.debug('new offset=%f %f %f  %f %f %f' % (x, y, z, h, p, r))
         return (x, y, z, h, p, r)
 
@@ -138,8 +140,8 @@ class ClusterMsgHandler:
 
     def parseCamFrustumDatagram(self, dgi):
         focalLength = dgi.getFloat32()
-        filmSize    = (dgi.getFloat32(), dgi.getFloat32())
-        filmOffset  = (dgi.getFloat32(), dgi.getFloat32())
+        filmSize = (dgi.getFloat32(), dgi.getFloat32())
+        filmOffset = (dgi.getFloat32(), dgi.getFloat32())
         self.notify.debug('fl, fs, fo=%f, (%f, %f), (%f, %f)' %
                           (focalLength, filmSize[0], filmSize[1],
                            filmOffset[0], filmOffset[1]))
@@ -158,7 +160,6 @@ class ClusterMsgHandler:
         datagram.addFloat32(hpr[2])
         return datagram
 
-
     def makeNamedMovementDone(self):
 
         datagram = PyDatagram()
@@ -166,7 +167,6 @@ class ClusterMsgHandler:
         self.packetNumber = self.packetNumber + 1
         datagram.addUint8(CLUSTER_NAMED_MOVEMENT_DONE)
         return datagram
-
 
     def makeNamedObjectMovementDatagram(self, xyz, hpr, scale, color, hidden, name):
         datagram = PyDatagram()
@@ -191,24 +191,24 @@ class ClusterMsgHandler:
         return datagram
 
     def parseCamMovementDatagram(self, dgi):
-        x=dgi.getFloat32()
-        y=dgi.getFloat32()
-        z=dgi.getFloat32()
-        h=dgi.getFloat32()
-        p=dgi.getFloat32()
-        r=dgi.getFloat32()
+        x = dgi.getFloat32()
+        y = dgi.getFloat32()
+        z = dgi.getFloat32()
+        h = dgi.getFloat32()
+        p = dgi.getFloat32()
+        r = dgi.getFloat32()
         self.notify.debug(('  new position=%f %f %f  %f %f %f' %
                            (x, y, z, h, p, r)))
         return (x, y, z, h, p, r)
 
     def parseNamedMovementDatagram(self, dgi):
         name = dgi.getString()
-        x=dgi.getFloat32()
-        y=dgi.getFloat32()
-        z=dgi.getFloat32()
-        h=dgi.getFloat32()
-        p=dgi.getFloat32()
-        r=dgi.getFloat32()
+        x = dgi.getFloat32()
+        y = dgi.getFloat32()
+        z = dgi.getFloat32()
+        h = dgi.getFloat32()
+        p = dgi.getFloat32()
+        r = dgi.getFloat32()
         sx = dgi.getFloat32()
         sy = dgi.getFloat32()
         sz = dgi.getFloat32()
@@ -217,8 +217,7 @@ class ClusterMsgHandler:
         b = dgi.getFloat32()
         a = dgi.getFloat32()
         hidden = dgi.getBool()
-        return (name,x, y, z, h, p, r, sx, sy, sz, red, g, b, a, hidden)
-
+        return (name, x, y, z, h, p, r, sx, sy, sz, red, g, b, a, hidden)
 
     def makeSelectedMovementDatagram(self, xyz, hpr, scale):
         datagram = PyDatagram()
@@ -234,19 +233,19 @@ class ClusterMsgHandler:
         datagram.addFloat32(scale[0])
         datagram.addFloat32(scale[1])
         datagram.addFloat32(scale[2])
-        #datagram.addBool(hidden)
+        # datagram.addBool(hidden)
         return datagram
 
     def parseSelectedMovementDatagram(self, dgi):
-        x=dgi.getFloat32()
-        y=dgi.getFloat32()
-        z=dgi.getFloat32()
-        h=dgi.getFloat32()
-        p=dgi.getFloat32()
-        r=dgi.getFloat32()
-        sx=dgi.getFloat32()
-        sy=dgi.getFloat32()
-        sz=dgi.getFloat32()
+        x = dgi.getFloat32()
+        y = dgi.getFloat32()
+        z = dgi.getFloat32()
+        h = dgi.getFloat32()
+        p = dgi.getFloat32()
+        r = dgi.getFloat32()
+        sx = dgi.getFloat32()
+        sy = dgi.getFloat32()
+        sz = dgi.getFloat32()
         self.notify.debug('  new position=%f %f %f  %f %f %f %f %f %f' %
                           (x, y, z, h, p, r, sx, sy, sz))
         return (x, y, z, h, p, r, sx, sy, sz)
@@ -295,17 +294,8 @@ class ClusterMsgHandler:
         return datagram
 
     def parseTimeDataDatagram(self, dgi):
-        frameCount=dgi.getUint32()
-        frameTime=dgi.getFloat32()
-        dt=dgi.getFloat32()
+        frameCount = dgi.getUint32()
+        frameTime = dgi.getFloat32()
+        dt = dgi.getFloat32()
         self.notify.debug('time data=%f %f' % (frameTime, dt))
         return (frameCount, frameTime, dt)
-
-
-
-
-
-
-
-
-

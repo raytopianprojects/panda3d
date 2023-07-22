@@ -124,6 +124,7 @@ def egg2bam(_build_cmd, srcpath, dstpath):
         raise RuntimeError('egg2bam failed: {}'.format(err))
     return dstpath
 
+
 macosx_binary_magics = (
     b'\xFE\xED\xFA\xCE', b'\xCE\xFA\xED\xFE',
     b'\xFE\xED\xFA\xCF', b'\xCF\xFA\xED\xFE',
@@ -147,8 +148,10 @@ PACKAGE_DATA_DIRS = {
         ('cefpython3/License', '', {}),
         ('cefpython3/subprocess*', '', {'PKG_DATA_MAKE_EXECUTABLE'}),
         ('cefpython3/locals/*', 'locals', {}),
-        ('cefpython3/Chromium Embedded Framework.framework/Resources', 'Chromium Embedded Framework.framework/Resources', {}),
-        ('cefpython3/Chromium Embedded Framework.framework/Chromium Embedded Framework', '', {'PKG_DATA_MAKE_EXECUTABLE'}),
+        ('cefpython3/Chromium Embedded Framework.framework/Resources',
+         'Chromium Embedded Framework.framework/Resources', {}),
+        ('cefpython3/Chromium Embedded Framework.framework/Chromium Embedded Framework',
+         '', {'PKG_DATA_MAKE_EXECUTABLE'}),
     ],
     'pytz': [('pytz/zoneinfo/*', 'zoneinfo', ())],
     'certifi': [('certifi/cacert.pem', '', {})],
@@ -472,12 +475,14 @@ class build_apps(setuptools.Command):
 
         use_pipenv = (
             'Pipfile' in os.path.basename(self.requirements_path) or
-            not os.path.exists(self.requirements_path) and os.path.exists('Pipfile')
+            not os.path.exists(
+                self.requirements_path) and os.path.exists('Pipfile')
         )
         if use_pipenv:
             reqspath = os.path.join(self.build_base, 'requirements.txt')
             with open(reqspath, 'w') as reqsfile:
-                subprocess.check_call(['pipenv', 'lock', '--requirements'], stdout=reqsfile)
+                subprocess.check_call(
+                    ['pipenv', 'lock', '--requirements'], stdout=reqsfile)
             self.requirements_path = reqspath
 
         if self.use_optimized_wheels:
@@ -490,7 +495,8 @@ class build_apps(setuptools.Command):
                 # See if a buildbot build is being used
                 with open(self.requirements_path) as reqsfile:
                     reqsdata = reqsfile.read()
-                matches = re.search(r'--extra-index-url (https*://archive.panda3d.org/.*\b)', reqsdata)
+                matches = re.search(
+                    r'--extra-index-url (https*://archive.panda3d.org/.*\b)', reqsdata)
                 if matches and matches.group(1):
                     self.optimized_wheel_index = matches.group(1)
                     if not matches.group(1).endswith('opt'):
@@ -498,10 +504,13 @@ class build_apps(setuptools.Command):
 
             assert self.optimized_wheel_index, 'An index for optimized wheels must be defined if use_optimized_wheels is set'
 
-        assert os.path.exists(self.requirements_path), 'Requirements.txt path does not exist: {}'.format(self.requirements_path)
-        assert num_gui_apps + num_console_apps != 0, 'Must specify at least one app in either gui_apps or console_apps'
+        assert os.path.exists(self.requirements_path), 'Requirements.txt path does not exist: {}'.format(
+            self.requirements_path)
+        assert num_gui_apps + \
+            num_console_apps != 0, 'Must specify at least one app in either gui_apps or console_apps'
 
-        self.exclude_dependencies = [p3d.GlobPattern(i) for i in self.exclude_dependencies]
+        self.exclude_dependencies = [p3d.GlobPattern(
+            i) for i in self.exclude_dependencies]
         for glob in self.exclude_dependencies:
             glob.case_sensitive = False
 
@@ -511,7 +520,8 @@ class build_apps(setuptools.Command):
             for ext in self.bam_model_extensions:
                 ext = '.' + ext.lstrip('.')
                 assert ext not in self.file_handlers, \
-                    'Extension {} occurs in both file_handlers and bam_model_extensions!'.format(ext)
+                    'Extension {} occurs in both file_handlers and bam_model_extensions!'.format(
+                        ext)
                 self.file_handlers[ext] = _model_to_bam
 
         tmp = self.default_file_handlers.copy()
@@ -535,7 +545,8 @@ class build_apps(setuptools.Command):
             self.icon_objects[app] = iconobj
 
     def run(self):
-        self.announce('Building platforms: {0}'.format(','.join(self.platforms)), distutils.log.INFO)
+        self.announce('Building platforms: {0}'.format(
+            ','.join(self.platforms)), distutils.log.INFO)
 
         for platform in self.platforms:
             self.build_runtimes(platform, True)
@@ -548,13 +559,15 @@ class build_apps(setuptools.Command):
 
         import pip
 
-        self.announce('Gathering wheels for platform: {}'.format(platform), distutils.log.INFO)
+        self.announce('Gathering wheels for platform: {}'.format(
+            platform), distutils.log.INFO)
 
         whlcache = os.path.join(self.build_base, '__whl_cache__')
 
         pip_version = int(pip.__version__.split('.')[0])
         if pip_version < 9:
-            raise RuntimeError("pip 9.0 or greater is required, but found {}".format(pip.__version__))
+            raise RuntimeError(
+                "pip 9.0 or greater is required, but found {}".format(pip.__version__))
 
         abi_tag = 'cp%d%d' % (sys.version_info[:2])
         if sys.version_info < (3, 8):
@@ -608,14 +621,19 @@ class build_apps(setuptools.Command):
         except:
             # Display a more helpful message for these common issues.
             if platform.startswith('manylinux2010_') and sys.version_info >= (3, 11):
-                new_platform = platform.replace('manylinux2010_', 'manylinux2014_')
-                self.announce('This error likely occurs because {} is not a supported target as of Python 3.11.\nChange the target platform to {} instead.'.format(platform, new_platform), distutils.log.ERROR)
+                new_platform = platform.replace(
+                    'manylinux2010_', 'manylinux2014_')
+                self.announce('This error likely occurs because {} is not a supported target as of Python 3.11.\nChange the target platform to {} instead.'.format(
+                    platform, new_platform), distutils.log.ERROR)
             elif platform.startswith('manylinux1_') and sys.version_info >= (3, 10):
-                new_platform = platform.replace('manylinux1_', 'manylinux2014_')
-                self.announce('This error likely occurs because {} is not a supported target as of Python 3.10.\nChange the target platform to {} instead.'.format(platform, new_platform), distutils.log.ERROR)
+                new_platform = platform.replace(
+                    'manylinux1_', 'manylinux2014_')
+                self.announce('This error likely occurs because {} is not a supported target as of Python 3.10.\nChange the target platform to {} instead.'.format(
+                    platform, new_platform), distutils.log.ERROR)
             elif platform.startswith('macosx_10_6_') and sys.version_info >= (3, 8):
                 new_platform = platform.replace('macosx_10_6_', 'macosx_10_9_')
-                self.announce('This error likely occurs because {} is not a supported target as of Python 3.8.\nChange the target platform to {} instead.'.format(platform, new_platform), distutils.log.ERROR)
+                self.announce('This error likely occurs because {} is not a supported target as of Python 3.8.\nChange the target platform to {} instead.'.format(
+                    platform, new_platform), distutils.log.ERROR)
             raise
 
         # Return a list of paths to the downloaded whls
@@ -642,7 +660,8 @@ class build_apps(setuptools.Command):
             if self.prefer_discrete_gpu:
                 if not pef.rename_export("SymbolPlaceholder___________________", "AmdPowerXpressRequestHighPerformance") or \
                    not pef.rename_export("SymbolPlaceholder__", "NvOptimusEnablement"):
-                    self.warn("Failed to apply prefer_discrete_gpu, newer target Panda3D version may be required")
+                    self.warn(
+                        "Failed to apply prefer_discrete_gpu, newer target Panda3D version may be required")
             pef.write_changes()
             pef.close()
 
@@ -656,7 +675,8 @@ class build_apps(setuptools.Command):
         fwdir = os.path.join(contentsdir, 'Frameworks')
         resdir = os.path.join(contentsdir, 'Resources')
 
-        self.announce('Bundling macOS app into {}'.format(appdir), distutils.log.INFO)
+        self.announce('Bundling macOS app into {}'.format(
+            appdir), distutils.log.INFO)
 
         # Create initial directory structure
         os.makedirs(macosdir)
@@ -680,11 +700,11 @@ class build_apps(setuptools.Command):
         # Write out Info.plist
         plist = {
             'CFBundleName': appname,
-            'CFBundleDisplayName': appname, #TODO use name from setup.py/cfg
-            'CFBundleIdentifier': '', #TODO
-            'CFBundleVersion': '0.0.0', #TODO get from setup.py
+            'CFBundleDisplayName': appname,  # TODO use name from setup.py/cfg
+            'CFBundleIdentifier': '',  # TODO
+            'CFBundleVersion': '0.0.0',  # TODO get from setup.py
             'CFBundlePackageType': 'APPL',
-            'CFBundleSignature': '', #TODO
+            'CFBundleSignature': '',  # TODO
             'CFBundleExecutable': self.macos_main_app,
         }
 
@@ -701,7 +721,6 @@ class build_apps(setuptools.Command):
                 plistlib.dump(plist, f)
             else:
                 plistlib.writePlist(plist, f)
-
 
     def build_runtimes(self, platform, use_wheels):
         """ Builds the distributions for the given platform. """
@@ -728,14 +747,17 @@ class build_apps(setuptools.Command):
                 elif os.path.basename(whl).startswith('tkinter-'):
                     has_tkinter_wheel = True
             else:
-                raise RuntimeError("Missing panda3d wheel for platform: {}".format(platform))
+                raise RuntimeError(
+                    "Missing panda3d wheel for platform: {}".format(platform))
 
             if self.use_optimized_wheels:
                 # Check to see if we have an optimized wheel
-                localtag = p3dwhlfn.split('+')[1].split('-')[0] if '+' in p3dwhlfn else ''
+                localtag = p3dwhlfn.split(
+                    '+')[1].split('-')[0] if '+' in p3dwhlfn else ''
                 if not localtag.endswith('opt'):
                     self.announce(
-                        'Could not find an optimized wheel (using index {}) for platform: {}'.format(self.optimized_wheel_index, platform),
+                        'Could not find an optimized wheel (using index {}) for platform: {}'.format(
+                            self.optimized_wheel_index, platform),
                         distutils.log.WARN
                     )
 
@@ -744,7 +766,7 @@ class build_apps(setuptools.Command):
                     has_tkinter_wheel = True
                     break
 
-            #whlfiles = {whl: self._get_zip_file(whl) for whl in wheelpaths}
+            # whlfiles = {whl: self._get_zip_file(whl) for whl in wheelpaths}
 
             # Add whl files to the path so they are picked up by modulefinder
             for whl in wheelpaths:
@@ -753,8 +775,8 @@ class build_apps(setuptools.Command):
             # Add deploy_libs from panda3d whl to the path
             path.insert(0, os.path.join(p3dwhlfn, 'deploy_libs'))
 
-
-        self.announce('Building runtime for platform: {}'.format(platform), distutils.log.INFO)
+        self.announce('Building runtime for platform: {}'.format(
+            platform), distutils.log.INFO)
 
         # Gather PRC data
         prcstring = ''
@@ -783,12 +805,13 @@ class build_apps(setuptools.Command):
 
         # Clenup PRC data
         check_plugins = [
-            #TODO find a better way to get this list
+            # TODO find a better way to get this list
             'pandaegg',
             'p3ffmpeg',
             'p3ptloader',
             'p3assimp',
         ]
+
         def parse_prc(prcstr, warn_on_missing_plugin):
             out = []
             for ln in prcstr.split('\n'):
@@ -810,14 +833,16 @@ class build_apps(setuptools.Command):
                     value = value[:c].rstrip()
 
                 if var == 'model-cache-dir' and value:
-                    value = value.replace('/panda3d', '/{}'.format(self.distribution.get_name()))
+                    value = value.replace(
+                        '/panda3d', '/{}'.format(self.distribution.get_name()))
 
                 if var == 'audio-library-name':
                     # We have the default set to p3fmod_audio on macOS in 1.10,
                     # but this can be unexpected as other platforms use OpenAL
                     # by default.  Switch it up if FMOD is not included.
                     if value not in self.plugins and value == 'p3fmod_audio' and 'p3openal_audio' in self.plugins:
-                        self.warn("Missing audio plugin p3fmod_audio referenced in PRC data, replacing with p3openal_audio")
+                        self.warn(
+                            "Missing audio plugin p3fmod_audio referenced in PRC data, replacing with p3openal_audio")
                         value = 'p3openal_audio'
 
                 if var == 'aux-display':
@@ -830,7 +855,8 @@ class build_apps(setuptools.Command):
                         useline = False
                         if warn_on_missing_plugin:
                             self.warn(
-                                "Missing plugin ({0}) referenced in user PRC data".format(plugin)
+                                "Missing plugin ({0}) referenced in user PRC data".format(
+                                    plugin)
                             )
                         break
                 if useline:
@@ -847,7 +873,7 @@ class build_apps(setuptools.Command):
             prcdir = self.default_prc_dir.replace('<auto>', '')
             prcdir = os.path.join(builddir, prcdir)
             os.makedirs(prcdir)
-            with open (os.path.join(prcdir, '00-panda3d.prc'), 'w') as f:
+            with open(os.path.join(prcdir, '00-panda3d.prc'), 'w') as f:
                 f.write(prcexport)
 
         # Create runtimes
@@ -878,11 +904,13 @@ class build_apps(setuptools.Command):
                     extra_dirs = PACKAGE_LIB_DIRS.get(whl_name, [])
                     for extra_dir, search_in in extra_dirs:
                         if not search_in:
-                            search_path.append(os.path.join(whl, extra_dir.replace('/', os.path.sep)))
+                            search_path.append(os.path.join(
+                                whl, extra_dir.replace('/', os.path.sep)))
                         else:
                             for whl2 in wheelpaths:
                                 if os.path.basename(whl2).startswith(search_in + '-'):
-                                    search_path.append(os.path.join(whl2, extra_dir.replace('/', os.path.sep)))
+                                    search_path.append(os.path.join(
+                                        whl2, extra_dir.replace('/', os.path.sep)))
 
             return search_path
 
@@ -894,7 +922,8 @@ class build_apps(setuptools.Command):
 
             optimize = 2 if self.strip_docstrings else 1
 
-            freezer = FreezeTool.Freezer(platform=platform, path=path, optimize=optimize)
+            freezer = FreezeTool.Freezer(
+                platform=platform, path=path, optimize=optimize)
             freezer.addModule('__main__', filename=mainscript)
             freezer.addModule('site', filename='site.py', text=site_py)
             for incmod in self.include_modules.get(appname, []) + self.include_modules.get('*', []):
@@ -917,14 +946,17 @@ class build_apps(setuptools.Command):
             if use_wheels:
                 stub_file = p3dwhl.open('panda3d_tools/{0}'.format(stub_name))
             else:
-                dtool_path = p3d.Filename(p3d.ExecutionEnvironment.get_dtool_name()).to_os_specific()
-                stub_path = os.path.join(os.path.dirname(dtool_path), '..', 'bin', stub_name)
+                dtool_path = p3d.Filename(
+                    p3d.ExecutionEnvironment.get_dtool_name()).to_os_specific()
+                stub_path = os.path.join(os.path.dirname(
+                    dtool_path), '..', 'bin', stub_name)
                 stub_file = open(stub_path, 'rb')
 
             # Do we need an icon?  On Windows, we need to add this to the stub
             # before we add the blob.
             if 'win' in platform:
-                temp_file = tempfile.NamedTemporaryFile(suffix='-icon.exe', delete=False)
+                temp_file = tempfile.NamedTemporaryFile(
+                    suffix='-icon.exe', delete=False)
                 temp_file.write(stub_file.read())
                 stub_file.close()
                 temp_file.close()
@@ -955,7 +987,8 @@ class build_apps(setuptools.Command):
             search_path = [builddir]
             if use_wheels:
                 search_path.append(os.path.join(p3dwhlfn, 'deploy_libs'))
-            self.copy_dependencies(target_path, builddir, search_path, stub_name)
+            self.copy_dependencies(target_path, builddir,
+                                   search_path, stub_name)
 
             freezer_extras.update(freezer.extras)
             freezer_modules.update(freezer.getAllModuleNames())
@@ -977,7 +1010,8 @@ class build_apps(setuptools.Command):
         if not has_tkinter_wheel and '_tkinter' in freezer_modules:
             # The on-windows-for-windows case is handled as legacy below
             if sys.platform != "win32" or not platform.startswith('win'):
-                self.warn("Detected use of tkinter, but tkinter is not specified in requirements.txt!")
+                self.warn(
+                    "Detected use of tkinter, but tkinter is not specified in requirements.txt!")
 
         # Copy extension modules
         whl_modules = []
@@ -1020,7 +1054,8 @@ class build_apps(setuptools.Command):
                 source_path = os.path.join(p3dwhlfn, lib)
                 target_path = os.path.join(builddir, os.path.basename(lib))
                 search_path = [os.path.dirname(source_path)]
-                self.copy_with_dependencies(source_path, target_path, search_path)
+                self.copy_with_dependencies(
+                    source_path, target_path, search_path)
 
         # Copy any shared objects we need
         for module, source_path in freezer_extras:
@@ -1050,13 +1085,16 @@ class build_apps(setuptools.Command):
                             break
 
                     if not found_in_wheel:
-                        self.warn('{} was not found in any downloaded wheel, is a dependency missing from requirements.txt?'.format(basename))
+                        self.warn(
+                            '{} was not found in any downloaded wheel, is a dependency missing from requirements.txt?'.format(basename))
             else:
                 # Builtin module, but might not be builtin in wheel libs, so double check
                 if module in whl_modules:
-                    source_path = os.path.join(p3dwhlfn, 'deploy_libs/{}.{}'.format(module, whl_modules_ext))#'{0}/deploy_libs/{1}.{2}'.format(p3dwhlfn, module, whl_modules_ext)
+                    # '{0}/deploy_libs/{1}.{2}'.format(p3dwhlfn, module, whl_modules_ext)
+                    source_path = os.path.join(
+                        p3dwhlfn, 'deploy_libs/{}.{}'.format(module, whl_modules_ext))
                     basename = os.path.basename(source_path)
-                    #XXX should we remove python version string here too?
+                    # XXX should we remove python version string here too?
                 else:
                     continue
 
@@ -1069,7 +1107,8 @@ class build_apps(setuptools.Command):
         # This is legacy, we nowadays recommend the separate tkinter wheel.
         if sys.platform == "win32" and platform.startswith('win') and not has_tkinter_wheel:
             tcl_dir = os.path.join(sys.prefix, 'tcl')
-            tkinter_name = 'tkinter' if sys.version_info >= (3, 0) else 'Tkinter'
+            tkinter_name = 'tkinter' if sys.version_info >= (
+                3, 0) else 'Tkinter'
 
             if os.path.isdir(tcl_dir) and tkinter_name in freezer_modules:
                 self.announce('Copying Tcl files', distutils.log.INFO)
@@ -1079,7 +1118,8 @@ class build_apps(setuptools.Command):
                     sub_dir = os.path.join(tcl_dir, dir)
                     if os.path.isdir(sub_dir):
                         target_dir = os.path.join(builddir, 'tcl', dir)
-                        self.announce('copying {0} -> {1}'.format(sub_dir, target_dir))
+                        self.announce(
+                            'copying {0} -> {1}'.format(sub_dir, target_dir))
                         shutil.copytree(sub_dir, target_dir)
 
         # Extract any other data files from dependency packages.
@@ -1087,7 +1127,8 @@ class build_apps(setuptools.Command):
             if module not in freezer_modules:
                 continue
 
-            self.announce('Copying data files for module: {}'.format(module), distutils.log.INFO)
+            self.announce('Copying data files for module: {}'.format(
+                module), distutils.log.INFO)
 
             # OK, find out in which .whl this occurs.
             for whl in wheelpaths:
@@ -1116,7 +1157,8 @@ class build_apps(setuptools.Command):
 
                             if 'PKG_DATA_MAKE_EXECUTABLE' in flags:
                                 search_path = get_search_path_for(source_path)
-                                self.copy_with_dependencies(source_path, target_path, search_path)
+                                self.copy_with_dependencies(
+                                    source_path, target_path, search_path)
                                 mode = os.stat(target_path).st_mode
                                 mode |= stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
                                 os.chmod(target_path, mode)
@@ -1124,7 +1166,8 @@ class build_apps(setuptools.Command):
                                 self.copy(source_path, target_path)
 
         # Copy Game Files
-        self.announce('Copying game files for platform: {}'.format(platform), distutils.log.INFO)
+        self.announce('Copying game files for platform: {}'.format(
+            platform), distutils.log.INFO)
         ignore_copy_list = [
             '**/__pycache__/**',
             '**/*.pyc',
@@ -1133,7 +1176,8 @@ class build_apps(setuptools.Command):
         ignore_copy_list += self.exclude_patterns
         ignore_copy_list += freezer_modpaths
         ignore_copy_list += self.extra_prc_files
-        ignore_copy_list = [p3d.GlobPattern(p3d.Filename.from_os_specific(i).get_fullpath()) for i in ignore_copy_list]
+        ignore_copy_list = [p3d.GlobPattern(p3d.Filename.from_os_specific(
+            i).get_fullpath()) for i in ignore_copy_list]
 
         include_copy_list = [p3d.GlobPattern(i) for i in self.include_patterns]
 
@@ -1147,11 +1191,11 @@ class build_apps(setuptools.Command):
             for pattern in pattern_list:
                 # If the pattern is absolute, match against the absolute filename.
                 if pattern.pattern[0] == '/':
-                    #print('check ignore: {} {} {}'.format(pattern, src, pattern.matches_file(abspath)))
+                    # print('check ignore: {} {} {}'.format(pattern, src, pattern.matches_file(abspath)))
                     if pattern.matches_file(abspath):
                         return True
                 else:
-                    #print('check ignore: {} {} {}'.format(pattern, src, pattern.matches_file(path)))
+                    # print('check ignore: {} {} {}'.format(pattern, src, pattern.matches_file(path)))
                     if pattern.matches_file(path):
                         return True
             return False
@@ -1202,7 +1246,8 @@ class build_apps(setuptools.Command):
 
             if ext in self.file_handlers:
                 buildscript = self.file_handlers[ext]
-                self.announce('running {} on src ({})'.format(buildscript.__name__, src))
+                self.announce('running {} on src ({})'.format(
+                    buildscript.__name__, src))
                 try:
                     dst = self.file_handlers[ext](self, src, dst)
                 except Exception as err:
@@ -1212,7 +1257,8 @@ class build_apps(setuptools.Command):
                 shutil.copyfile(src, dst)
 
         def update_path(path):
-            normpath = p3d.Filename.from_os_specific(os.path.normpath(src)).c_str()
+            normpath = p3d.Filename.from_os_specific(
+                os.path.normpath(src)).c_str()
             for inputpath, outputpath in self.rename_paths.items():
                 if normpath.startswith(inputpath):
                     normpath = normpath.replace(inputpath, outputpath, 1)
@@ -1253,7 +1299,8 @@ class build_apps(setuptools.Command):
 
             if os.path.isfile(source_path):
                 target_path = os.path.join(target_dir, name)
-                self.copy_with_dependencies(source_path, target_path, search_path)
+                self.copy_with_dependencies(
+                    source_path, target_path, search_path)
                 return
 
             elif '.whl' in source_path:
@@ -1273,8 +1320,10 @@ class build_apps(setuptools.Command):
                     # We have a match.  Change it to the correct case.
                     wf = namelist[namelist_lower.index(wf.lower())]
                     source_path = os.path.join(whl, wf)
-                    target_path = os.path.join(target_dir, os.path.basename(wf))
-                    self.copy_with_dependencies(source_path, target_path, search_path)
+                    target_path = os.path.join(
+                        target_dir, os.path.basename(wf))
+                    self.copy_with_dependencies(
+                        source_path, target_path, search_path)
                     return
 
         # If we didn't find it, look again, but case-insensitively.
@@ -1289,10 +1338,12 @@ class build_apps(setuptools.Command):
                     name = files[files_lower.index(name_lower)]
                     source_path = os.path.join(dir, name)
                     target_path = os.path.join(target_dir, name)
-                    self.copy_with_dependencies(source_path, target_path, search_path)
+                    self.copy_with_dependencies(
+                        source_path, target_path, search_path)
 
         # Warn if we can't find it, but only once.
-        self.warn("could not find dependency {0} (referenced by {1})".format(name, referenced_by))
+        self.warn("could not find dependency {0} (referenced by {1})".format(
+            name, referenced_by))
         self.exclude_dependencies.append(p3d.GlobPattern(name.lower()))
 
     def copy(self, source_path, target_path):
@@ -1301,10 +1352,12 @@ class build_apps(setuptools.Command):
         source_path may be located inside a .whl file. """
 
         try:
-            self.announce('copying {0} -> {1}'.format(os.path.relpath(source_path, self.build_base), os.path.relpath(target_path, self.build_base)))
+            self.announce('copying {0} -> {1}'.format(os.path.relpath(
+                source_path, self.build_base), os.path.relpath(target_path, self.build_base)))
         except ValueError:
             # No relative path (e.g., files on different drives in Windows), just print absolute paths instead
-            self.announce('copying {0} -> {1}'.format(source_path, target_path))
+            self.announce(
+                'copying {0} -> {1}'.format(source_path, target_path))
 
         # Make the directory if it does not yet exist.
         target_dir = os.path.dirname(target_path)
@@ -1390,29 +1443,34 @@ class build_apps(setuptools.Command):
 
         # Make sure we read in the correct endianness and integer size
         byte_order = "<>"[ord(ident[1:2]) - 1]
-        elf_class = ord(ident[0:1]) - 1 # 0 = 32-bits, 1 = 64-bits
-        header_struct = byte_order + ("HHIIIIIHHHHHH", "HHIQQQIHHHHHH")[elf_class]
-        section_struct = byte_order + ("4xI8xIII8xI", "4xI16xQQI12xQ")[elf_class]
+        elf_class = ord(ident[0:1]) - 1  # 0 = 32-bits, 1 = 64-bits
+        header_struct = byte_order + \
+            ("HHIIIIIHHHHHH", "HHIQQQIHHHHHH")[elf_class]
+        section_struct = byte_order + \
+            ("4xI8xIII8xI", "4xI16xQQI12xQ")[elf_class]
         dynamic_struct = byte_order + ("iI", "qQ")[elf_class]
 
         type, machine, version, entry, phoff, shoff, flags, ehsize, phentsize, phnum, shentsize, shnum, shstrndx \
-          = struct.unpack(header_struct, elf.read(struct.calcsize(header_struct)))
+            = struct.unpack(header_struct, elf.read(struct.calcsize(header_struct)))
         dynamic_sections = []
         string_tables = {}
 
         # Seek to the section header table and find the .dynamic section.
         elf.seek(shoff)
         for i in range(shnum):
-            type, offset, size, link, entsize = struct.unpack_from(section_struct, elf.read(shentsize))
-            if type == 6 and link != 0: # DYNAMIC type, links to string table
+            type, offset, size, link, entsize = struct.unpack_from(
+                section_struct, elf.read(shentsize))
+            if type == 6 and link != 0:  # DYNAMIC type, links to string table
                 dynamic_sections.append((offset, size, link, entsize))
                 string_tables[link] = None
 
         # Read the relevant string tables.
         for idx in string_tables.keys():
             elf.seek(shoff + idx * shentsize)
-            type, offset, size, link, entsize = struct.unpack_from(section_struct, elf.read(shentsize))
-            if type != 3: continue
+            type, offset, size, link, entsize = struct.unpack_from(
+                section_struct, elf.read(shentsize))
+            if type != 3:
+                continue
             elf.seek(offset)
             string_tables[idx] = elf.read(size)
 
@@ -1426,15 +1484,18 @@ class build_apps(setuptools.Command):
 
             # Read tags until we find a NULL tag.
             while tag != 0:
-                if tag == 1: # A NEEDED entry.  Read it from the string table.
-                    string = string_tables[link][val : string_tables[link].find(b'\0', val)]
+                if tag == 1:  # A NEEDED entry.  Read it from the string table.
+                    string = string_tables[link][val: string_tables[link].find(
+                        b'\0', val)]
                     needed.append(string.decode('utf-8'))
 
                 elif tag == 15 or tag == 29:
                     # An RPATH or RUNPATH entry.
-                    string = string_tables[link][val : string_tables[link].find(b'\0', val)]
+                    string = string_tables[link][val: string_tables[link].find(
+                        b'\0', val)]
                     rpath += [
-                        os.path.normpath(i.decode('utf-8').replace('$ORIGIN', origin))
+                        os.path.normpath(
+                            i.decode('utf-8').replace('$ORIGIN', origin))
                         for i in string.split(b':')
                     ]
 
@@ -1469,14 +1530,15 @@ class build_apps(setuptools.Command):
             cmd_data = fp.read(cmd_size - 8)
             cmd &= ~0x80000000
 
-            if cmd == 0x0c: # LC_LOAD_DYLIB
+            if cmd == 0x0c:  # LC_LOAD_DYLIB
                 dylib = cmd_data[16:].decode('ascii').split('\x00', 1)[0]
                 orig = dylib
 
                 if dylib.startswith('@loader_path/../Frameworks/'):
                     dylib = dylib.replace('@loader_path/../Frameworks/', '')
                 elif dylib.startswith('@executable_path/../Frameworks/'):
-                    dylib = dylib.replace('@executable_path/../Frameworks/', '')
+                    dylib = dylib.replace(
+                        '@executable_path/../Frameworks/', '')
                 else:
                     for prefix in ('@loader_path/', '@rpath/'):
                         if dylib.startswith(prefix):
@@ -1488,9 +1550,11 @@ class build_apps(setuptools.Command):
                                 str_size = len(cmd_data) - 16
                                 if len(new_dylib) < str_size:
                                     fp.seek(-str_size, os.SEEK_CUR)
-                                    fp.write(new_dylib.encode('ascii').ljust(str_size, b'\0'))
+                                    fp.write(new_dylib.encode(
+                                        'ascii').ljust(str_size, b'\0'))
                                 else:
-                                    self.warn('Unable to rewrite dependency {}'.format(orig))
+                                    self.warn(
+                                        'Unable to rewrite dependency {}'.format(orig))
 
                 load_dylibs.append(dylib)
 
@@ -1631,7 +1695,8 @@ class bdist_apps(setuptools.Command):
 
         base_dir = self._get_archive_basedir()
         build_cmd = self.get_finalized_command('build_apps')
-        binary_names = list(build_cmd.console_apps.keys()) + list(build_cmd.gui_apps.keys())
+        binary_names = list(build_cmd.console_apps.keys()) + \
+            list(build_cmd.gui_apps.keys())
 
         source_date = os.environ.get('SOURCE_DATE_EPOCH', '').strip()
         if source_date:
@@ -1729,7 +1794,8 @@ class bdist_apps(setuptools.Command):
         for root, dirs, files in os.walk(build_dir):
             dirs.sort()
             for name in files:
-                basefile = p3d.Filename.fromOsSpecific(os.path.join(root, name))
+                basefile = p3d.Filename.fromOsSpecific(
+                    os.path.join(root, name))
                 file = p3d.Filename(basefile)
                 file.makeAbsolute()
                 file.makeRelativeTo(nsi_dir)
@@ -1747,8 +1813,10 @@ class bdist_apps(setuptools.Command):
         nsi.write('  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application\n')
         nsi.write('    CreateDirectory "$SMPROGRAMS\\$StartMenuFolder"\n')
         for app in apps:
-            nsi.write('    CreateShortCut "$SMPROGRAMS\\$StartMenuFolder\\%s.lnk" "$INSTDIR\\%s"\n' % (shortname, app))
-        nsi.write('    CreateShortCut "$SMPROGRAMS\\$StartMenuFolder\\Uninstall.lnk" "$INSTDIR\\Uninstall.exe"\n')
+            nsi.write('    CreateShortCut "$SMPROGRAMS\\$StartMenuFolder\\%s.lnk" "$INSTDIR\\%s"\n' % (
+                shortname, app))
+        nsi.write(
+            '    CreateShortCut "$SMPROGRAMS\\$StartMenuFolder\\Uninstall.lnk" "$INSTDIR\\Uninstall.exe"\n')
         nsi.write('  !insertmacro MUI_STARTMENU_WRITE_END\n')
         nsi.write('SectionEnd\n')
 
@@ -1758,7 +1826,8 @@ class bdist_apps(setuptools.Command):
         nsi.write('  ; Desktop icon\n')
         nsi.write('  Delete "$DESKTOP\\%s.lnk"\n' % shortname)
         nsi.write('  ; Start menu items\n')
-        nsi.write('  !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder\n')
+        nsi.write(
+            '  !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder\n')
         nsi.write('  RMDir /r "$SMPROGRAMS\\$StartMenuFolder"\n')
         nsi.write('SectionEnd\n')
         nsi.close()
@@ -1766,7 +1835,8 @@ class bdist_apps(setuptools.Command):
         cmd = ['makensis']
         for flag in ["V2"]:
             cmd.append(
-                '{}{}'.format('/' if sys.platform.startswith('win') else '-', flag)
+                '{}{}'.format(
+                    '/' if sys.platform.startswith('win') else '-', flag)
             )
         cmd.append(nsifile.to_os_specific())
         subprocess.check_call(cmd)
@@ -1789,11 +1859,14 @@ class bdist_apps(setuptools.Command):
 
         for platform in platforms:
             build_dir = os.path.join(build_base, platform)
-            basename = '{}_{}'.format(self.distribution.get_fullname(), platform)
-            installers = self.installers.get(platform, self.DEFAULT_INSTALLERS.get(platform, ['zip']))
+            basename = '{}_{}'.format(
+                self.distribution.get_fullname(), platform)
+            installers = self.installers.get(
+                platform, self.DEFAULT_INSTALLERS.get(platform, ['zip']))
 
             for installer in installers:
-                self.announce('\nBuilding {} for platform: {}'.format(installer, platform), distutils.log.INFO)
+                self.announce('\nBuilding {} for platform: {}'.format(
+                    installer, platform), distutils.log.INFO)
 
                 if installer == 'zip':
                     self.create_zip(basename, build_dir)
@@ -1806,7 +1879,8 @@ class bdist_apps(setuptools.Command):
                 elif installer == 'nsis':
                     if not platform.startswith('win'):
                         self.announce(
-                            '\tNSIS installer not supported for platform: {}'.format(platform),
+                            '\tNSIS installer not supported for platform: {}'.format(
+                                platform),
                             distutils.log.ERROR
                         )
                         continue
@@ -1822,7 +1896,8 @@ class bdist_apps(setuptools.Command):
                     self.create_nsis(basename, build_dir, is_64bit)
 
                 else:
-                    self.announce('\tUnknown installer: {}'.format(installer), distutils.log.ERROR)
+                    self.announce('\tUnknown installer: {}'.format(
+                        installer), distutils.log.ERROR)
 
 
 def finalize_distribution_options(dist):

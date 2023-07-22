@@ -61,7 +61,8 @@ import sys
 import os
 from . import FreezeTool
 
-def usage(code, msg = ''):
+
+def usage(code, msg=''):
     if __doc__:
         sys.stderr.write(__doc__ + '\n')
     sys.stderr.write(str(msg) + '\n')
@@ -131,13 +132,13 @@ def main(args=None):
         startfile = args[0]
         startmod = startfile
         if startfile.endswith('.py') or startfile.endswith('.pyw') or \
-        startfile.endswith('.pyc') or startfile.endswith('.pyo'):
+                startfile.endswith('.pyc') or startfile.endswith('.pyo'):
             startmod = os.path.splitext(startfile)[0]
 
         if outputType == 'dll' or outputType == 'c':
-            freezer.addModule(startmod, filename = startfile)
+            freezer.addModule(startmod, filename=startfile)
         else:
-            freezer.addModule('__main__', filename = startfile)
+            freezer.addModule('__main__', filename=startfile)
             compileToExe = True
             addStartupModules = True
 
@@ -145,14 +146,14 @@ def main(args=None):
         # We must have a main module when making an executable.
         usage(1, 'A main file needs to be specified when creating an executable.')
 
-    freezer.done(addStartupModules = addStartupModules)
+    freezer.done(addStartupModules=addStartupModules)
 
     if outputType == 'mf':
         freezer.writeMultifile(basename)
     elif outputType == 'c':
         freezer.writeCode(basename)
     else:
-        freezer.generateCode(basename, compileToExe = compileToExe)
+        freezer.generateCode(basename, compileToExe=compileToExe)
 
     return 0
 

@@ -3,7 +3,7 @@
 __all__ = ['FourStateAI']
 
 from direct.directnotify import DirectNotifyGlobal
-#import DistributedObjectAI
+# import DistributedObjectAI
 from . import ClassicFSM
 from . import State
 from direct.task import Task
@@ -43,7 +43,7 @@ class FourStateAI:
     """
     notify = DirectNotifyGlobal.directNotify.newCategory('FourStateAI')
 
-    def __init__(self, names, durations = [0, 1, None, 1, 1]):
+    def __init__(self, names, durations=[0, 1, None, 1, 1]):
         """
         Names is a list of state names.  Some examples are::
 
@@ -91,8 +91,8 @@ class FourStateAI:
         """
         self.stateIndex = 0
         assert self.__debugPrint(
-                "FourStateAI(names=%s, durations=%s)"
-                %(names, durations))
+            "FourStateAI(names=%s, durations=%s)"
+            % (names, durations))
         self.doLaterTask = None
         assert len(names) == 5
         assert len(names) == len(durations)
@@ -122,14 +122,14 @@ class FourStateAI:
                            self.enterState4,
                            self.exitState4,
                            [names[1]]),
-            }
+        }
         self.fsm = ClassicFSM.ClassicFSM('FourState',
-                           list(self.states.values()),
-                           # Initial State
-                           names[0],
-                           # Final State
-                           names[0],
-                          )
+                                         list(self.states.values()),
+                                         # Initial State
+                                         names[0],
+                                         # Final State
+                                         names[0],
+                                         )
         self.fsm.enterInitialState()
 
     def delete(self):
@@ -141,7 +141,8 @@ class FourStateAI:
         del self.fsm
 
     def getState(self):
-        assert self.__debugPrint("getState() returning %s"%(self.stateIndex,))
+        assert self.__debugPrint(
+            "getState() returning %s" % (self.stateIndex,))
         return [self.stateIndex]
 
     def sendState(self):
@@ -149,7 +150,7 @@ class FourStateAI:
         self.sendUpdate('setState', self.getState())
 
     def setIsOn(self, isOn):
-        assert self.__debugPrint("setIsOn(isOn=%s)"%(isOn,))
+        assert self.__debugPrint("setIsOn(isOn=%s)" % (isOn,))
         if isOn:
             if self.stateIndex != 4:
                 # ...if it's not On; request turning on:
@@ -158,16 +159,17 @@ class FourStateAI:
             if self.stateIndex != 2:
                 # ...if it's not Off; request turning off:
                 self.fsm.request(self.states[1])
-        #if isOn:
+        # if isOn:
         #    nextState = (4, 3, 3, 4, None)[self.stateIndex]
-        #else:
+        # else:
         #    nextState = (2, 2, None, 1, 1)[self.stateIndex]
-        #if nextState is not None:
+        # if nextState is not None:
         #    self.fsm.request(self.states[nextState])
 
     def isOn(self):
-        assert self.__debugPrint("isOn() returning %s (stateIndex=%s)"%(self.stateIndex==4, self.stateIndex))
-        return self.stateIndex==4
+        assert self.__debugPrint("isOn() returning %s (stateIndex=%s)" % (
+            self.stateIndex == 4, self.stateIndex))
+        return self.stateIndex == 4
 
     def changedOnState(self, isOn):
         """
@@ -175,7 +177,7 @@ class FourStateAI:
         The self.isOn value has toggled.  Call getIsOn() to
         get the current state.
         """
-        assert self.__debugPrint("changedOnState(isOn=%s)"%(isOn,))
+        assert self.__debugPrint("changedOnState(isOn=%s)" % (isOn,))
 
     ##### states #####
 
@@ -194,23 +196,23 @@ class FourStateAI:
 
     def enterStateN(self, stateIndex, nextStateIndex):
         assert self.__debugPrint(
-            "enterStateN(stateIndex=%s, nextStateIndex=%s)"%
+            "enterStateN(stateIndex=%s, nextStateIndex=%s)" %
             (stateIndex, nextStateIndex))
         self.stateIndex = stateIndex
         self.nextStateIndex = nextStateIndex
         self.distributeStateChange()
         if self.durations[stateIndex] is not None:
             assert self.doLaterTask is None
-            self.doLaterTask=taskMgr.doMethodLater(
+            self.doLaterTask = taskMgr.doMethodLater(
                 self.durations[stateIndex],
                 self.switchToNextStateTask,
-                "enterStateN-timer-%s"%id(self))
+                "enterStateN-timer-%s" % id(self))
 
     def exitStateN(self):
         assert self.__debugPrint("exitStateN()")
         if self.doLaterTask:
             taskMgr.remove(self.doLaterTask)
-            self.doLaterTask=None
+            self.doLaterTask = None
 
     ##### state 0 #####
 
@@ -224,7 +226,7 @@ class FourStateAI:
     ##### state 1 #####
 
     def enterState1(self):
-        #assert self.__debugPrint("enterState1()")
+        # assert self.__debugPrint("enterState1()")
         self.enterStateN(1, 2)
 
     def exitState1(self):
@@ -234,7 +236,7 @@ class FourStateAI:
     ##### state 2 #####
 
     def enterState2(self):
-        #assert self.__debugPrint("enterState2()")
+        # assert self.__debugPrint("enterState2()")
         self.enterStateN(2, 3)
 
     def exitState2(self):
@@ -244,7 +246,7 @@ class FourStateAI:
     ##### state 3 #####
 
     def enterState3(self):
-        #assert self.__debugPrint("enterState3()")
+        # assert self.__debugPrint("enterState3()")
         self.enterStateN(3, 4)
 
     def exitState3(self):
@@ -266,6 +268,5 @@ class FourStateAI:
     if __debug__:
         def __debugPrint(self, message):
             """for debugging"""
-            return self.notify.debug("%d (%d) %s"%(
-                    id(self), self.stateIndex==4, message))
-
+            return self.notify.debug("%d (%d) %s" % (
+                id(self), self.stateIndex == 4, message))

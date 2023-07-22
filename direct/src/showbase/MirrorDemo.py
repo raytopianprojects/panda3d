@@ -24,8 +24,9 @@ __all__ = ['setupMirror', 'showFrustum']
 from panda3d.core import *
 from direct.task import Task
 
-def setupMirror(name, width, height, rootCamera = None,
-                bufferSize = 256, clearColor = None):
+
+def setupMirror(name, width, height, rootCamera=None,
+                bufferSize=256, clearColor=None):
     # The return value is a NodePath that contains a rectangle that
     # reflects render.  You can reparent, reposition, and rotate it
     # anywhere you like.
@@ -53,7 +54,7 @@ def setupMirror(name, width, height, rootCamera = None,
     buffer = base.win.makeTextureBuffer(name, bufferSize, bufferSize)
     if clearColor is None:
         buffer.setClearColor(base.win.getClearColor())
-        #buffer.setClearColor(VBase4(0, 0, 1, 1))
+        # buffer.setClearColor(VBase4(0, 0, 1, 1))
     else:
         buffer.setClearColor(clearColor)
 
@@ -77,15 +78,15 @@ def setupMirror(name, width, height, rootCamera = None,
     camera.setInitialState(dummy.getState())
 
     # Create a visible representation of the camera so we can see it.
-    #cameraVis = loader.loadModel('camera.egg')
-    #if not cameraVis.isEmpty():
+    # cameraVis = loader.loadModel('camera.egg')
+    # if not cameraVis.isEmpty():
     #    cameraVis.reparentTo(cameraNP)
 
     # Spawn a task to keep that camera on the opposite side of the
     # mirror.
-    def moveCamera(task, cameraNP = cameraNP, plane = plane,
-                   planeNP = planeNP, card = card, lens = lens,
-                   width = width, height = height, rootCamera = rootCamera):
+    def moveCamera(task, cameraNP=cameraNP, plane=plane,
+                   planeNP=planeNP, card=card, lens=lens,
+                   width=width, height=height, rootCamera=rootCamera):
         # Set the camera to the mirror-image position of the main camera.
         cameraNP.setMat(rootCamera.getMat(planeNP) * plane.getReflectionMat())
 
@@ -96,10 +97,14 @@ def setupMirror(name, width, height, rootCamera = None,
         # And reset the frustum to exactly frame the mirror's corners.
         # This is a minor detail, but it helps to provide a realistic
         # reflection and keep the subject centered.
-        ul = cameraNP.getRelativePoint(card, Point3(-width / 2.0, 0, height / 2.0))
-        ur = cameraNP.getRelativePoint(card, Point3(width / 2.0, 0, height / 2.0))
-        ll = cameraNP.getRelativePoint(card, Point3(-width / 2.0, 0, -height / 2.0))
-        lr = cameraNP.getRelativePoint(card, Point3(width / 2.0, 0, -height / 2.0))
+        ul = cameraNP.getRelativePoint(
+            card, Point3(-width / 2.0, 0, height / 2.0))
+        ur = cameraNP.getRelativePoint(
+            card, Point3(width / 2.0, 0, height / 2.0))
+        ll = cameraNP.getRelativePoint(
+            card, Point3(-width / 2.0, 0, -height / 2.0))
+        lr = cameraNP.getRelativePoint(
+            card, Point3(width / 2.0, 0, -height / 2.0))
 
         # get the distance from the mirrors camera to the mirror plane
         camvec = planeNP.getPos() - cameraNP.getPos()
@@ -112,20 +117,22 @@ def setupMirror(name, width, height, rootCamera = None,
         ll.setY(camdist)
         lr.setY(camdist)
 
-        lens.setFrustumFromCorners(ul, ur, ll, lr, Lens.FCCameraPlane | Lens.FCOffAxis | Lens.FCAspectRatio)
+        lens.setFrustumFromCorners(
+            ul, ur, ll, lr, Lens.FCCameraPlane | Lens.FCOffAxis | Lens.FCAspectRatio)
 
         return Task.cont
 
     # Add it with a fairly high priority to make it happen late in the
     # frame, after the avatar controls (or whatever) have been applied
     # but before we render.
-    taskMgr.add(moveCamera, name, priority = 40)
+    taskMgr.add(moveCamera, name, priority=40)
 
     # Now apply the output of this camera as a texture on the mirror's
     # visible representation.
     card.setTexture(buffer.getTexture())
 
     return root
+
 
 def showFrustum(np):
     # Utility function to reveal the frustum for a particular camera.
@@ -135,6 +142,7 @@ def showFrustum(np):
     geomNode = GeomNode('frustum')
     geomNode.addGeom(lens.makeGeometry())
     cameraNP.attachNewNode(geomNode)
+
 
 if __name__ == "__main__":
     from direct.showbase.ShowBase import ShowBase
@@ -146,11 +154,12 @@ if __name__ == "__main__":
     panda.setScale(0.5)
     panda.reparentTo(render)
 
-    myMirror = setupMirror("mirror", 10, 10, bufferSize=1024, clearColor=(0, 0, 1, 1))
+    myMirror = setupMirror(
+        "mirror", 10, 10, bufferSize=1024, clearColor=(0, 0, 1, 1))
     myMirror.setPos(0, 15, 2.5)
     myMirror.setH(180)
 
     # Uncomment this to show the frustum of the camera in the mirror
-    #showFrustum(render)
+    # showFrustum(render)
 
     base.run()

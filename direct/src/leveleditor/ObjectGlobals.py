@@ -43,17 +43,18 @@ FUNC_NAME = 0
 FUNC_ARGS = 1
 
 # data type of property value
-PROP_INT = 0 # int type value
-PROP_BOOL = 1 # bool type value
-PROP_FLOAT = 2 # float type value
-PROP_STR = 3 # string type value
-PROP_BLIND = 4 # blind type value
+PROP_INT = 0  # int type value
+PROP_BOOL = 1  # bool type value
+PROP_FLOAT = 2  # float type value
+PROP_STR = 3  # string type value
+PROP_BLIND = 4  # blind type value
 
 TYPE_CONV = {PROP_INT: int, PROP_BOOL: bool, PROP_FLOAT: float, PROP_STR: str}
 
 # these dynamic args should be used in create / update function declaration
 ARG_NAME = '_arg_name'
-ARG_VAL = '_arg_val' # value from UI
-ARG_OBJ = '_arg_object' # obj information data structure
-ARG_NOLOADING = '_arg_noloading' # to indicate this call is not from loading a scene
-ARG_PARENT = '_arg_parent' # parent object to be passed
+ARG_VAL = '_arg_val'  # value from UI
+ARG_OBJ = '_arg_object'  # obj information data structure
+# to indicate this call is not from loading a scene
+ARG_NOLOADING = '_arg_noloading'
+ARG_PARENT = '_arg_parent'  # parent object to be passed

@@ -8,6 +8,7 @@ from direct.directnotify.DirectNotifyGlobal import *
 from . import Interval
 import random
 
+
 class SoundInterval(Interval.Interval):
     # Name counter
     soundNum = 1
@@ -31,9 +32,10 @@ class SoundInterval(Interval.Interval):
     # in Miles when looping MP3s. =(
     # RAU 03/01/07 add listenerNode in case we don't want to
     # use base.camera as the listener, node must not be None
-    def __init__(self, sound, loop = 0, duration = 0.0, name = None,
-                 volume = 1.0, startTime = 0.0, node=None,
-                 seamlessLoop=True, listenerNode = None, cutOff = None):
+
+    def __init__(self, sound, loop=0, duration=0.0, name=None,
+                 volume=1.0, startTime=0.0, node=None,
+                 seamlessLoop=True, listenerNode=None, cutOff=None):
         """__init__(sound, loop, name)
         """
         # Generate unique name
@@ -59,11 +61,11 @@ class SoundInterval(Interval.Interval):
         # If no duration given use sound's duration as interval's duration
         if float(duration) == 0.0 and self.sound != None:
             duration = max(self.soundDuration - self.startTime, 0)
-            #if (duration == 0):
+            # if (duration == 0):
             #    self.notify.warning('zero length duration!')
 
             # MPG - hack for Miles bug
-            #duration += 1.5
+            # duration += 1.5
 
             # DCR - hack for Miles bug - adding 1.5 seconds caused
             # problems for MG_neg_buzzer.wav
@@ -78,7 +80,7 @@ class SoundInterval(Interval.Interval):
             # drose - ok, I've put in a lower-level workaround in the
             # MilesAudioManager.  This is no longer necessary up here,
             # where it pollutes SoundInterval for everyone.
-            #duration += min(duration * 2.4, 1.5)
+            # duration += min(duration * 2.4, 1.5)
 
         # Generate unique name if necessary
         if (name == None):
@@ -96,7 +98,7 @@ class SoundInterval(Interval.Interval):
         if (t1 < self.soundDuration) and not (self._seamlessLoop and self._soundPlaying):
             base.sfxPlayer.playSfx(
                 self.sound, self.fLoop, 1, self.volume, t1, self.node,
-                listenerNode = self.listenerNode, cutoff = self.cutOff)
+                listenerNode=self.listenerNode, cutoff=self.cutOff)
             self._soundPlaying = True
         self.state = CInterval.SStarted
         self.currT = t
@@ -105,9 +107,9 @@ class SoundInterval(Interval.Interval):
         pass
 
     def privStep(self, t):
-        ## if self._reverse:
-        ##     # Don't attempt to play the sound backwards.
-        ##     return
+        # if self._reverse:
+        # Don't attempt to play the sound backwards.
+        # return
 
         if self.state == CInterval.SPaused:
             # Restarting from a pause.
@@ -115,7 +117,7 @@ class SoundInterval(Interval.Interval):
             if t1 < self.soundDuration:
                 base.sfxPlayer.playSfx(
                     self.sound, self.fLoop, 1, self.volume, t1, self.node,
-                    listenerNode = self.listenerNode)
+                    listenerNode=self.listenerNode)
         if self.listenerNode and not self.listenerNode.isEmpty() and \
            self.node and not self.node.isEmpty():
             base.sfxPlayer.setFinalVolume(self.sound, self.node, self.volume,
@@ -133,7 +135,7 @@ class SoundInterval(Interval.Interval):
         # if we're just coming to the end of a seamlessloop, leave the sound alone,
         # let the audio subsystem loop it
         if (self._seamlessLoop and self._soundPlaying and self.getLoop()
-            and not hasattr(self, '_inFinish')):
+                and not hasattr(self, '_inFinish')):
             base.sfxPlayer.setFinalVolume(self.sound, self.node, self.volume,
                                           self.listenerNode, self.cutOff)
             return
@@ -159,7 +161,7 @@ class SoundInterval(Interval.Interval):
             self._soundPlaying = False
         self.state = CInterval.SPaused
 
-    def loop(self, startT = 0.0, endT = -1.0, playRate = 1.0, stagger=False):
+    def loop(self, startT=0.0, endT=-1.0, playRate=1.0, stagger=False):
         self.fLoop = 1
         Interval.Interval.loop(self, startT, endT, playRate)
         if stagger:

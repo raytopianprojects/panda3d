@@ -3,7 +3,8 @@
 __all__ = ['WidgetPropertiesDialog']
 
 from direct.showbase.TkGlobal import *
-import Pmw, sys
+import Pmw
+import sys
 
 """
 TODO:
@@ -13,10 +14,12 @@ TODO:
   Something other than Return to accept a new value
 """
 
+
 class WidgetPropertiesDialog(Toplevel):
     """Class to open dialogs to adjust widget properties."""
-    def __init__(self, propertyDict, propertyList = None, parent = None,
-                 title = 'Widget Properties'):
+
+    def __init__(self, propertyDict, propertyList=None, parent=None,
+                 title='Widget Properties'):
         """Initialize a dialog.
         Arguments:
             propertyDict -- a dictionary of properties to be edited
@@ -95,18 +98,18 @@ class WidgetPropertiesDialog(Toplevel):
             helpString = propertySet.get('help', None)
             # Create label
             label = Label(master, text=property, justify=LEFT)
-            label.grid(row=count, column = 0, padx=5, sticky=W)
+            label.grid(row=count, column=0, padx=5, sticky=W)
 
             # Create entry
-            entry = Pmw.EntryField(master, entry_justify = 'right')
-            entry.grid(row=count, column = 1, padx=5, sticky=W+E)
+            entry = Pmw.EntryField(master, entry_justify='right')
+            entry.grid(row=count, column=1, padx=5, sticky=W+E)
             if initialvalue is None:
                 entry.insert(0, 'None')
             else:
                 entry.insert(0, initialvalue)
 
             # Create balloon for help
-            balloon = Pmw.Balloon(state = 'balloon')
+            balloon = Pmw.Balloon(state='balloon')
             self.balloonList.append(balloon)
             # extra info if None is allowed value
             if helpString is None:
@@ -118,17 +121,17 @@ class WidgetPropertiesDialog(Toplevel):
             if entryType == 'real':
                 # Only allow real numbers
                 if fAllowNone:
-                    entry['validate'] = { 'validator': self.realOrNone }
+                    entry['validate'] = {'validator': self.realOrNone}
                 else:
-                    entry['validate'] = { 'validator': 'real' }
+                    entry['validate'] = {'validator': 'real'}
                 if helpString is None:
                     helpString = 'Enter a floating point number' + extra + '.'
             elif entryType == 'integer':
                 # Only allow integer values
                 if fAllowNone:
-                    entry['validate'] = { 'validator': self.intOrNone }
+                    entry['validate'] = {'validator': self.intOrNone}
                 else:
-                    entry['validate'] = { 'validator': 'integer' }
+                    entry['validate'] = {'validator': 'integer'}
                 if helpString is None:
                     helpString = 'Enter an integer' + extra + '.'
             else:
@@ -231,5 +234,4 @@ class WidgetPropertiesDialog(Toplevel):
         This method is called automatically to process the data, *after*
         the dialog is destroyed. By default, it does nothing.
         """
-        pass # override
-
+        pass  # override

@@ -12,18 +12,21 @@ class ObjectPaletteUI(wx.Panel):
         self.editor = editor
 
         self.palette = self.editor.objectPalette
-        self.tree = PaletteTreeCtrl(self, treeStyle=wx.TR_DEFAULT_STYLE, rootName='Objects')
+        self.tree = PaletteTreeCtrl(
+            self, treeStyle=wx.TR_DEFAULT_STYLE, rootName='Objects')
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.tree, 1, wx.EXPAND, 0)
-        self.SetSizer(sizer); self.Layout()
+        self.SetSizer(sizer)
+        self.Layout()
 
         parentSizer = wx.BoxSizer(wx.VERTICAL)
         parentSizer.Add(self, 1, wx.EXPAND, 0)
-        parent.SetSizer(parentSizer); parent.Layout()
+        parent.SetSizer(parentSizer)
+        parent.Layout()
 
         self.opSortAlpha = "Sort Alphabetical Order"
-        self.opSortOrig  = "Sort Original Order"
+        self.opSortOrig = "Sort Original Order"
         self.opSort = self.opSortOrig
 
         self.menuItems = list()
@@ -39,7 +42,8 @@ class ObjectPaletteUI(wx.Panel):
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.onSelected)
 
     def populate(self):
-        self.tree.addTreeNodes(self.tree.GetRootItem(), self.palette.rootName, self.palette.dataStruct, self.palette.dataKeys)
+        self.tree.addTreeNodes(self.tree.GetRootItem(
+        ), self.palette.rootName, self.palette.dataStruct, self.palette.dataKeys)
 
     def onSelected(self, event):
         pass
@@ -53,9 +57,9 @@ class ObjectPaletteUI(wx.Panel):
         menuItem = self.popupmenu.FindItemById(event.GetId())
         text = menuItem.GetText()
         if text == self.opSortAlpha:
-           self.opSort = self.opSortAlpha
+            self.opSort = self.opSortAlpha
         elif text == self.opSortOrig:
-           self.opSort = self.opSortOrig
+            self.opSort = self.opSortOrig
         self.tree.SortTreeNodes(self.tree.GetRootItem())
 
     def compareItems(self, item1, item2):

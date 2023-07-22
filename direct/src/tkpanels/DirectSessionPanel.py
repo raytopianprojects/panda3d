@@ -22,19 +22,20 @@ popup panels
 taskMgr page
 """
 
+
 class DirectSessionPanel(AppShell):
     # Override class variables here
     appname = 'Direct Session Panel'
-    frameWidth      = 600
-    frameHeight     = 365
+    frameWidth = 600
+    frameHeight = 365
     usecommandarea = 0
-    usestatusarea  = 0
+    usestatusarea = 0
 
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         INITOPT = Pmw.INITOPT
         optiondefs = (
             ('title',       self.appname,       None),
-            )
+        )
         self.defineoptions(kw, optiondefs)
 
         # Call superclass initialization function
@@ -79,7 +80,7 @@ class DirectSessionPanel(AppShell):
             ('DIRECT_redoListEmpty', self.redoListEmptyHook),
             ('DIRECT_selectedNodePath', self.selectedNodePathHook),
             ('DIRECT_addLight', self.addLight),
-            ]
+        ]
         for event, method in self.actionEvents:
             self.accept(event, method)
 
@@ -93,96 +94,96 @@ class DirectSessionPanel(AppShell):
         self.directEnabled.set(1)
         self.menuBar.addmenuitem('DIRECT', 'checkbutton',
                                  'DIRECT Enabled',
-                                 label = 'Enable',
-                                 variable = self.directEnabled,
-                                 command = self.toggleDirect)
+                                 label='Enable',
+                                 variable=self.directEnabled,
+                                 command=self.toggleDirect)
 
         self.directGridEnabled = BooleanVar()
         self.directGridEnabled.set(base.direct.grid.isEnabled())
         self.menuBar.addmenuitem('DIRECT', 'checkbutton',
                                  'DIRECT Grid Enabled',
-                                 label = 'Enable Grid',
-                                 variable = self.directGridEnabled,
-                                 command = self.toggleDirectGrid)
+                                 label='Enable Grid',
+                                 variable=self.directGridEnabled,
+                                 command=self.toggleDirectGrid)
 
         self.menuBar.addmenuitem('DIRECT', 'command',
                                  'Toggle Object Handles Visability',
-                                 label = 'Toggle Widget Viz',
-                                 command = base.direct.toggleWidgetVis)
+                                 label='Toggle Widget Viz',
+                                 command=base.direct.toggleWidgetVis)
 
         self.menuBar.addmenuitem(
             'DIRECT', 'command',
             'Toggle Widget Move/COA Mode',
-            label = 'Toggle Widget Mode',
-            command = base.direct.manipulationControl.toggleObjectHandlesMode)
+            label='Toggle Widget Mode',
+            command=base.direct.manipulationControl.toggleObjectHandlesMode)
 
         self.directWidgetOnTop = BooleanVar()
         self.directWidgetOnTop.set(0)
         self.menuBar.addmenuitem('DIRECT', 'checkbutton',
                                  'DIRECT Widget On Top',
-                                 label = 'Widget On Top',
-                                 variable = self.directWidgetOnTop,
-                                 command = self.toggleWidgetOnTop)
+                                 label='Widget On Top',
+                                 variable=self.directWidgetOnTop,
+                                 command=self.toggleWidgetOnTop)
 
         self.menuBar.addmenuitem('DIRECT', 'command',
                                  'Deselect All',
-                                 label = 'Deselect All',
-                                 command = base.direct.deselectAll)
+                                 label='Deselect All',
+                                 command=base.direct.deselectAll)
 
         # Get a handle to the menu frame
         menuFrame = self.menuFrame
 
         # Widget to select node paths (and display list of selected node paths)
         self.nodePathMenu = Pmw.ComboBox(
-            menuFrame, labelpos = W, label_text = 'DIRECT Select:',
-            entry_width = 20,
-            selectioncommand = self.selectNodePathNamed,
-            scrolledlist_items = self.nodePathNames)
+            menuFrame, labelpos=W, label_text='DIRECT Select:',
+            entry_width=20,
+            selectioncommand=self.selectNodePathNamed,
+            scrolledlist_items=self.nodePathNames)
         self.nodePathMenu.selectitem('widget')
         self.nodePathMenuEntry = (
             self.nodePathMenu.component('entryfield_entry'))
         self.nodePathMenuBG = (
             self.nodePathMenuEntry.configure('background')[3])
-        self.nodePathMenu.pack(side = LEFT, fill = X, expand = 1)
+        self.nodePathMenu.pack(side=LEFT, fill=X, expand=1)
         self.bind(self.nodePathMenu, 'Select node path to manipulate')
 
-        self.undoButton = Button(menuFrame, text = 'Undo',
-                                 command = base.direct.undo)
+        self.undoButton = Button(menuFrame, text='Undo',
+                                 command=base.direct.undo)
         if base.direct.undoList:
             self.undoButton['state'] = 'normal'
         else:
             self.undoButton['state'] = 'disabled'
-        self.undoButton.pack(side = LEFT, expand = 0)
+        self.undoButton.pack(side=LEFT, expand=0)
         self.bind(self.undoButton, 'Undo last operation')
 
-        self.redoButton = Button(menuFrame, text = 'Redo',
-                                 command = base.direct.redo)
+        self.redoButton = Button(menuFrame, text='Redo',
+                                 command=base.direct.redo)
         if base.direct.redoList:
             self.redoButton['state'] = 'normal'
         else:
             self.redoButton['state'] = 'disabled'
-        self.redoButton.pack(side = LEFT, expand = 0)
+        self.redoButton.pack(side=LEFT, expand=0)
         self.bind(self.redoButton, 'Redo last operation')
 
         # The master frame for the dials
         mainFrame = Frame(interior)
 
         # Paned widget for dividing two halves
-        framePane = Pmw.PanedWidget(mainFrame, orient = HORIZONTAL)
-        sgeFrame = framePane.add('left', min = 250)
-        notebookFrame = framePane.add('right', min = 300)
+        framePane = Pmw.PanedWidget(mainFrame, orient=HORIZONTAL)
+        sgeFrame = framePane.add('left', min=250)
+        notebookFrame = framePane.add('right', min=300)
 
         # Scene Graph Explorer
         self.SGE = SceneGraphExplorer.SceneGraphExplorer(
-            sgeFrame, nodePath = render,
-            scrolledCanvas_hull_width = 250,
-            scrolledCanvas_hull_height = 300)
-        self.SGE.pack(fill = BOTH, expand = 1)
-        sgeFrame.pack(side = LEFT, fill = 'both', expand = 1)
+            sgeFrame, nodePath=render,
+            scrolledCanvas_hull_width=250,
+            scrolledCanvas_hull_height=300)
+        self.SGE.pack(fill=BOTH, expand=1)
+        sgeFrame.pack(side=LEFT, fill='both', expand=1)
 
         # Create the notebook pages
         notebook = Pmw.NoteBook(notebookFrame)
-        notebook.pack(fill = BOTH, expand = 1)
+        notebook.pack(fill=BOTH, expand=1)
         self.createEnvPage(notebook.add('Environment'))
         self.createLightsPage(notebook.add('Lights'))
         self.createGridPage(notebook.add('Grid'))
@@ -192,144 +193,145 @@ class DirectSessionPanel(AppShell):
 
         notebook.setnaturalsize()
 
-        framePane.pack(expand = 1, fill = BOTH)
-        mainFrame.pack(fill = 'both', expand = 1)
+        framePane.pack(expand=1, fill=BOTH)
+        mainFrame.pack(fill='both', expand=1)
 
         # Put this here so it isn't called right away
         notebook['raisecommand'] = self.updateInfo
 
     def createEnvPage(self, envPage):
-        bkgrdFrame = Frame(envPage, borderwidth = 2, relief = 'sunken')
+        bkgrdFrame = Frame(envPage, borderwidth=2, relief='sunken')
 
-        Label(bkgrdFrame, text = 'Background',
-              font=('MSSansSerif', 14, 'bold')).pack(expand = 0)
+        Label(bkgrdFrame, text='Background',
+              font=('MSSansSerif', 14, 'bold')).pack(expand=0)
 
         self.backgroundColor = VectorWidgets.ColorEntry(
-            bkgrdFrame, text = 'Background Color')
+            bkgrdFrame, text='Background Color')
         self.backgroundColor['command'] = self.setBackgroundColorVec
-        self.backgroundColor.pack(fill = X, expand = 0)
+        self.backgroundColor.pack(fill=X, expand=0)
         self.bind(self.backgroundColor, 'Set background color')
-        bkgrdFrame.pack(fill = BOTH, expand = 0)
+        bkgrdFrame.pack(fill=BOTH, expand=0)
 
-        drFrame = Frame(envPage, borderwidth = 2, relief = 'sunken')
-        Label(drFrame, text = 'Display Region',
-              font=('MSSansSerif', 14, 'bold')).pack(expand = 0)
+        drFrame = Frame(envPage, borderwidth=2, relief='sunken')
+        Label(drFrame, text='Display Region',
+              font=('MSSansSerif', 14, 'bold')).pack(expand=0)
 
-        nameList = ['Display Region ' + repr(x) for x in range(len(base.direct.drList))]
+        nameList = ['Display Region ' + repr(x)
+                    for x in range(len(base.direct.drList))]
         self.drMenu = Pmw.ComboBox(
-            drFrame, labelpos = W, label_text = 'Display Region:',
-            entry_width = 20,
-            selectioncommand = self.selectDisplayRegionNamed,
-            scrolledlist_items = nameList)
-        self.drMenu.pack(fill = X, expand = 0)
+            drFrame, labelpos=W, label_text='Display Region:',
+            entry_width=20,
+            selectioncommand=self.selectDisplayRegionNamed,
+            scrolledlist_items=nameList)
+        self.drMenu.pack(fill=X, expand=0)
         self.bind(self.drMenu, 'Select display region to configure')
 
         self.nearPlane = Floater.Floater(
             drFrame,
-            text = 'Near Plane',
-            min = 0.01)
+            text='Near Plane',
+            min=0.01)
         self.nearPlane['command'] = self.setNear
-        self.nearPlane.pack(fill = X, expand = 0)
+        self.nearPlane.pack(fill=X, expand=0)
         self.bind(self.nearPlane, 'Set near plane distance')
 
         self.farPlane = Floater.Floater(
             drFrame,
-            text = 'Far Plane',
-            min = 0.01)
+            text='Far Plane',
+            min=0.01)
         self.farPlane['command'] = self.setFar
-        self.farPlane.pack(fill = X, expand = 0)
+        self.farPlane.pack(fill=X, expand=0)
         self.bind(self.farPlane, 'Set far plane distance')
 
         fovFrame = Frame(drFrame)
         fovFloaterFrame = Frame(fovFrame)
         self.hFov = Slider.Slider(
             fovFloaterFrame,
-            text = 'Horizontal FOV',
-            min = 0.01, max = 170.0)
+            text='Horizontal FOV',
+            min=0.01, max=170.0)
         self.hFov['command'] = self.setHFov
-        self.hFov.pack(fill = X, expand = 0)
+        self.hFov.pack(fill=X, expand=0)
         self.bind(self.hFov, 'Set horizontal field of view')
 
         self.vFov = Slider.Slider(
             fovFloaterFrame,
-            text = 'Vertical FOV',
-            min = 0.01, max = 170.0)
+            text='Vertical FOV',
+            min=0.01, max=170.0)
         self.vFov['command'] = self.setVFov
-        self.vFov.pack(fill = X, expand = 0)
+        self.vFov.pack(fill=X, expand=0)
         self.bind(self.vFov, 'Set vertical field of view')
-        fovFloaterFrame.pack(side = LEFT, fill = X, expand = 1)
+        fovFloaterFrame.pack(side=LEFT, fill=X, expand=1)
 
         frame = Frame(fovFrame)
         self.lockedFov = BooleanVar()
         self.lockedFov.set(1)
         self.lockedFovButton = Checkbutton(
             frame,
-            text = 'Locked',
-            anchor = 'w', justify = LEFT,
-            variable = self.lockedFov)
-        self.lockedFovButton.pack(fill = X, expand = 0)
+            text='Locked',
+            anchor='w', justify=LEFT,
+            variable=self.lockedFov)
+        self.lockedFovButton.pack(fill=X, expand=0)
 
         self.resetFovButton = Button(
             frame,
-            text = 'Reset',
-            command = self.resetFov)
-        self.resetFovButton.pack(fill = X, expand = 0)
-        frame.pack(side = LEFT, fill = X, expand = 0)
-        fovFrame.pack(fill = X, expand = 1)
+            text='Reset',
+            command=self.resetFov)
+        self.resetFovButton.pack(fill=X, expand=0)
+        frame.pack(side=LEFT, fill=X, expand=0)
+        fovFrame.pack(fill=X, expand=1)
 
-        drFrame.pack(fill = BOTH, expand = 0)
+        drFrame.pack(fill=BOTH, expand=0)
 
         ## Render Style ##
-        toggleFrame = Frame(envPage, borderwidth = 2, relief = 'sunken')
-        Label(toggleFrame, text = 'Toggle Render Style',
-              font=('MSSansSerif', 14, 'bold')).pack(expand = 0)
+        toggleFrame = Frame(envPage, borderwidth=2, relief='sunken')
+        Label(toggleFrame, text='Toggle Render Style',
+              font=('MSSansSerif', 14, 'bold')).pack(expand=0)
         self.toggleBackfaceButton = Button(
             toggleFrame,
-            text = 'Backface',
-            command = base.toggleBackface)
-        self.toggleBackfaceButton.pack(side = LEFT, fill = X, expand = 1)
+            text='Backface',
+            command=base.toggle_backface)
+        self.toggleBackfaceButton.pack(side=LEFT, fill=X, expand=1)
 
         self.toggleLightsButton = Button(
             toggleFrame,
-            text = 'Lights',
-            command = base.direct.lights.toggle)
-        self.toggleLightsButton.pack(side = LEFT, fill = X, expand = 1)
+            text='Lights',
+            command=base.direct.lights.toggle)
+        self.toggleLightsButton.pack(side=LEFT, fill=X, expand=1)
 
         self.toggleTextureButton = Button(
             toggleFrame,
-            text = 'Texture',
-            command = base.toggleTexture)
-        self.toggleTextureButton.pack(side = LEFT, fill = X, expand = 1)
+            text='Texture',
+            command=base.toggle_texture)
+        self.toggleTextureButton.pack(side=LEFT, fill=X, expand=1)
 
         self.toggleWireframeButton = Button(
             toggleFrame,
-            text = 'Wireframe',
-            command = base.toggleWireframe)
-        self.toggleWireframeButton.pack(fill = X, expand = 1)
-        toggleFrame.pack(side = LEFT, fill = X, expand = 1)
+            text='Wireframe',
+            command=base.toggle_wireframe)
+        self.toggleWireframeButton.pack(fill=X, expand=1)
+        toggleFrame.pack(side=LEFT, fill=X, expand=1)
 
     def createLightsPage(self, lightsPage):
         # Lights #
-        lightFrame = Frame(lightsPage, borderwidth = 2, relief = 'sunken')
-        self.lightsButton = Menubutton(lightFrame, text = 'Lights',
+        lightFrame = Frame(lightsPage, borderwidth=2, relief='sunken')
+        self.lightsButton = Menubutton(lightFrame, text='Lights',
                                        font=('MSSansSerif', 14, 'bold'),
-                                       activebackground = '#909090')
+                                       activebackground='#909090')
         lightsMenu = Menu(self.lightsButton)
-        lightsMenu.add_command(label = 'Add Ambient Light',
-                            command = self.addAmbient)
-        lightsMenu.add_command(label = 'Add Directional Light',
-                            command = self.addDirectional)
-        lightsMenu.add_command(label = 'Add Point Light',
-                            command = self.addPoint)
-        lightsMenu.add_command(label = 'Add Spotlight',
-                            command = self.addSpot)
+        lightsMenu.add_command(label='Add Ambient Light',
+                               command=self.addAmbient)
+        lightsMenu.add_command(label='Add Directional Light',
+                               command=self.addDirectional)
+        lightsMenu.add_command(label='Add Point Light',
+                               command=self.addPoint)
+        lightsMenu.add_command(label='Add Spotlight',
+                               command=self.addSpot)
 
-        self.lightsButton.pack(expand = 0)
+        self.lightsButton.pack(expand=0)
         self.lightsButton['menu'] = lightsMenu
 
         # Notebook pages for light specific controls
-        self.lightNotebook = Pmw.NoteBook(lightFrame, tabpos = None,
-                                          borderwidth = 0)
+        self.lightNotebook = Pmw.NoteBook(lightFrame, tabpos=None,
+                                          borderwidth=0)
         ambientPage = self.lightNotebook.add('Ambient')
         directionalPage = self.lightNotebook.add('Directional')
         pointPage = self.lightNotebook.add('Point')
@@ -340,272 +342,271 @@ class DirectSessionPanel(AppShell):
         # Main light switch
         mainSwitchFrame = Frame(lightFrame)
         Label(mainSwitchFrame,
-              text = 'Lighting:').pack(side = LEFT, expand = 0)
+              text='Lighting:').pack(side=LEFT, expand=0)
         self.enableLights = BooleanVar()
         self.enableLightsButton = Checkbutton(
             mainSwitchFrame,
-            text = 'Enabled/Disabled',
-            variable = self.enableLights,
-            command = self.toggleLights)
-        self.enableLightsButton.pack(side = LEFT, fill = X, expand = 0)
-        mainSwitchFrame.pack(fill = X, expand = 0)
+            text='Enabled/Disabled',
+            variable=self.enableLights,
+            command=self.toggleLights)
+        self.enableLightsButton.pack(side=LEFT, fill=X, expand=0)
+        mainSwitchFrame.pack(fill=X, expand=0)
 
         # Widget to select a light to configure
         nameList = base.direct.lights.getNameList()
         lightMenuFrame = Frame(lightFrame)
 
         self.lightMenu = Pmw.ComboBox(
-            lightMenuFrame, labelpos = W, label_text = 'Light:',
-            entry_width = 20,
-            selectioncommand = self.selectLightNamed,
-            scrolledlist_items = nameList)
-        self.lightMenu.pack(side = LEFT, fill = X, expand = 0)
+            lightMenuFrame, labelpos=W, label_text='Light:',
+            entry_width=20,
+            selectioncommand=self.selectLightNamed,
+            scrolledlist_items=nameList)
+        self.lightMenu.pack(side=LEFT, fill=X, expand=0)
         self.bind(self.lightMenu, 'Select light to configure')
 
         self.lightActive = BooleanVar()
         self.lightActiveButton = Checkbutton(
             lightMenuFrame,
-            text = 'On/Off',
-            variable = self.lightActive,
-            command = self.toggleActiveLight)
-        self.lightActiveButton.pack(side = LEFT, fill = X, expand = 0)
+            text='On/Off',
+            variable=self.lightActive,
+            command=self.toggleActiveLight)
+        self.lightActiveButton.pack(side=LEFT, fill=X, expand=0)
 
         # Pack light menu
-        lightMenuFrame.pack(fill = X, expand = 0, padx = 2)
+        lightMenuFrame.pack(fill=X, expand=0, padx=2)
 
         self.lightColor = VectorWidgets.ColorEntry(
-            lightFrame, text = 'Light Color')
+            lightFrame, text='Light Color')
         self.lightColor['command'] = self.setLightColor
-        self.lightColor.pack(fill = X, expand = 0, padx = 4)
+        self.lightColor.pack(fill=X, expand=0, padx=4)
         self.bind(self.lightColor, 'Set active light color')
 
         # Directional light controls
         self.dSpecularColor = VectorWidgets.ColorEntry(
-            directionalPage, text = 'Specular Color')
+            directionalPage, text='Specular Color')
         self.dSpecularColor['command'] = self.setSpecularColor
-        self.dSpecularColor.pack(fill = X, expand = 0)
+        self.dSpecularColor.pack(fill=X, expand=0)
         self.bind(self.dSpecularColor,
                   'Set directional light specular color')
 
         # Point light controls
         self.pSpecularColor = VectorWidgets.ColorEntry(
-            pointPage, text = 'Specular Color')
+            pointPage, text='Specular Color')
         self.pSpecularColor['command'] = self.setSpecularColor
-        self.pSpecularColor.pack(fill = X, expand = 0)
+        self.pSpecularColor.pack(fill=X, expand=0)
         self.bind(self.pSpecularColor,
                   'Set point light specular color')
 
         self.pConstantAttenuation = Slider.Slider(
             pointPage,
-            text = 'Constant Attenuation',
-            min = 0.0, max = 1.0, value = 1.0)
+            text='Constant Attenuation',
+            min=0.0, max=1.0, value=1.0)
         self.pConstantAttenuation['command'] = self.setConstantAttenuation
-        self.pConstantAttenuation.pack(fill = X, expand = 0)
+        self.pConstantAttenuation.pack(fill=X, expand=0)
         self.bind(self.pConstantAttenuation,
                   'Set point light constant attenuation')
 
         self.pLinearAttenuation = Slider.Slider(
             pointPage,
-            text = 'Linear Attenuation',
-            min = 0.0, max = 1.0, value = 0.0)
+            text='Linear Attenuation',
+            min=0.0, max=1.0, value=0.0)
         self.pLinearAttenuation['command'] = self.setLinearAttenuation
-        self.pLinearAttenuation.pack(fill = X, expand = 0)
+        self.pLinearAttenuation.pack(fill=X, expand=0)
         self.bind(self.pLinearAttenuation,
                   'Set point light linear attenuation')
 
         self.pQuadraticAttenuation = Slider.Slider(
             pointPage,
-            text = 'Quadratic Attenuation',
-            min = 0.0, max = 1.0, value = 0.0)
+            text='Quadratic Attenuation',
+            min=0.0, max=1.0, value=0.0)
         self.pQuadraticAttenuation['command'] = self.setQuadraticAttenuation
-        self.pQuadraticAttenuation.pack(fill = X, expand = 0)
+        self.pQuadraticAttenuation.pack(fill=X, expand=0)
         self.bind(self.pQuadraticAttenuation,
                   'Set point light quadratic attenuation')
 
         # Spot light controls
         self.sSpecularColor = VectorWidgets.ColorEntry(
-            spotPage, text = 'Specular Color')
+            spotPage, text='Specular Color')
         self.sSpecularColor['command'] = self.setSpecularColor
-        self.sSpecularColor.pack(fill = X, expand = 0)
+        self.sSpecularColor.pack(fill=X, expand=0)
         self.bind(self.sSpecularColor,
                   'Set spot light specular color')
 
         self.sConstantAttenuation = Slider.Slider(
             spotPage,
-            text = 'Constant Attenuation',
-            min = 0.0, max = 1.0, value = 1.0)
+            text='Constant Attenuation',
+            min=0.0, max=1.0, value=1.0)
         self.sConstantAttenuation['command'] = self.setConstantAttenuation
-        self.sConstantAttenuation.pack(fill = X, expand = 0)
+        self.sConstantAttenuation.pack(fill=X, expand=0)
         self.bind(self.sConstantAttenuation,
                   'Set spot light constant attenuation')
 
         self.sLinearAttenuation = Slider.Slider(
             spotPage,
-            text = 'Linear Attenuation',
-            min = 0.0, max = 1.0, value = 0.0)
+            text='Linear Attenuation',
+            min=0.0, max=1.0, value=0.0)
         self.sLinearAttenuation['command'] = self.setLinearAttenuation
-        self.sLinearAttenuation.pack(fill = X, expand = 0)
+        self.sLinearAttenuation.pack(fill=X, expand=0)
         self.bind(self.sLinearAttenuation,
                   'Set spot light linear attenuation')
 
         self.sQuadraticAttenuation = Slider.Slider(
             spotPage,
-            text = 'Quadratic Attenuation',
-            min = 0.0, max = 1.0, value = 0.0)
+            text='Quadratic Attenuation',
+            min=0.0, max=1.0, value=0.0)
         self.sQuadraticAttenuation['command'] = self.setQuadraticAttenuation
-        self.sQuadraticAttenuation.pack(fill = X, expand = 0)
+        self.sQuadraticAttenuation.pack(fill=X, expand=0)
         self.bind(self.sQuadraticAttenuation,
                   'Set spot light quadratic attenuation')
 
         self.sExponent = Slider.Slider(
             spotPage,
-            text = 'Exponent',
-            min = 0.0, max = 1.0, value = 0.0)
+            text='Exponent',
+            min=0.0, max=1.0, value=0.0)
         self.sExponent['command'] = self.setExponent
-        self.sExponent.pack(fill = X, expand = 0)
+        self.sExponent.pack(fill=X, expand=0)
         self.bind(self.sExponent,
                   'Set spot light exponent')
 
         # MRM: Add frustum controls
 
         self.lightNotebook.setnaturalsize()
-        self.lightNotebook.pack(expand = 1, fill = BOTH)
+        self.lightNotebook.pack(expand=1, fill=BOTH)
 
-        lightFrame.pack(expand = 1, fill = BOTH)
-
+        lightFrame.pack(expand=1, fill=BOTH)
 
     def createGridPage(self, gridPage):
-        Label(gridPage, text = 'Grid',
-              font=('MSSansSerif', 14, 'bold')).pack(expand = 0)
+        Label(gridPage, text='Grid',
+              font=('MSSansSerif', 14, 'bold')).pack(expand=0)
         self.enableGrid = BooleanVar()
         self.enableGridButton = Checkbutton(
             gridPage,
-            text = 'Enabled/Disabled',
-            anchor = 'w', justify = LEFT,
-            variable = self.enableGrid,
-            command = self.toggleGrid)
-        self.enableGridButton.pack(fill = X, expand = 0)
+            text='Enabled/Disabled',
+            anchor='w', justify=LEFT,
+            variable=self.enableGrid,
+            command=self.toggleGrid)
+        self.enableGridButton.pack(fill=X, expand=0)
 
         self.xyzSnap = BooleanVar()
         self.xyzSnapButton = Checkbutton(
             gridPage,
-            text = 'XYZ Snap',
-            anchor = 'w', justify = LEFT,
-            variable = self.xyzSnap,
-            command = self.toggleXyzSnap)
-        self.xyzSnapButton.pack(fill = X, expand = 0)
+            text='XYZ Snap',
+            anchor='w', justify=LEFT,
+            variable=self.xyzSnap,
+            command=self.toggleXyzSnap)
+        self.xyzSnapButton.pack(fill=X, expand=0)
 
         self.hprSnap = BooleanVar()
         self.hprSnapButton = Checkbutton(
             gridPage,
-            text = 'HPR Snap',
-            anchor = 'w', justify = LEFT,
-            variable = self.hprSnap,
-            command = self.toggleHprSnap)
-        self.hprSnapButton.pack(fill = X, expand = 0)
+            text='HPR Snap',
+            anchor='w', justify=LEFT,
+            variable=self.hprSnap,
+            command=self.toggleHprSnap)
+        self.hprSnapButton.pack(fill=X, expand=0)
 
         self.gridSpacing = Floater.Floater(
             gridPage,
-            text = 'Grid Spacing',
-            min = 0.1,
-            value = base.direct.grid.getGridSpacing())
+            text='Grid Spacing',
+            min=0.1,
+            value=base.direct.grid.getGridSpacing())
         self.gridSpacing['command'] = base.direct.grid.setGridSpacing
-        self.gridSpacing.pack(fill = X, expand = 0)
+        self.gridSpacing.pack(fill=X, expand=0)
 
         self.gridSize = Floater.Floater(
             gridPage,
-            text = 'Grid Size',
-            min = 1.0,
-            value = base.direct.grid.getGridSize())
+            text='Grid Size',
+            min=1.0,
+            value=base.direct.grid.getGridSize())
         self.gridSize['command'] = base.direct.grid.setGridSize
-        self.gridSize.pack(fill = X, expand = 0)
+        self.gridSize.pack(fill=X, expand=0)
 
         self.gridSnapAngle = Dial.AngleDial(
             gridPage,
-            text = 'Snap Angle',
-            style = 'mini',
-            value = base.direct.grid.getSnapAngle())
+            text='Snap Angle',
+            style='mini',
+            value=base.direct.grid.getSnapAngle())
         self.gridSnapAngle['command'] = base.direct.grid.setSnapAngle
-        self.gridSnapAngle.pack(fill = X, expand = 0)
+        self.gridSnapAngle.pack(fill=X, expand=0)
 
     def createDevicePage(self, devicePage):
-        Label(devicePage, text = 'DEVICES',
-              font=('MSSansSerif', 14, 'bold')).pack(expand = 0)
+        Label(devicePage, text='DEVICES',
+              font=('MSSansSerif', 14, 'bold')).pack(expand=0)
 
         if base.direct.joybox != None:
-            joyboxFrame = Frame(devicePage, borderwidth = 2, relief = 'sunken')
-            Label(joyboxFrame, text = 'Joybox',
-                  font=('MSSansSerif', 14, 'bold')).pack(expand = 0)
+            joyboxFrame = Frame(devicePage, borderwidth=2, relief='sunken')
+            Label(joyboxFrame, text='Joybox',
+                  font=('MSSansSerif', 14, 'bold')).pack(expand=0)
             self.enableJoybox = BooleanVar()
             self.enableJoybox.set(1)
             self.enableJoyboxButton = Checkbutton(
                 joyboxFrame,
-                text = 'Enabled/Disabled',
-                anchor = 'w', justify = LEFT,
-                variable = self.enableJoybox,
-                command = self.toggleJoybox)
-            self.enableJoyboxButton.pack(fill = X, expand = 0)
-            joyboxFrame.pack(fill = X, expand = 0)
+                text='Enabled/Disabled',
+                anchor='w', justify=LEFT,
+                variable=self.enableJoybox,
+                command=self.toggleJoybox)
+            self.enableJoyboxButton.pack(fill=X, expand=0)
+            joyboxFrame.pack(fill=X, expand=0)
 
             self.jbModeMenu = Pmw.ComboBox(
-                joyboxFrame, labelpos = W, label_text = 'Joybox Mode:',
-                label_width = 16, entry_width = 20,
-                selectioncommand = self.selectJBModeNamed,
-                scrolledlist_items = ['Joe Mode', 'Drive Mode', 'Orbit Mode',
-                                      'Look At Mode', 'Look Around Mode',
-                                      'Walkthru Mode', 'Demo Mode',
-                                      'HPRXYZ Mode'])
+                joyboxFrame, labelpos=W, label_text='Joybox Mode:',
+                label_width=16, entry_width=20,
+                selectioncommand=self.selectJBModeNamed,
+                scrolledlist_items=['Joe Mode', 'Drive Mode', 'Orbit Mode',
+                                    'Look At Mode', 'Look Around Mode',
+                                    'Walkthru Mode', 'Demo Mode',
+                                    'HPRXYZ Mode'])
             self.jbModeMenu.selectitem('Joe Mode')
-            self.jbModeMenu.pack(fill = X, expand = 1)
+            self.jbModeMenu.pack(fill=X, expand=1)
 
             self.jbNodePathMenu = Pmw.ComboBox(
-                joyboxFrame, labelpos = W, label_text = 'Joybox Node Path:',
-                label_width = 16, entry_width = 20,
-                selectioncommand = self.selectJBNodePathNamed,
-                scrolledlist_items = self.jbNodePathNames)
+                joyboxFrame, labelpos=W, label_text='Joybox Node Path:',
+                label_width=16, entry_width=20,
+                selectioncommand=self.selectJBNodePathNamed,
+                scrolledlist_items=self.jbNodePathNames)
             self.jbNodePathMenu.selectitem('camera')
             self.jbNodePathMenuEntry = (
                 self.jbNodePathMenu.component('entryfield_entry'))
             self.jbNodePathMenuBG = (
                 self.jbNodePathMenuEntry.configure('background')[3])
-            self.jbNodePathMenu.pack(fill = X, expand = 1)
+            self.jbNodePathMenu.pack(fill=X, expand=1)
             self.bind(self.jbNodePathMenu,
                       'Select node path to manipulate using the joybox')
 
             self.jbXyzSF = Slider.Slider(
                 joyboxFrame,
-                text = 'XYZ Scale Factor',
-                value = 1.0,
-                hull_relief = RIDGE, hull_borderwidth = 2,
-                min = 1.0, max = 100.0)
+                text='XYZ Scale Factor',
+                value=1.0,
+                hull_relief=RIDGE, hull_borderwidth=2,
+                min=1.0, max=100.0)
             self.jbXyzSF['command'] = (
                 lambda v: base.direct.joybox.setXyzMultiplier(v))
-            self.jbXyzSF.pack(fill = X, expand = 0)
+            self.jbXyzSF.pack(fill=X, expand=0)
             self.bind(self.jbXyzSF, 'Set joybox XYZ speed multiplier')
 
             self.jbHprSF = Slider.Slider(
                 joyboxFrame,
-                text = 'HPR Scale Factor',
-                value = 1.0,
-                hull_relief = RIDGE, hull_borderwidth = 2,
-                min = 1.0, max = 100.0)
+                text='HPR Scale Factor',
+                value=1.0,
+                hull_relief=RIDGE, hull_borderwidth=2,
+                min=1.0, max=100.0)
             self.jbHprSF['command'] = (
                 lambda v: base.direct.joybox.setHprMultiplier(v))
-            self.jbHprSF.pack(fill = X, expand = 0)
+            self.jbHprSF.pack(fill=X, expand=0)
             self.bind(self.jbHprSF, 'Set joybox HPR speed multiplier')
 
     def createTasksPage(self, tasksPage):
-        Label(tasksPage, text = 'TASKS',
-              font=('MSSansSerif', 14, 'bold')).pack(expand = 0)
+        Label(tasksPage, text='TASKS',
+              font=('MSSansSerif', 14, 'bold')).pack(expand=0)
         self.taskMgrPanel = TaskManagerWidget(tasksPage, taskMgr)
         self.taskMgrPanel.taskListBox['listbox_height'] = 10
 
     def createMemPage(self, memPage):
         self.MemExp = MemoryExplorer.MemoryExplorer(
-            memPage, nodePath = render,
-            scrolledCanvas_hull_width = 250,
-            scrolledCanvas_hull_height = 250)
-        self.MemExp.pack(fill = BOTH, expand = 1)
+            memPage, nodePath=render,
+            scrolledCanvas_hull_width=250,
+            scrolledCanvas_hull_height=250)
+        self.MemExp.pack(fill=BOTH, expand=1)
 
     def toggleDirect(self):
         if self.directEnabled.get():
@@ -737,10 +738,11 @@ class DirectSessionPanel(AppShell):
     # Background #
     def setBackgroundColor(self, r, g, b):
         self.setBackgroundColorVec((r, g, b))
+
     def setBackgroundColorVec(self, color):
-        base.setBackgroundColor(color[0]/255.0,
-                                color[1]/255.0,
-                                color[2]/255.0)
+        base.set_background_color(color[0] / 255.0,
+                                  color[1] / 255.0,
+                                  color[2] / 255.0)
 
     def selectDisplayRegionNamed(self, name):
         if name.find('Display Region ') >= 0:
@@ -754,14 +756,14 @@ class DirectSessionPanel(AppShell):
     def setNear(self, near):
         dr = self.activeDisplayRegion
         if dr:
-            dr.camLens.setNear(near)
-            cluster('base.camLens.setNear(%f)' % near, 0)
+            dr.cam_lens.setNear(near)
+            cluster('base.cam_lens.setNear(%f)' % near, 0)
 
     def setFar(self, far):
         dr = self.activeDisplayRegion
         if dr:
-            dr.camLens.setFar(far)
-            cluster('base.camLens.setFar(%f)' % far, 0)
+            dr.cam_lens.setFar(far)
+            cluster('base.cam_lens.setFar(%f)' % far, 0)
 
     def setHFov(self, hFov):
         dr = self.activeDisplayRegion
@@ -900,7 +902,7 @@ class DirectSessionPanel(AppShell):
     def toggleHprSnap(self):
         base.direct.grid.setHprSnap(self.hprSnap.get())
 
-    ## DEVICE CONTROLS
+    # DEVICE CONTROLS
     def toggleJoybox(self):
         if self.enableJoybox.get():
             base.direct.joybox.enable()
@@ -908,7 +910,7 @@ class DirectSessionPanel(AppShell):
             base.direct.joybox.disable()
 
     ## UPDATE INFO ##
-    def updateInfo(self, page = 'Environment'):
+    def updateInfo(self, page='Environment'):
         if page == 'Environment':
             self.updateEnvironmentInfo()
         elif page == 'Lights':
@@ -917,7 +919,7 @@ class DirectSessionPanel(AppShell):
             self.updateGridInfo()
 
     def updateEnvironmentInfo(self):
-        bkgrdColor = base.getBackgroundColor() * 255.0
+        bkgrdColor = base.get_background_color() * 255.0
         self.backgroundColor.set([bkgrdColor[0],
                                   bkgrdColor[1],
                                   bkgrdColor[2],
@@ -931,7 +933,7 @@ class DirectSessionPanel(AppShell):
             self.hFov.set(self.activeDisplayRegion.fovH, 0)
             self.vFov.set(self.activeDisplayRegion.fovV, 0)
 
-    def updateLightInfo(self, page = None):
+    def updateLightInfo(self, page=None):
         # Set main lighting button
         self.enableLights.set(
             render.node().hasAttrib(LightAttrib.getClassType()))
@@ -979,33 +981,33 @@ class DirectSessionPanel(AppShell):
         self.gridSnapAngle.set(base.direct.grid.getSnapAngle(), 0)
 
     # UNDO/REDO
-    def pushUndo(self, fResetRedo = 1):
+    def pushUndo(self, fResetRedo=1):
         base.direct.pushUndo([self['nodePath']])
 
-    def undoHook(self, nodePathList = []):
+    def undoHook(self, nodePathList=[]):
         pass
 
     def pushUndoHook(self):
         # Make sure button is reactivated
-        self.undoButton.configure(state = 'normal')
+        self.undoButton.configure(state='normal')
 
     def undoListEmptyHook(self):
         # Make sure button is deactivated
-        self.undoButton.configure(state = 'disabled')
+        self.undoButton.configure(state='disabled')
 
     def pushRedo(self):
         base.direct.pushRedo([self['nodePath']])
 
-    def redoHook(self, nodePathList = []):
+    def redoHook(self, nodePathList=[]):
         pass
 
     def pushRedoHook(self):
         # Make sure button is reactivated
-        self.redoButton.configure(state = 'normal')
+        self.redoButton.configure(state='normal')
 
     def redoListEmptyHook(self):
         # Make sure button is deactivated
-        self.redoButton.configure(state = 'disabled')
+        self.redoButton.configure(state='disabled')
 
     def onDestroy(self, event):
         # Remove hooks

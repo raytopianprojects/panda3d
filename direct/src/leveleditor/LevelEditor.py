@@ -13,8 +13,10 @@ from .ObjectHandler import *
 from .ObjectPalette import *
 from .ProtoPalette import *
 
+
 class LevelEditor(LevelEditorBase):
     """ Class for Panda3D LevelEditor """
+
     def __init__(self):
         LevelEditorBase.__init__(self)
 

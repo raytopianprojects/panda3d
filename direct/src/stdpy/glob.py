@@ -10,6 +10,7 @@ from direct.stdpy import file
 
 __all__ = ["glob", "iglob"]
 
+
 def glob(pathname):
     """Return a list of paths matching a pathname pattern.
 
@@ -17,6 +18,7 @@ def glob(pathname):
 
     """
     return list(iglob(pathname))
+
 
 def iglob(pathname):
     """Return an iterator which yields the paths matching a pathname pattern.
@@ -49,12 +51,13 @@ def iglob(pathname):
 # They return a list of basenames. repr(glob1) accepts a pattern while `glob0`
 # takes a literal basename (so it only has to check for its existence).
 
+
 def glob1(dirname, pattern):
     if not dirname:
         dirname = os.curdir
     if sys.version_info < (3, 0) and isinstance(pattern, unicode) and not isinstance(dirname, unicode):
         dirname = unicode(dirname, sys.getfilesystemencoding() or
-                                   sys.getdefaultencoding())
+                          sys.getdefaultencoding())
     try:
         names = os.listdir(dirname)
     except os.error:
@@ -62,6 +65,7 @@ def glob1(dirname, pattern):
     if pattern[0] != '.':
         names = [x for x in names if x[0] != '.']
     return fnmatch.filter(names, pattern)
+
 
 def glob0(dirname, basename):
     if basename == '':
@@ -80,6 +84,7 @@ def has_magic(s):
         return b'*' in s or b'?' in s or b'[' in s
     else:
         return '*' in s or '?' in s or '[' in s
+
 
 def escape(pathname):
     drive, pathname = os.path.splitdrive(pathname)

@@ -16,11 +16,12 @@ FAST_X = 0
 FAST_Y = 1
 FAST_Z = 2
 
+
 class DirectFastrak(DirectObject):
     fastrakCount = 0
     notify = DirectNotifyGlobal.directNotify.newCategory('DirectFastrak')
 
-    def __init__(self, device = 'Tracker0', nodePath = None):
+    def __init__(self, device='Tracker0', nodePath=None):
         # See if device manager has been initialized
         if base.direct.deviceManager is None:
             base.direct.deviceManager = DirectDeviceManager()
@@ -64,5 +65,5 @@ class DirectFastrak(DirectObject):
         self.trackerPos = Vec3(3.280839895013123 * pos[2],
                                3.280839895013123 * pos[1],
                                3.280839895013123 * pos[0])
-        self.notify.debug("Tracker(%d) Pos = %s" % (self.deviceNo, repr(self.trackerPos)))
-
+        self.notify.debug("Tracker(%d) Pos = %s" %
+                          (self.deviceNo, repr(self.trackerPos)))

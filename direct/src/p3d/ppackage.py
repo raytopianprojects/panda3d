@@ -1,5 +1,10 @@
 #! /usr/bin/env python
 
+from panda3d.core import *
+from direct.p3d import Packager
+import os
+import getopt
+import sys
 usageText = """
 This script can be used to produce a Panda3D downloadable "package",
 which may contain arbitrary files--for instance, Python code, bam
@@ -135,21 +140,16 @@ Options:
      Display this help
 """
 
-import sys
-import getopt
-import os
 
-from direct.p3d import Packager
-from panda3d.core import *
-
-def usage(code, msg = ''):
+def usage(code, msg=''):
     sys.stderr.write(usageText % {
-        'version' : PandaSystem.getPackageVersionString(),
-        'host' : PandaSystem.getPackageHostUrl(),
-        'prog' : os.path.split(sys.argv[0])[1]
-        })
+        'version': PandaSystem.getPackageVersionString(),
+        'host': PandaSystem.getPackageHostUrl(),
+        'prog': os.path.split(sys.argv[0])[1]
+    })
     sys.stderr.write(msg + '\n')
     sys.exit(code)
+
 
 installDir = None
 buildPatches = False
@@ -236,7 +236,7 @@ if not platforms:
     platforms = [PandaSystem.getPlatform()]
 
 for platform in platforms:
-    packager = Packager.Packager(platform = platform)
+    packager = Packager.Packager(platform=platform)
     packager.installDir = installDir
     packager.installSearch = installSearch + packager.installSearch
     if installDir is not None:
@@ -251,7 +251,8 @@ for platform in platforms:
 
     try:
         packager.setup()
-        packages = packager.readPackageDef(packageDef, packageNames = packageNames)
+        packages = packager.readPackageDef(
+            packageDef, packageNames=packageNames)
         packager.close()
         if buildPatches:
             packager.buildPatches(packages)

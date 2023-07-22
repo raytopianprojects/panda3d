@@ -16,11 +16,12 @@ class TestInterval(Interval):
     # create ParticleInterval DirectNotify category
     notify = directNotify.newCategory('TestInterval')
     # Class methods
+
     def __init__(self,
                  particleEffect,
                  duration=0.0,
-                 parent = None,
-                 renderParent = None,
+                 parent=None,
+                 renderParent=None,
                  name=None):
         """
         particleEffect is ??
@@ -45,13 +46,13 @@ class TestInterval(Interval):
     def __del__(self):
         pass
 
-    def __step(self,dt):
-        self.particleEffect.accelerate(dt,1,0.05)
+    def __step(self, dt):
+        self.particleEffect.accelerate(dt, 1, 0.05)
 
-    def start(self,*args,**kwargs):
+    def start(self, *args, **kwargs):
         self.particleEffect.clearToInitial()
         self.currT = 0
-        Interval.start(self,*args,**kwargs)
+        Interval.start(self, *args, **kwargs)
 
     def privInitialize(self, t):
         if self.parent != None:
@@ -60,7 +61,7 @@ class TestInterval(Interval):
             self.setRenderParent(self.renderParent.node())
 
         self.state = CInterval.SStarted
-        #self.particleEffect.enable()
+        # self.particleEffect.enable()
         """
         if (self.particleEffect.renderParent != None):
             for p in self.particleEffect.particlesDict.values():

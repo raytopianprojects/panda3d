@@ -1,6 +1,7 @@
 from panda3d.core import *
 from direct.showbase.DirectObject import DirectObject
 
+
 class TexViewer(DirectObject):
     """ A simple class to pop up a card onscreen to see the contents
     of a texture. """
@@ -31,7 +32,6 @@ class TexViewer(DirectObject):
         ls.drawTo(l, 0, b)
         cards.attachNewNode(ls.create())
 
-
         # And the "simple", reduced-resolution version goes on the
         # right.
         if self.tex.hasSimpleRamImage():
@@ -61,9 +61,11 @@ class TexViewer(DirectObject):
 
         # Scale both sides by the aspect ratio.
         if self.tex.getXSize() > self.tex.getYSize():
-            cards.setScale(1, 1, float(self.tex.getYSize()) / self.tex.getXSize())
+            cards.setScale(1, 1, float(self.tex.getYSize()) /
+                           self.tex.getXSize())
         else:
-            cards.setScale(float(self.tex.getXSize()) / self.tex.getYSize(), 1, 1)
+            cards.setScale(float(self.tex.getXSize()) /
+                           self.tex.getYSize(), 1, 1)
 
         # Label the texture.
         tn = TextNode('label')

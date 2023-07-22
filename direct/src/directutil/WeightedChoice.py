@@ -6,11 +6,12 @@ import random
 # has an optional 'sum' argument that you can pass in if you know the
 # sum of the weights and want to make repeated choices.
 
+
 class WeightedChoice:
     def __init__(self, listOfLists, weightIndex=0):
-        t=0
+        t = 0
         for i in listOfLists:
-            t+=i[weightIndex]
+            t += i[weightIndex]
         self.total = t
         self.listOfLists = listOfLists
         self.weightIndex = weightIndex

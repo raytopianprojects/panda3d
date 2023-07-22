@@ -20,6 +20,7 @@ from panda3d.core import *
 from direct.directnotify import DirectNotifyGlobal
 from . import NonPhysicsWalker
 
+
 class ObserverWalker(NonPhysicsWalker.NonPhysicsWalker):
     notify = DirectNotifyGlobal.directNotify.newCategory("ObserverWalker")
 
@@ -27,7 +28,7 @@ class ObserverWalker(NonPhysicsWalker.NonPhysicsWalker):
     slideName = "jump"
 
     def initializeCollisions(self, collisionTraverser, avatarNodePath,
-            avatarRadius = 1.4, floorOffset = 1.0, reach = 1.0):
+                             avatarRadius=1.4, floorOffset=1.0, reach=1.0):
         """
         Set up the avatar for collisions
         """
@@ -74,8 +75,8 @@ class ObserverWalker(NonPhysicsWalker.NonPhysicsWalker):
 
         del self.pusher
 
-    def setCollisionsActive(self, active = 1):
-        assert self.debugPrint("setCollisionsActive(active%s)"%(active,))
+    def setCollisionsActive(self, active=1):
+        assert self.debugPrint("setCollisionsActive(active%s)" % (active,))
         if self.collisionsActive != active:
             self.collisionsActive = active
             if active:

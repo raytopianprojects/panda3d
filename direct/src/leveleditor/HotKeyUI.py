@@ -1,6 +1,7 @@
 import wx
 from wx.lib.scrolledpanel import ScrolledPanel
 
+
 class EditHotKeyDialog(wx.Dialog):
     def __init__(self, parent, id, title, key):
         wx.Dialog.__init__(self, parent, id, title, size=(250, 240))
@@ -16,7 +17,8 @@ class EditHotKeyDialog(wx.Dialog):
         vbox = wx.BoxSizer(wx.VERTICAL)
         self.label = wx.StaticText(self.panel, label='')
         vbox.Add(self.label)
-        self.modifierRadio = wx.RadioBox(self.panel, -1, "", choices=['None', 'Shift', 'Control'], majorDimension=1, style=wx.RA_SPECIFY_ROWS)
+        self.modifierRadio = wx.RadioBox(
+            self.panel, -1, "", choices=['None', 'Shift', 'Control'], majorDimension=1, style=wx.RA_SPECIFY_ROWS)
         self.modifierRadio.Bind(wx.EVT_RADIOBOX, self.onChangeModifier)
         vbox.Add(self.modifierRadio)
         itemPanel = wx.Panel(self.panel)
@@ -84,7 +86,7 @@ class EditHotKeyDialog(wx.Dialog):
 
         specialKey = self.specialKeyCombo.GetStringSelection()
         if specialKey == '':
-            newKeyStr= prefix + self.keyEntry.GetValue().lower()
+            newKeyStr = prefix + self.keyEntry.GetValue().lower()
         else:
             newKeyStr = specialKey
 
@@ -92,21 +94,23 @@ class EditHotKeyDialog(wx.Dialog):
             if newKeyStr in list(base.direct.hotKeyMap.keys()):
                 print('a hotkey is to be overridden with %s' % newKeyStr)
                 oldKeyDesc = base.direct.hotKeyMap[newKeyStr]
-                msg = 'The hotkey is already assigned to %s\n'%oldKeyDesc[0] +\
+                msg = 'The hotkey is already assigned to %s\n' % oldKeyDesc[0] +\
                       'Do you want to override this?'
 
                 dialog = wx.MessageDialog(None, msg, 'Hot Key exists!',
-                                        wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+                                          wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
                 result = dialog.ShowModal()
                 if result == wx.ID_YES:
                     base.direct.hotKeyMap[newKeyStr] = base.direct.hotKeyMap[self.currKey]
-                    base.direct.hotKeyMap['__removed__' + newKeyStr] = oldKeyDesc
+                    base.direct.hotKeyMap['__removed__' +
+                                          newKeyStr] = oldKeyDesc
                     del base.direct.hotKeyMap[self.currKey]
             else:
                 base.direct.hotKeyMap[newKeyStr] = base.direct.hotKeyMap[self.currKey]
                 del base.direct.hotKeyMap[self.currKey]
 
         self.Destroy()
+
 
 class HotKeyPanel(ScrolledPanel):
     def __init__(self, parent):
@@ -122,11 +126,12 @@ class HotKeyPanel(ScrolledPanel):
             keyDesc = base.direct.hotKeyMap[key]
             itemPanel = wx.Panel(self)
             sizer = wx.BoxSizer(wx.HORIZONTAL)
-            space = wx.StaticText(itemPanel, label='', size=(10,20))
+            space = wx.StaticText(itemPanel, label='', size=(10, 20))
             hotKey = wx.StaticText(itemPanel, label=key, size=(100, 20))
             desc = wx.StaticText(itemPanel, label=keyDesc[0], size=(380, 20))
             button = wx.Button(itemPanel, -1, 'Edit', size=(40, 20))
-            button.Bind(wx.EVT_BUTTON, lambda p0 = None, p1 = key: self.onEdit(p0, p1))
+            button.Bind(wx.EVT_BUTTON, lambda p0=None,
+                        p1=key: self.onEdit(p0, p1))
             sizer.Add(button)
             sizer.Add(space)
             sizer.Add(hotKey)
@@ -150,6 +155,7 @@ class HotKeyPanel(ScrolledPanel):
             self.SetSizer(None)
         base.le.ui.bindKeyEvents(True)
         self.updateUI()
+
 
 class HotKeyUI(wx.Dialog):
     def __init__(self, parent, id, title):

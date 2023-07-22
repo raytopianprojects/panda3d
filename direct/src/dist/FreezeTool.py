@@ -43,7 +43,8 @@ startupModules = [
 ]
 if sys.version_info >= (3, 0):
     # Modules specific to Python 3
-    startupModules += ['io', 'marshal', 'importlib.machinery', 'importlib.util']
+    startupModules += ['io', 'marshal',
+                       'importlib.machinery', 'importlib.util']
 else:
     # Modules specific to Python 2
     startupModules += []
@@ -231,7 +232,8 @@ class CompilationEnvironment:
             self.PythonIPath = sysconf.get_python_inc()
         else:
             self.PythonIPath = sysconf.get_path('include')
-        self.PythonVersion = sysconf.get_config_var("LDVERSION") or sysconf.get_python_version()
+        self.PythonVersion = sysconf.get_config_var(
+            "LDVERSION") or sysconf.get_python_version()
 
         # The VC directory of Microsoft Visual Studio (if relevant)
         self.MSVC = None
@@ -260,23 +262,29 @@ class CompilationEnvironment:
             if ('VCINSTALLDIR' in os.environ):
                 self.MSVC = os.environ['VCINSTALLDIR']
             elif (Filename('/c/Program Files/Microsoft Visual Studio 9.0/VC').exists()):
-                self.MSVC = Filename('/c/Program Files/Microsoft Visual Studio 9.0/VC').toOsSpecific()
+                self.MSVC = Filename(
+                    '/c/Program Files/Microsoft Visual Studio 9.0/VC').toOsSpecific()
             elif (Filename('/c/Program Files (x86)/Microsoft Visual Studio 9.0/VC').exists()):
-                self.MSVC = Filename('/c/Program Files (x86)/Microsoft Visual Studio 9.0/VC').toOsSpecific()
+                self.MSVC = Filename(
+                    '/c/Program Files (x86)/Microsoft Visual Studio 9.0/VC').toOsSpecific()
             elif (Filename('/c/Program Files/Microsoft Visual Studio .NET 2003/Vc7').exists()):
-                self.MSVC = Filename('/c/Program Files/Microsoft Visual Studio .NET 2003/Vc7').toOsSpecific()
+                self.MSVC = Filename(
+                    '/c/Program Files/Microsoft Visual Studio .NET 2003/Vc7').toOsSpecific()
             else:
-                print('Could not locate Microsoft Visual C++ Compiler! Try running from the Visual Studio Command Prompt.')
+                print(
+                    'Could not locate Microsoft Visual C++ Compiler! Try running from the Visual Studio Command Prompt.')
                 sys.exit(1)
 
             if ('WindowsSdkDir' in os.environ):
                 self.PSDK = os.environ['WindowsSdkDir']
             elif (platform.architecture()[0] == '32bit' and Filename('/c/Program Files/Microsoft Platform SDK for Windows Server 2003 R2').exists()):
-                self.PSDK = Filename('/c/Program Files/Microsoft Platform SDK for Windows Server 2003 R2').toOsSpecific()
+                self.PSDK = Filename(
+                    '/c/Program Files/Microsoft Platform SDK for Windows Server 2003 R2').toOsSpecific()
             elif (os.path.exists(os.path.join(self.MSVC, 'PlatformSDK'))):
                 self.PSDK = os.path.join(self.MSVC, 'PlatformSDK')
             else:
-                print('Could not locate the Microsoft Windows Platform SDK! Try running from the Visual Studio Command Prompt.')
+                print(
+                    'Could not locate the Microsoft Windows Platform SDK! Try running from the Visual Studio Command Prompt.')
                 sys.exit(1)
 
             # We need to use the correct compiler setting for debug vs. release builds.
@@ -297,7 +305,8 @@ class CompilationEnvironment:
                 self.linkExe = 'link /nologo /MAP:NUL /FIXED:NO /OPT:REF /STACK:4194304 /INCREMENTAL:NO /LIBPATH:"%(python)s\\libs"  /out:%(basename)s.exe %(basename)s.obj'
                 self.linkDll = 'link /nologo /DLL /MAP:NUL /FIXED:NO /OPT:REF /INCREMENTAL:NO /LIBPATH:"%(python)s\\libs"  /out:%(basename)s%(dllext)s.pyd %(basename)s.obj'
             else:
-                os.environ['PATH'] += ';' + self.MSVC + '\\bin' + self.suffix64 + ';' + self.MSVC + '\\Common7\\IDE;' + self.PSDK + '\\bin'
+                os.environ['PATH'] += ';' + self.MSVC + '\\bin' + self.suffix64 + \
+                    ';' + self.MSVC + '\\Common7\\IDE;' + self.PSDK + '\\bin'
 
                 self.compileObjExe = 'cl /wd4996 /Fo%(basename)s.obj /nologo /c %(MD)s /Zi /O2 /Ob2 /EHsc /Zm300 /W3 /I"%(pythonIPath)s" /I"%(PSDK)s\\include" /I"%(MSVC)s\\include" %(filename)s'
                 self.compileObjDll = self.compileObjExe
@@ -323,7 +332,7 @@ class CompilationEnvironment:
         else:
             # Unix
             lib_dir = sysconf.get_python_lib(plat_specific=1, standard_lib=1)
-            #python_a = os.path.join(lib_dir, "config", "libpython%(pythonVersion)s.a")
+            # python_a = os.path.join(lib_dir, "config", "libpython%(pythonVersion)s.a")
             self.compileObjExe = "%(CC)s %(CFLAGS)s -c -o %(basename)s.o -pthread -O2 %(filename)s -I%(pythonIPath)s"
             self.compileObjDll = "%(CC)s %(CFLAGS)s %(CCSHARED)s -c -o %(basename)s.o -O2 %(filename)s -I%(pythonIPath)s"
             self.linkExe = "%(CC)s -o %(basename)s %(basename)s.o -L/usr/local/lib -lpython%(pythonVersion)s"
@@ -335,32 +344,32 @@ class CompilationEnvironment:
 
     def compileExe(self, filename, basename, extraLink=[]):
         compile = self.compileObjExe % dict({
-            'python' : self.Python,
-            'MSVC' : self.MSVC,
-            'PSDK' : self.PSDK,
-            'suffix64' : self.suffix64,
-            'MD' : self.MD,
-            'pythonIPath' : self.PythonIPath,
-            'pythonVersion' : self.PythonVersion,
-            'arch' : self.arch,
-            'filename' : filename,
-            'basename' : basename,
-            }, **sysconf.get_config_vars())
+            'python': self.Python,
+            'MSVC': self.MSVC,
+            'PSDK': self.PSDK,
+            'suffix64': self.suffix64,
+            'MD': self.MD,
+            'pythonIPath': self.PythonIPath,
+            'pythonVersion': self.PythonVersion,
+            'arch': self.arch,
+            'filename': filename,
+            'basename': basename,
+        }, **sysconf.get_config_vars())
         sys.stderr.write(compile + '\n')
         if os.system(compile) != 0:
             raise Exception('failed to compile %s.' % basename)
 
         link = self.linkExe % dict({
-            'python' : self.Python,
-            'MSVC' : self.MSVC,
-            'PSDK' : self.PSDK,
-            'suffix64' : self.suffix64,
-            'pythonIPath' : self.PythonIPath,
-            'pythonVersion' : self.PythonVersion,
-            'arch' : self.arch,
-            'filename' : filename,
-            'basename' : basename,
-            }, **sysconf.get_config_vars())
+            'python': self.Python,
+            'MSVC': self.MSVC,
+            'PSDK': self.PSDK,
+            'suffix64': self.suffix64,
+            'pythonIPath': self.PythonIPath,
+            'pythonVersion': self.PythonVersion,
+            'arch': self.arch,
+            'filename': filename,
+            'basename': basename,
+        }, **sysconf.get_config_vars())
         link += ' ' + ' '.join(extraLink)
         sys.stderr.write(link + '\n')
         if os.system(link) != 0:
@@ -368,37 +377,38 @@ class CompilationEnvironment:
 
     def compileDll(self, filename, basename, extraLink=[]):
         compile = self.compileObjDll % dict({
-            'python' : self.Python,
-            'MSVC' : self.MSVC,
-            'PSDK' : self.PSDK,
-            'suffix64' : self.suffix64,
-            'MD' : self.MD,
-            'pythonIPath' : self.PythonIPath,
-            'pythonVersion' : self.PythonVersion,
-            'arch' : self.arch,
-            'filename' : filename,
-            'basename' : basename,
-            }, **sysconf.get_config_vars())
+            'python': self.Python,
+            'MSVC': self.MSVC,
+            'PSDK': self.PSDK,
+            'suffix64': self.suffix64,
+            'MD': self.MD,
+            'pythonIPath': self.PythonIPath,
+            'pythonVersion': self.PythonVersion,
+            'arch': self.arch,
+            'filename': filename,
+            'basename': basename,
+        }, **sysconf.get_config_vars())
         sys.stderr.write(compile + '\n')
         if os.system(compile) != 0:
             raise Exception('failed to compile %s.' % basename)
 
         link = self.linkDll % dict({
-            'python' : self.Python,
-            'MSVC' : self.MSVC,
-            'PSDK' : self.PSDK,
-            'suffix64' : self.suffix64,
-            'pythonIPath' : self.PythonIPath,
-            'pythonVersion' : self.PythonVersion,
-            'arch' : self.arch,
-            'filename' : filename,
-            'basename' : basename,
-            'dllext' : self.dllext,
-            }, **sysconf.get_config_vars())
+            'python': self.Python,
+            'MSVC': self.MSVC,
+            'PSDK': self.PSDK,
+            'suffix64': self.suffix64,
+            'pythonIPath': self.PythonIPath,
+            'pythonVersion': self.PythonVersion,
+            'arch': self.arch,
+            'filename': filename,
+            'basename': basename,
+            'dllext': self.dllext,
+        }, **sysconf.get_config_vars())
         link += ' ' + ' '.join(extraLink)
         sys.stderr.write(link + '\n')
         if os.system(link) != 0:
             raise Exception('failed to link %s.' % basename)
+
 
 # The code from frozenmain.c in the Python source repository.
 frozenMainCode = """
@@ -728,22 +738,23 @@ okMissing = [
     'MacOS', '_emx_link', 'ce', 'mac', 'org.python.core', 'os.path',
     'os2', 'posix', 'pwd', 'readline', 'riscos', 'riscosenviron',
     'riscospath', 'dbm', 'fcntl', 'win32api', 'win32pipe', 'usercustomize',
-    '_winreg', 'winreg', 'ctypes', 'ctypes.wintypes', 'nt','msvcrt',
+    '_winreg', 'winreg', 'ctypes', 'ctypes.wintypes', 'nt', 'msvcrt',
     'EasyDialogs', 'SOCKS', 'ic', 'rourl2path', 'termios', 'vms_lib',
     'OverrideFrom23._Res', 'email', 'email.Utils', 'email.Generator',
     'email.Iterators', '_subprocess', 'gestalt', 'java.lang',
     'direct.extensions_native.extensions_darwin', '_manylinux',
     'collections.Iterable', 'collections.Mapping', 'collections.MutableMapping',
     'collections.Sequence', 'numpy_distutils', '_winapi',
-    ]
+]
+
 
 class Freezer:
     class ModuleDef:
-        def __init__(self, moduleName, filename = None,
-                     implicit = False, guess = False,
-                     exclude = False, forbid = False,
-                     allowChildren = False, fromSource = None,
-                     text = None):
+        def __init__(self, moduleName, filename=None,
+                     implicit=False, guess=False,
+                     exclude=False, forbid=False,
+                     allowChildren=False, fromSource=None,
+                     text=None):
             # The Python module name.
             self.moduleName = moduleName
 
@@ -803,8 +814,8 @@ class Freezer:
                 args.append('allowChildren = True')
             return 'ModuleDef(%s)' % (', '.join(args))
 
-    def __init__(self, previous = None, debugLevel = 0,
-                 platform = None, path=None, optimize=None):
+    def __init__(self, previous=None, debugLevel=0,
+                 platform=None, path=None, optimize=None):
         # Normally, we are freezing for our own platform.  Change this
         # if untrue.
         self.platform = platform or PandaSystem.getPlatform()
@@ -865,7 +876,7 @@ class Freezer:
 
         # Exclude doctest by default; it is not very useful in production
         # builds.  It can be explicitly included if desired.
-        self.modules['doctest'] = self.ModuleDef('doctest', exclude = True)
+        self.modules['doctest'] = self.ModuleDef('doctest', exclude=True)
 
         self.mf = None
 
@@ -901,8 +912,10 @@ class Freezer:
 
             if 'linux' in self.platform:
                 self.moduleSuffixes += [
-                    ('.cpython-{0}{1}-x86_64-linux-gnu.so'.format(abi_version, abi_flags), 'rb', 3),
-                    ('.cpython-{0}{1}-i686-linux-gnu.so'.format(abi_version, abi_flags), 'rb', 3),
+                    ('.cpython-{0}{1}-x86_64-linux-gnu.so'.format(abi_version,
+                     abi_flags), 'rb', 3),
+                    ('.cpython-{0}{1}-i686-linux-gnu.so'.format(abi_version,
+                     abi_flags), 'rb', 3),
                     ('.abi{0}.so'.format(sys.version_info[0]), 'rb', 3),
                     ('.so', 'rb', 3),
                 ]
@@ -915,13 +928,15 @@ class Freezer:
                 ]
             elif 'mac' in self.platform:
                 self.moduleSuffixes += [
-                    ('.cpython-{0}{1}-darwin.so'.format(abi_version, abi_flags), 'rb', 3),
+                    ('.cpython-{0}{1}-darwin.so'.format(abi_version,
+                     abi_flags), 'rb', 3),
                     ('.abi{0}.so'.format(sys.version_info[0]), 'rb', 3),
                     ('.so', 'rb', 3),
                 ]
-            else: # FreeBSD et al.
+            else:  # FreeBSD et al.
                 self.moduleSuffixes += [
-                    ('.cpython-{0}{1}.so'.format(abi_version, abi_flags), 'rb', 3),
+                    ('.cpython-{0}{1}.so'.format(abi_version,
+                     abi_flags), 'rb', 3),
                     ('.abi{0}.so'.format(sys.version_info[0]), 'rb', 3),
                     ('.so', 'rb', 3),
                 ]
@@ -937,8 +952,8 @@ class Freezer:
             self.previousModules[key] = value
             self.modules[key] = value
 
-    def excludeModule(self, moduleName, forbid = False, allowChildren = False,
-                      fromSource = None):
+    def excludeModule(self, moduleName, forbid=False, allowChildren=False,
+                      fromSource=None):
         """ Adds a module to the list of modules not to be exported by
         this tool.  If forbid is true, the module is furthermore
         forbidden to be imported, even if it exists on disk.  If
@@ -948,9 +963,9 @@ class Freezer:
         assert self.mf is None
 
         self.modules[moduleName] = self.ModuleDef(
-            moduleName, exclude = True,
-            forbid = forbid, allowChildren = allowChildren,
-            fromSource = fromSource)
+            moduleName, exclude=True,
+            forbid=forbid, allowChildren=allowChildren,
+            fromSource=fromSource)
 
     def handleCustomPath(self, moduleName):
         """ Indicates a module that may perform runtime manipulation
@@ -1050,14 +1065,14 @@ class Freezer:
 
         return modules
 
-    def _gatherSubmodules(self, moduleName, implicit = False, newName = None,
-                          filename = None, guess = False, fromSource = None,
-                          text = None):
+    def _gatherSubmodules(self, moduleName, implicit=False, newName=None,
+                          filename=None, guess=False, fromSource=None,
+                          text=None):
         if not newName:
             newName = moduleName
 
-        assert(moduleName.endswith('.*'))
-        assert(newName.endswith('.*'))
+        assert (moduleName.endswith('.*'))
+        assert (newName.endswith('.*'))
 
         mdefs = {}
 
@@ -1067,7 +1082,7 @@ class Freezer:
         parentNames = [(parentName, newParentName)]
 
         if parentName.endswith('.*'):
-            assert(newParentName.endswith('.*'))
+            assert (newParentName.endswith('.*'))
             # Another special case.  The parent name "*" means to
             # return all possible directories within a particular
             # directory.
@@ -1091,8 +1106,8 @@ class Freezer:
             if modules is None:
                 # It's actually a regular module.
                 mdefs[newParentName] = self.ModuleDef(
-                    parentName, implicit = implicit, guess = guess,
-                    fromSource = fromSource, text = text)
+                    parentName, implicit=implicit, guess=guess,
+                    fromSource=fromSource, text=text)
 
             else:
                 # Now get all the py files in the parent directory.
@@ -1100,13 +1115,13 @@ class Freezer:
                     moduleName = '%s.%s' % (parentName, basename)
                     newName = '%s.%s' % (newParentName, basename)
                     mdefs[newName] = self.ModuleDef(
-                        moduleName, implicit = implicit, guess = True,
-                        fromSource = fromSource)
+                        moduleName, implicit=implicit, guess=True,
+                        fromSource=fromSource)
         return mdefs
 
-    def addModule(self, moduleName, implicit = False, newName = None,
-                  filename = None, guess = False, fromSource = None,
-                  text = None):
+    def addModule(self, moduleName, implicit=False, newName=None,
+                  filename=None, guess=False, fromSource=None,
+                  text=None):
         """ Adds a module to the list of modules to be exported by
         this tool.  If implicit is true, it is OK if the module does
         not actually exist.
@@ -1136,10 +1151,10 @@ class Freezer:
         else:
             # A normal, explicit module name.
             self.modules[newName] = self.ModuleDef(
-                moduleName, filename = filename, implicit = implicit,
-                guess = guess, fromSource = fromSource, text = text)
+                moduleName, filename=filename, implicit=implicit,
+                guess=guess, fromSource=fromSource, text=text)
 
-    def done(self, addStartupModules = False):
+    def done(self, addStartupModules=False):
         """ Call this method after you have added all modules with
         addModule().  You may then call generateCode() or
         writeMultifile() to dump the resulting output.  After a call
@@ -1151,12 +1166,14 @@ class Freezer:
         # If we are building an exe, we also need to implicitly
         # bring in Python's startup modules.
         if addStartupModules:
-            self.modules['_frozen_importlib'] = self.ModuleDef('importlib._bootstrap', implicit = True)
-            self.modules['_frozen_importlib_external'] = self.ModuleDef('importlib._bootstrap_external', implicit = True)
+            self.modules['_frozen_importlib'] = self.ModuleDef(
+                'importlib._bootstrap', implicit=True)
+            self.modules['_frozen_importlib_external'] = self.ModuleDef(
+                'importlib._bootstrap_external', implicit=True)
 
             for moduleName in startupModules:
                 if moduleName not in self.modules:
-                    self.addModule(moduleName, implicit = True)
+                    self.addModule(moduleName, implicit=True)
 
         # Excluding a parent module also excludes all its
         # (non-explicit) children, unless the parent has allowChildren
@@ -1178,7 +1195,7 @@ class Freezer:
             if mdef.implicit and '.' in newName:
                 # For implicit modules, check if the parent is excluded.
                 parentName, baseName = newName.rsplit('.', 1)
-                if parentName in excludeDict :
+                if parentName in excludeDict:
                     mdef = excludeDict[parentName]
 
             if mdef.exclude:
@@ -1189,7 +1206,8 @@ class Freezer:
             else:
                 includes.append(mdef)
 
-        self.mf = PandaModuleFinder(excludes=list(excludeDict.keys()), suffixes=self.moduleSuffixes, path=self.path, optimize=self.optimize)
+        self.mf = PandaModuleFinder(excludes=list(excludeDict.keys(
+        )), suffixes=self.moduleSuffixes, path=self.path, optimize=self.optimize)
 
         # Attempt to import the explicit modules into the modulefinder.
 
@@ -1198,7 +1216,7 @@ class Freezer:
         # resolves potential ordering issues, especially with modules
         # that are discovered by filename rather than through import
         # statements.
-        includes.sort(key = self.__sortModuleKey)
+        includes.sort(key=self.__sortModuleKey)
 
         # Now walk through the list and import them all.
         for mdef in includes:
@@ -1227,7 +1245,7 @@ class Freezer:
             hidden = hiddenImports.get(origName, [])
             for modname in hidden:
                 if modname.endswith('.*'):
-                    mdefs = self._gatherSubmodules(modname, implicit = True)
+                    mdefs = self._gatherSubmodules(modname, implicit=True)
                     for mdef in mdefs.values():
                         try:
                             self.__loadModule(mdef)
@@ -1235,7 +1253,8 @@ class Freezer:
                             pass
                 else:
                     try:
-                        self.__loadModule(self.ModuleDef(modname, implicit = True))
+                        self.__loadModule(
+                            self.ModuleDef(modname, implicit=True))
                     except ImportError:
                         pass
 
@@ -1270,7 +1289,8 @@ class Freezer:
         # Now, any new modules we found get added to the export list.
         for origName in list(self.mf.modules.keys()):
             if origName not in origToNewName:
-                self.modules[origName] = self.ModuleDef(origName, implicit = True)
+                self.modules[origName] = self.ModuleDef(
+                    origName, implicit=True)
 
         for origName in self.mf.any_missing_maybe()[0]:
             if origName in startupModules:
@@ -1282,8 +1302,8 @@ class Freezer:
 
             # This module is missing.  Let it be missing in the
             # runtime also.
-            self.modules[origName] = self.ModuleDef(origName, exclude = True,
-                                                    implicit = True)
+            self.modules[origName] = self.ModuleDef(origName, exclude=True,
+                                                    implicit=True)
 
             if origName in okMissing:
                 # If it's listed in okMissing, don't even report it.
@@ -1402,8 +1422,8 @@ class Freezer:
                     # Previously exported.
                     pass
                 elif mdef.moduleName in self.mf.modules or \
-                     mdef.moduleName in startupModules or \
-                     mdef.filename:
+                        mdef.moduleName in startupModules or \
+                        mdef.filename:
                     moduleDefs.append((newName, mdef))
             elif mdef.forbid:
                 if not prev or not prev.forbid:
@@ -1430,7 +1450,7 @@ class Freezer:
         for moduleName, module in list(self.mf.modules.items()):
             if module.__code__:
                 co = self.mf.replace_paths_in_code(module.__code__)
-                module.__code__ = co;
+                module.__code__ = co
 
     def __addPyc(self, multifile, filename, code, compressionLevel):
         if code:
@@ -1470,13 +1490,15 @@ class Freezer:
                     filename += '.pyo'
                 if multifile.findSubfile(filename) < 0:
                     if sys.version_info >= (3, 2):
-                        code = compile('', moduleName, 'exec', optimize=self.optimize)
+                        code = compile('', moduleName, 'exec',
+                                       optimize=self.optimize)
                     else:
                         code = compile('', moduleName, 'exec')
                     self.__addPyc(multifile, filename, code, compressionLevel)
 
             moduleDirs[str] = True
-            self.__addPythonDirs(multifile, moduleDirs, dirnames[:-1], compressionLevel)
+            self.__addPythonDirs(multifile, moduleDirs,
+                                 dirnames[:-1], compressionLevel)
 
     def __addPythonFile(self, multifile, moduleDirs, moduleName, mdef,
                         compressionLevel):
@@ -1489,13 +1511,14 @@ class Freezer:
             # the parent directory.
             dirnames = dirnames[:-1]
 
-        self.__addPythonDirs(multifile, moduleDirs, dirnames[:-1], compressionLevel)
+        self.__addPythonDirs(multifile, moduleDirs,
+                             dirnames[:-1], compressionLevel)
 
         filename = '/'.join(dirnames)
 
         module = self.mf.modules.get(mdef.moduleName, None)
         if getattr(module, '__path__', None) is not None or \
-          (getattr(module, '__file__', None) is not None and getattr(module, '__file__').endswith('/__init__.py')):
+                (getattr(module, '__file__', None) is not None and getattr(module, '__file__').endswith('/__init__.py')):
             # It's actually a package.  In this case, we really write
             # the file moduleName/__init__.py.
             filename += '/__init__'
@@ -1520,7 +1543,8 @@ class Freezer:
         if self.storePythonSource:
             if sourceFilename and sourceFilename.exists():
                 filename += '.py'
-                multifile.addSubfile(filename, sourceFilename, compressionLevel)
+                multifile.addSubfile(
+                    filename, sourceFilename, compressionLevel)
                 return
 
         # If we can't find the source file, add the compiled pyc instead.
@@ -1553,13 +1577,14 @@ class Freezer:
                 if source and source[-1] != '\n':
                     source = source + '\n'
                 if sys.version_info >= (3, 2):
-                    code = compile(source, str(sourceFilename), 'exec', optimize=self.optimize)
+                    code = compile(source, str(sourceFilename),
+                                   'exec', optimize=self.optimize)
                 else:
                     code = compile(source, str(sourceFilename), 'exec')
 
         self.__addPyc(multifile, filename, code, compressionLevel)
 
-    def addToMultifile(self, multifile, compressionLevel = 0):
+    def addToMultifile(self, multifile, compressionLevel=0):
         """ After a call to done(), this stores all of the accumulated
         python code into the indicated Multifile.  Additional
         extension modules are listed in self.extras.  """
@@ -1588,7 +1613,7 @@ class Freezer:
         multifile.flush()
         multifile.repack()
 
-    def writeCode(self, filename, initCode = ""):
+    def writeCode(self, filename, initCode=""):
         """ After a call to done(), this freezes all of the accumulated
         Python code into a C source file. """
 
@@ -1602,7 +1627,8 @@ class Freezer:
             origName = mdef.moduleName
             if mdef.forbid:
                 # Explicitly disallow importing this module.
-                moduleList.append(self.makeForbiddenModuleListEntry(moduleName))
+                moduleList.append(
+                    self.makeForbiddenModuleListEntry(moduleName))
                 continue
 
             assert not mdef.exclude
@@ -1614,10 +1640,11 @@ class Freezer:
 
                 mangledName = self.mangleName(moduleName)
                 moduleDefs.append(self.makeModuleDef(mangledName, code))
-                moduleList.append(self.makeModuleListEntry(mangledName, code, moduleName, module))
+                moduleList.append(self.makeModuleListEntry(
+                    mangledName, code, moduleName, module))
                 continue
 
-            #if moduleName in startupModules:
+            # if moduleName in startupModules:
             #    # Forbid the loading of this startup module.
             #    moduleList.append(self.makeForbiddenModuleListEntry(moduleName))
             #    continue
@@ -1635,13 +1662,16 @@ class Freezer:
             # module that loads it as builtin.
             if '.' in moduleName and self.linkExtensionModules:
                 if sys.version_info >= (3, 2):
-                    code = compile('import sys;del sys.modules["%s"];import imp;imp.init_builtin("%s")' % (moduleName, moduleName), moduleName, 'exec', optimize=self.optimize)
+                    code = compile('import sys;del sys.modules["%s"];import imp;imp.init_builtin("%s")' % (
+                        moduleName, moduleName), moduleName, 'exec', optimize=self.optimize)
                 else:
-                    code = compile('import sys;del sys.modules["%s"];import imp;imp.init_builtin("%s")' % (moduleName, moduleName), moduleName, 'exec')
+                    code = compile('import sys;del sys.modules["%s"];import imp;imp.init_builtin("%s")' % (
+                        moduleName, moduleName), moduleName, 'exec')
                 code = marshal.dumps(code)
                 mangledName = self.mangleName(moduleName)
                 moduleDefs.append(self.makeModuleDef(mangledName, code))
-                moduleList.append(self.makeModuleListEntry(mangledName, code, moduleName, None))
+                moduleList.append(self.makeModuleListEntry(
+                    mangledName, code, moduleName, None))
             elif '.' in moduleName:
                 # Nothing we can do about this case except warn the user they
                 # are in for some trouble.
@@ -1653,7 +1683,7 @@ class Freezer:
         text = programFile % {
             'moduleDefs': '\n'.join(moduleDefs),
             'moduleList': '\n'.join(moduleList),
-            }
+        }
 
         if self.linkExtensionModules and self.extras:
             # Should we link in extension modules?  If so, we write out a new
@@ -1667,7 +1697,8 @@ class Freezer:
             for module, fn in self.extras:
                 if sys.platform != "win32" or fn:
                     libName = module.split('.')[-1]
-                    initFunc = builtinInitFuncs.get(module, 'PyInit_' + libName)
+                    initFunc = builtinInitFuncs.get(
+                        module, 'PyInit_' + libName)
                     if initFunc:
                         text += 'extern PyAPI_FUNC(PyObject) *%s(void);\n' % (initFunc)
             text += '\n'
@@ -1680,7 +1711,8 @@ class Freezer:
             for module, fn in self.extras:
                 if sys.platform != "win32" or fn:
                     libName = module.split('.')[-1]
-                    initFunc = builtinInitFuncs.get(module, 'PyInit_' + libName) or 'NULL'
+                    initFunc = builtinInitFuncs.get(
+                        module, 'PyInit_' + libName) or 'NULL'
                     text += '  {"%s", %s},\n' % (module, initFunc)
             text += '  {0, 0},\n'
             text += '};\n\n'
@@ -1703,7 +1735,8 @@ class Freezer:
             for module, fn in self.extras:
                 if sys.platform != "win32" or fn:
                     libName = module.split('.')[-1]
-                    initFunc = builtinInitFuncs.get(module, 'init' + libName) or 'NULL'
+                    initFunc = builtinInitFuncs.get(
+                        module, 'init' + libName) or 'NULL'
                     text += '  {"%s", %s},\n' % (module, initFunc)
             text += '  {0, 0},\n'
             text += '};\n'
@@ -1721,7 +1754,7 @@ class Freezer:
             file.write(text)
             file.close()
 
-    def generateCode(self, basename, compileToExe = False):
+    def generateCode(self, basename, compileToExe=False):
         """ After a call to done(), this freezes all of the
         accumulated python code into either an executable program (if
         compileToExe is true) or a dynamic library (if compileToExe is
@@ -1747,18 +1780,18 @@ class Freezer:
             dllimport = '__declspec(dllimport) '
 
         if not self.cenv:
-            self.cenv = CompilationEnvironment(platform = self.platform)
+            self.cenv = CompilationEnvironment(platform=self.platform)
 
         if compileToExe:
             code = self.frozenMainCode
             if self.platform.startswith('win'):
                 code += self.frozenDllMainCode
             initCode = self.mainInitCode % {
-                'frozenMainCode' : code,
-                'programName' : os.path.basename(basename),
-                'dllexport' : dllexport,
-                'dllimport' : dllimport,
-                }
+                'frozenMainCode': code,
+                'programName': os.path.basename(basename),
+                'dllexport': dllexport,
+                'dllimport': dllimport,
+            }
             if self.platform.startswith('win'):
                 target = basename + '.exe'
             else:
@@ -1773,10 +1806,10 @@ class Freezer:
                 target = basename + '.so'
 
             initCode = dllInitCode % {
-                'moduleName' : os.path.basename(basename),
-                'dllexport' : dllexport,
-                'dllimport' : dllimport,
-                }
+                'moduleName': os.path.basename(basename),
+                'dllexport': dllexport,
+                'dllimport': dllimport,
+            }
             compileFunc = self.cenv.compileDll
 
         self.writeCode(filename, initCode=initCode)
@@ -1808,7 +1841,8 @@ class Freezer:
                         symbolName = 'PyInit_' + modname
                     else:
                         symbolName = 'init' + modname
-                    os.system('lib /nologo /def /export:%s /name:%s.pyd /out:%s' % (symbolName, modname, libfile))
+                    os.system('lib /nologo /def /export:%s /name:%s.pyd /out:%s' %
+                              (symbolName, modname, libfile))
                     extraLink.append(libfile)
                     cleanFiles += [libfile, modname + '.exp']
                 else:
@@ -1851,7 +1885,7 @@ class Freezer:
                 strings.add(value.encode('utf-8'))
 
         # Sort by length descending, allowing reuse of partial strings.
-        strings = sorted(strings, key=lambda str:-len(str))
+        strings = sorted(strings, key=lambda str: -len(str))
         string_offsets = {}
 
         # Now add the strings to the pool, and collect the offsets relative to
@@ -1910,11 +1944,14 @@ class Freezer:
             if '.' in moduleName:
                 if self.platform.startswith("macosx") and not use_console:
                     # We write the Frameworks directory to sys.path[0].
-                    code = 'import sys;del sys.modules["%s"];import sys,os,imp;imp.load_dynamic("%s",os.path.join(sys.path[0], "%s%s"))' % (moduleName, moduleName, moduleName, modext)
+                    code = 'import sys;del sys.modules["%s"];import sys,os,imp;imp.load_dynamic("%s",os.path.join(sys.path[0], "%s%s"))' % (
+                        moduleName, moduleName, moduleName, modext)
                 else:
-                    code = 'import sys;del sys.modules["%s"];import sys,os,imp;imp.load_dynamic("%s",os.path.join(os.path.dirname(sys.executable), "%s%s"))' % (moduleName, moduleName, moduleName, modext)
+                    code = 'import sys;del sys.modules["%s"];import sys,os,imp;imp.load_dynamic("%s",os.path.join(os.path.dirname(sys.executable), "%s%s"))' % (
+                        moduleName, moduleName, moduleName, modext)
                 if sys.version_info >= (3, 2):
-                    code = compile(code, moduleName, 'exec', optimize=self.optimize)
+                    code = compile(code, moduleName, 'exec',
+                                   optimize=self.optimize)
                 else:
                     code = compile(code, moduleName, 'exec')
                 code = marshal.dumps(code)
@@ -1944,7 +1981,8 @@ class Freezer:
 
         pool_offset = 0
         for bitness in bitnesses:
-            pool_offset += (len(moduleList) + 1) * struct.calcsize(entry_layouts[bitness])
+            pool_offset += (len(moduleList) + 1) * \
+                struct.calcsize(entry_layouts[bitness])
 
         # Now we can determine the offset of the blob.
         if self.platform.startswith('win'):
@@ -2003,32 +2041,35 @@ class Freezer:
             if log_filename_strftime:
                 flags |= 2
             if self.optimize < 2:
-                flags |= 4 # keep_docstrings
+                flags |= 4  # keep_docstrings
 
             # Compose the header we will be writing to the stub, to tell it
             # where to find the module data blob, as well as other variables.
             header = struct.pack(header_layout,
-                blob_offset,
-                blob_size,
-                1, # Version number
-                num_pointers, # Number of pointers that follow
-                0, # Codepage, not yet used
-                flags,
-                table_offset, # Module table pointer.
-                # The following variables need to be set before static init
-                # time.  See configPageManager.cxx, where they are read.
-                field_offsets.get('prc_data', 0),
-                field_offsets.get('default_prc_dir', 0),
-                field_offsets.get('prc_dir_envvars', 0),
-                field_offsets.get('prc_path_envvars', 0),
-                field_offsets.get('prc_patterns', 0),
-                field_offsets.get('prc_encrypted_patterns', 0),
-                field_offsets.get('prc_encryption_key', 0),
-                field_offsets.get('prc_executable_patterns', 0),
-                field_offsets.get('prc_executable_args_envvar', 0),
-                field_offsets.get('main_dir', 0),
-                field_offsets.get('log_filename', 0),
-                0)
+                                 blob_offset,
+                                 blob_size,
+                                 1,  # Version number
+                                 num_pointers,  # Number of pointers that follow
+                                 0,  # Codepage, not yet used
+                                 flags,
+                                 table_offset,  # Module table pointer.
+                                 # The following variables need to be set before static init
+                                 # time.  See configPageManager.cxx, where they are read.
+                                 field_offsets.get('prc_data', 0),
+                                 field_offsets.get('default_prc_dir', 0),
+                                 field_offsets.get('prc_dir_envvars', 0),
+                                 field_offsets.get('prc_path_envvars', 0),
+                                 field_offsets.get('prc_patterns', 0),
+                                 field_offsets.get(
+                                     'prc_encrypted_patterns', 0),
+                                 field_offsets.get('prc_encryption_key', 0),
+                                 field_offsets.get(
+                                     'prc_executable_patterns', 0),
+                                 field_offsets.get(
+                                     'prc_executable_args_envvar', 0),
+                                 field_offsets.get('main_dir', 0),
+                                 field_offsets.get('log_filename', 0),
+                                 0)
 
             # Now, find the location of the 'blobinfo' symbol in the binary,
             # to which we will write our header.
@@ -2207,14 +2248,14 @@ class Freezer:
 
         # Make sure we read in the correct endianness and integer size
         endian = "<>"[ord(elf_data[5:6]) - 1]
-        is_64bit = ord(elf_data[4:5]) - 1 # 0 = 32-bits, 1 = 64-bits
+        is_64bit = ord(elf_data[4:5]) - 1  # 0 = 32-bits, 1 = 64-bits
         header_struct = endian + ("HHIIIIIHHHHHH", "HHIQQQIHHHHHH")[is_64bit]
         section_struct = endian + ("4xI4xIIII8xI", "4xI8xQQQI12xQ")[is_64bit]
         symbol_struct = endian + ("IIIBBH", "IBBHQQ")[is_64bit]
 
         header_size = struct.calcsize(header_struct)
         type, machine, version, entry, phoff, shoff, flags, ehsize, phentsize, phnum, shentsize, shnum, shstrndx \
-          = struct.unpack_from(header_struct, elf_data, 16)
+            = struct.unpack_from(header_struct, elf_data, 16)
         section_offsets = []
         symbol_tables = []
         string_tables = {}
@@ -2222,17 +2263,19 @@ class Freezer:
         # Seek to the section header table and find the symbol tables.
         ptr = shoff
         for i in range(shnum):
-            type, addr, offset, size, link, entsize = struct.unpack_from(section_struct, elf_data[ptr:ptr+shentsize])
+            type, addr, offset, size, link, entsize = struct.unpack_from(
+                section_struct, elf_data[ptr:ptr+shentsize])
             ptr += shentsize
             section_offsets.append(offset - addr)
-            if type == 0x0B and link != 0: # SHT_DYNSYM, links to string table
+            if type == 0x0B and link != 0:  # SHT_DYNSYM, links to string table
                 symbol_tables.append((offset, size, link, entsize))
                 string_tables[link] = None
 
         # Read the relevant string tables.
         for idx in list(string_tables.keys()):
             ptr = shoff + idx * shentsize
-            type, addr, offset, size, link, entsize = struct.unpack_from(section_struct, elf_data[ptr:ptr+shentsize])
+            type, addr, offset, size, link, entsize = struct.unpack_from(
+                section_struct, elf_data[ptr:ptr+shentsize])
             if type == 3:
                 string_tables[idx] = elf_data[offset:offset+size]
 
@@ -2241,7 +2284,8 @@ class Freezer:
             entries = size // entsize
             for i in range(entries):
                 ptr = offset + i * entsize
-                fields = struct.unpack_from(symbol_struct, elf_data[ptr:ptr+entsize])
+                fields = struct.unpack_from(
+                    symbol_struct, elf_data[ptr:ptr+entsize])
                 if is_64bit:
                     name, info, other, shndx, value, size = fields
                 else:
@@ -2250,9 +2294,10 @@ class Freezer:
                 if not name:
                     continue
 
-                name = string_tables[link][name : string_tables[link].find(b'\0', name)]
+                name = string_tables[link][name: string_tables[link].find(
+                    b'\0', name)]
                 if name == symbol_name:
-                    if shndx == 0: # SHN_UNDEF
+                    if shndx == 0:  # SHN_UNDEF
                         continue
                     elif shndx >= 0xff00 and shndx <= 0xffff:
                         assert False
@@ -2286,32 +2331,34 @@ class Freezer:
         nlist_size = struct.calcsize(nlist_struct)
 
         for i in range(ncmds):
-            cmd, cmd_size = struct.unpack_from(endian + 'II', macho_data, cmd_ptr)
+            cmd, cmd_size = struct.unpack_from(
+                endian + 'II', macho_data, cmd_ptr)
             cmd_data = macho_data[cmd_ptr+8:cmd_ptr+cmd_size]
             cmd_ptr += cmd_size
 
             cmd &= ~0x80000000
 
-            if cmd == 0x01: # LC_SEGMENT
+            if cmd == 0x01:  # LC_SEGMENT
                 segname, vmaddr, vmsize, fileoff, filesize, maxprot, initprot, nsects, flags = \
                     struct.unpack_from(endian + '16sIIIIIIII', cmd_data)
                 segments.append((vmaddr, vmsize, fileoff))
 
-            elif cmd == 0x19: # LC_SEGMENT_64
+            elif cmd == 0x19:  # LC_SEGMENT_64
                 segname, vmaddr, vmsize, fileoff, filesize, maxprot, initprot, nsects, flags = \
                     struct.unpack_from(endian + '16sQQQQIIII', cmd_data)
                 segments.append((vmaddr, vmsize, fileoff))
 
-            elif cmd == 0x2: # LC_SYMTAB
+            elif cmd == 0x2:  # LC_SYMTAB
                 symoff, nsyms, stroff, strsize = \
                     struct.unpack_from(endian + 'IIII', cmd_data)
 
                 strings = macho_data[stroff:stroff+strsize]
 
                 for q in range(nsyms):
-                    strx, type, sect, desc, value = struct.unpack_from(nlist_struct, macho_data, symoff)
+                    strx, type, sect, desc, value = struct.unpack_from(
+                        nlist_struct, macho_data, symoff)
                     symoff += nlist_size
-                    name = strings[strx : strings.find(b'\0', strx)]
+                    name = strings[strx: strings.find(b'\0', strx)]
 
                     if name == b'_' + symbol_name:
                         # Find out in which segment this is.
@@ -2321,7 +2368,8 @@ class Freezer:
                             if rel >= 0 and rel < vmsize:
                                 # Yes, so return the symbol offset.
                                 return fileoff + rel
-                        print("Could not find memory address for symbol %s" % (symbol_name))
+                        print("Could not find memory address for symbol %s" %
+                              (symbol_name))
 
     def makeModuleDef(self, mangledName, code):
         result = ''
@@ -2329,9 +2377,9 @@ class Freezer:
         for i in range(0, len(code), 16):
             result += '\n  '
             for c in code[i:i+16]:
-                if isinstance(c, int): # Python 3
+                if isinstance(c, int):  # Python 3
                     result += ('%d,' % c)
-                else: # Python 2
+                else:  # Python 2
                     result += ('%d,' % ord(c))
         result += '\n};\n'
         return result
@@ -2345,7 +2393,6 @@ class Freezer:
 
     def makeForbiddenModuleListEntry(self, moduleName):
         return '  {"%s", NULL, 0},' % (moduleName)
-
 
     def __writingModule(self, moduleName):
         """ Returns true if we are outputting the named module in this
@@ -2520,7 +2567,8 @@ class PandaModuleFinder(modulefinder.ModuleFinder):
             if sys.version_info >= (3, 7):
                 try:
                     data = fp.read()
-                    importlib._bootstrap_external._classify_pyc(data, fqname, {})
+                    importlib._bootstrap_external._classify_pyc(
+                        data, fqname, {})
                 except ImportError as exc:
                     self.msgout(2, "raise ImportError: " + str(exc), pathname)
                     raise
@@ -2529,9 +2577,11 @@ class PandaModuleFinder(modulefinder.ModuleFinder):
             elif sys.version_info >= (3, 4):
                 try:
                     if sys.version_info >= (3, 5):
-                        marshal_data = importlib._bootstrap_external._validate_bytecode_header(fp.read())
+                        marshal_data = importlib._bootstrap_external._validate_bytecode_header(
+                            fp.read())
                     else:
-                        marshal_data = importlib._bootstrap._validate_bytecode_header(fp.read())
+                        marshal_data = importlib._bootstrap._validate_bytecode_header(
+                            fp.read())
                 except ImportError as exc:
                     self.msgout(2, "raise ImportError: " + str(exc), pathname)
                     raise
@@ -2539,7 +2589,8 @@ class PandaModuleFinder(modulefinder.ModuleFinder):
                 co = marshal.loads(marshal_data)
             else:
                 if fp.read(4) != imp.get_magic():
-                    self.msgout(2, "raise ImportError: Bad magic number", pathname)
+                    self.msgout(
+                        2, "raise ImportError: Bad magic number", pathname)
                     raise ImportError("Bad magic number in %s" % pathname)
 
                 fp.read(4)
@@ -2612,8 +2663,10 @@ class PandaModuleFinder(modulefinder.ModuleFinder):
                     if "*" in fromlist:
                         have_star = 1
                     fromlist = [f for f in fromlist if f != "*"]
-                if what == "absolute_import": level = 0
-                else: level = -1
+                if what == "absolute_import":
+                    level = 0
+                else:
+                    level = -1
                 self._safe_import_hook(name, m, fromlist, level=level)
                 if have_star:
                     # We've encountered an "import *". If it is a Python module,
@@ -2640,7 +2693,8 @@ class PandaModuleFinder(modulefinder.ModuleFinder):
                 if name:
                     self._safe_import_hook(name, m, fromlist, level=level)
                 else:
-                    self._safe_import_hook(parent.__name__, None, fromlist, level=0)
+                    self._safe_import_hook(
+                        parent.__name__, None, fromlist, level=0)
 
                 if fromlist and "*" in fromlist:
                     if name:
@@ -2668,7 +2722,7 @@ class PandaModuleFinder(modulefinder.ModuleFinder):
         (or self.path if None).  Returns a tuple like (fp, path, stuff), where
         stuff is a tuple like (suffix, mode, type). """
 
-        #if imp.is_frozen(name):
+        # if imp.is_frozen(name):
         #    # Don't pick up modules that are frozen into p3dpython.
         #    raise ImportError("'%s' is a frozen module" % (name))
 

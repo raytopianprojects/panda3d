@@ -40,7 +40,7 @@ def makeFilterBuffer(srcbuffer, name, sort, prog):
     blurBuffer = base.win.makeTextureBuffer(name, 512, 512)
     blurBuffer.setSort(sort)
     blurBuffer.setClearColor(LVector4(1, 0, 0, 1))
-    blurCamera = base.makeCamera2d(blurBuffer)
+    blurCamera = base.make_camera_2d(blurBuffer)
     blurScene = NodePath("new Scene")
     blurCamera.node().setScene(blurScene)
     shader = loader.loadShader(prog)
@@ -57,8 +57,8 @@ class GlowDemo(ShowBase):
         # create a window and set up everything we need for rendering into it.
         ShowBase.__init__(self)
 
-        base.disableMouse()
-        base.setBackgroundColor(0, 0, 0)
+        base.disable_mouse()
+        base.set_background_color(0, 0, 0)
         camera.setPos(0, -50, 0)
 
         # Check video card capabilities.
@@ -107,7 +107,7 @@ class GlowDemo(ShowBase):
         # We have to attach a camera to the glow buffer. The glow camera
         # must have the same frustum as the main camera. As long as the aspect
         # ratios match, the rest will take care of itself.
-        glowCamera = base.makeCamera(
+        glowCamera = base.make_camera(
             glowBuffer, lens=base.cam.node().getLens())
 
         # Tell the glow camera to use the glow shader

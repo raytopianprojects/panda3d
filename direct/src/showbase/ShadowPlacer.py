@@ -13,6 +13,7 @@ from direct.directnotify import DirectNotifyGlobal
 from panda3d.core import *
 from . import DirectObject
 
+
 class ShadowPlacer(DirectObject.DirectObject):
     notify = DirectNotifyGlobal.directNotify.newCategory("ShadowPlacer")
 
@@ -22,29 +23,31 @@ class ShadowPlacer(DirectObject.DirectObject):
 
     # special methods
     def __init__(self, cTrav, shadowNodePath,
-            wallCollideMask, floorCollideMask):
-        self.isActive = 0 # Is the placer "on".  This is also printed in the debugCall.
+                 wallCollideMask, floorCollideMask):
+        # Is the placer "on".  This is also printed in the debugCall.
+        self.isActive = 0
         assert self.notify.debugCall()
         DirectObject.DirectObject.__init__(self)
         self.setup(cTrav, shadowNodePath,
-            wallCollideMask, floorCollideMask)
+                   wallCollideMask, floorCollideMask)
         if __debug__:
             self.count += 1
             self.debugDisplay()
 
     def setup(self, cTrav, shadowNodePath,
-            wallCollideMask, floorCollideMask):
+              wallCollideMask, floorCollideMask):
         """
         Set up the collisions
         """
         assert self.notify.debugCall()
         assert not shadowNodePath.isEmpty()
-        assert not hasattr(self, "cTrav") # Protect from setup() being called again.
+        # Protect from setup() being called again.
+        assert not hasattr(self, "c_trav")
 
         if not cTrav:
             # set up the shadow collision traverser
-            base.initShadowTrav()
-            cTrav = base.shadowTrav
+            base.init_shadow_trav()
+            cTrav = base.shadow_trav
 
         self.cTrav = cTrav
         self.shadowNodePath = shadowNodePath
@@ -52,7 +55,8 @@ class ShadowPlacer(DirectObject.DirectObject):
         floorOffset = 0.025
         # Set up the collison ray
         # This is a ray cast down to detect floor polygons
-        self.cRay = CollisionRay(0.0, 0.0, CollisionHandlerRayStart, 0.0, 0.0, -1.0)
+        self.cRay = CollisionRay(
+            0.0, 0.0, CollisionHandlerRayStart, 0.0, 0.0, -1.0)
         cRayNode = CollisionNode('shadowPlacer')
         cRayNode.addSolid(self.cRay)
         self.cRayNodePath = NodePath(cRayNode)
@@ -62,13 +66,13 @@ class ShadowPlacer(DirectObject.DirectObject):
 
         # set up floor collision mechanism
         self.lifter = CollisionHandlerFloor()
-        #self.lifter.setInPattern("on-floor")
-        #self.lifter.setOutPattern("off-floor")
+        # self.lifter.setInPattern("on-floor")
+        # self.lifter.setOutPattern("off-floor")
         self.lifter.setOffset(floorOffset)
         self.lifter.setReach(4.0)
 
         # activate the collider with the traverser and pusher
-        #self.on()
+        # self.on()
 
         self.lifter.addCollider(self.cRayNodePath, shadowNodePath)
 
@@ -84,7 +88,7 @@ class ShadowPlacer(DirectObject.DirectObject):
         del self.shadowNodePath
 
         del self.cRay
-        #del self.cRayNode
+        # del self.cRayNode
         self.cRayNodePath.removeNode()
         del self.cRayNodePath
 
@@ -95,7 +99,7 @@ class ShadowPlacer(DirectObject.DirectObject):
         Turn on the shadow placement.  The shadow z position will
         start being updated until a call to off() is made.
         """
-        assert self.notify.debugCall("activeCount=%s"%(self.activeCount,))
+        assert self.notify.debugCall("activeCount=%s" % (self.activeCount,))
         if self.isActive:
             assert self.cTrav.hasCollider(self.cRayNodePath)
             return
@@ -113,7 +117,7 @@ class ShadowPlacer(DirectObject.DirectObject):
         there, but the z position will not be updated until a call
         to on() is made.
         """
-        assert self.notify.debugCall("activeCount=%s"%(self.activeCount,))
+        assert self.notify.debugCall("activeCount=%s" % (self.activeCount,))
         if not self.isActive:
             assert not self.cTrav.hasCollider(self.cRayNodePath)
             return
@@ -142,14 +146,14 @@ class ShadowPlacer(DirectObject.DirectObject):
 
     def resetToOrigin(self):
         if self.shadowNodePath:
-            self.shadowNodePath.setPos(0,0,0)
+            self.shadowNodePath.setPos(0, 0, 0)
 
     if __debug__:
         def debugDisplay(self):
             """for debugging"""
             if self.notify.getDebug():
-                message = "%d active (%d total), %d colliders"%(
-                self.activeCount, self.count, self.cTrav.getNumColliders())
+                message = "%d active (%d total), %d colliders" % (
+                    self.activeCount, self.count, self.cTrav.getNumColliders())
                 self.notify.debug(message)
                 onScreenDebug.add("ShadowPlacers", message)
-            return 1 # to allow assert self.debugDisplay()
+            return 1  # to allow assert self.debugDisplay()

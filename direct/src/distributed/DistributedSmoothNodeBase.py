@@ -5,11 +5,14 @@ from direct.task import Task
 from direct.showbase.PythonUtil import randFloat, Enum
 from panda3d.direct import CDistributedSmoothNodeBase
 
+
 class DummyTaskClass:
     def setDelay(self, blah):
         pass
 
+
 DummyTask = DummyTaskClass()
+
 
 class DistributedSmoothNodeBase:
     """common base class for DistributedSmoothNode and DistributedSmoothNodeAI
@@ -35,6 +38,7 @@ class DistributedSmoothNodeBase:
     def b_clearSmoothing(self):
         self.d_clearSmoothing()
         self.clearSmoothing()
+
     def d_clearSmoothing(self):
         self.sendUpdate("clearSmoothing", [0])
 
@@ -77,7 +81,7 @@ class DistributedSmoothNodeBase:
             BT.FULL: self.cnode.broadcastPosHprFull,
             BT.XYH:  self.cnode.broadcastPosHprXyh,
             BT.XY:  self.cnode.broadcastPosHprXy,
-            }
+        }
         # this comment is here so it will show up in a grep for 'def d_broadcastPosHpr'
         self.d_broadcastPosHpr = broadcastFuncs[self.broadcastType]
 
@@ -117,4 +121,3 @@ class DistributedSmoothNodeBase:
         if self.d_broadcastPosHpr is None:
             self.cnode.initialize(self, self.dclass, self.doId)
         self.cnode.sendEverything()
-

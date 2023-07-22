@@ -15,7 +15,7 @@ class ClassicStyle(FSM.FSM):
             'Red': ['Green'],
             'Yellow': ['Red'],
             'Green': ['Yellow'],
-            }
+        }
 
     def enterRed(self):
         print("enterRed(self, '%s', '%s')" % (self.oldState, self.newState))
@@ -123,73 +123,73 @@ class ToonEyes(FSM.FSM):
 
 
 ####
-#### Example of using ClassicStyle:
+# Example of using ClassicStyle:
 ##
-## >>> import SampleFSM
-## >>> foo = SampleFSM.ClassicStyle('foo')
-## >>> foo.request('Red')
-## enterRed(self, 'Off', 'Red')
-## ('Red',)
-## >>> foo.request('Yellow')
-## Traceback (most recent call last):
-##   File "<stdin>", line 1, in ?
-##   File "/home/drose/player/direct/src/fsm/FSM.py", line 168, in request
-##     result = func(request, args)
-##   File "/home/drose/player/direct/src/fsm/FSM.py", line 210, in default_filter
-##     self.notify.error("%s rejecting request %s from state %s." % (self.name, request, self.state))
-##   File "/home/drose/player/direct/src/directnotify/Notifier.py", line 99, in error
-##     raise exception(errorString)
-## StandardError: foo rejecting request Yellow from state Red.
-## >>> foo.request('Green')
-## exitRed(self, 'Red', 'Green')
-## enterGreen(self, 'Red', 'Green')
-## ('Green',)
-## >>>
+# >>> import SampleFSM
+# >>> foo = SampleFSM.ClassicStyle('foo')
+# >>> foo.request('Red')
+# enterRed(self, 'Off', 'Red')
+# ('Red',)
+# >>> foo.request('Yellow')
+# Traceback (most recent call last):
+# File "<stdin>", line 1, in ?
+# File "/home/drose/player/direct/src/fsm/FSM.py", line 168, in request
+# result = func(request, args)
+# File "/home/drose/player/direct/src/fsm/FSM.py", line 210, in default_filter
+# self.notify.error("%s rejecting request %s from state %s." % (self.name, request, self.state))
+# File "/home/drose/player/direct/src/directnotify/Notifier.py", line 99, in error
+# raise exception(errorString)
+# StandardError: foo rejecting request Yellow from state Red.
+# >>> foo.request('Green')
+# exitRed(self, 'Red', 'Green')
+# enterGreen(self, 'Red', 'Green')
+# ('Green',)
+# >>>
 
 ####
-#### Example of using NewStyle:
+# Example of using NewStyle:
 ##
-## >>> import SampleFSM
-## >>> foo = SampleFSM.NewStyle('foo')
-## >>> foo.request('Red')
-## enterRed(self, 'Off', 'Red')
-## ('Red',)
-## >>> foo.request('advance')
-## filterRed(self, 'advance', ())
-## exitRed(self, 'Red', 'Green')
-## enterGreen(self, 'Red', 'Green')
-## ('Green',)
-## >>> foo.request('advance')
-## filterGreen(self, 'advance', ())
-## exitGreen(self, 'Green', 'Yellow')
-## enterYellow(self, 'Green', 'Yellow')
-## ('Yellow',)
-## >>> foo.request('advance')
-## filterYellow(self, 'advance', ())
-## exitYellow(self, 'Yellow', 'Red')
-## enterRed(self, 'Yellow', 'Red')
-## ('Red',)
-## >>> foo.request('advance')
-## filterRed(self, 'advance', ())
-## exitRed(self, 'Red', 'Green')
-## enterGreen(self, 'Red', 'Green')
-## ('Green',)
-## >>>
+# >>> import SampleFSM
+# >>> foo = SampleFSM.NewStyle('foo')
+# >>> foo.request('Red')
+# enterRed(self, 'Off', 'Red')
+# ('Red',)
+# >>> foo.request('advance')
+# filterRed(self, 'advance', ())
+# exitRed(self, 'Red', 'Green')
+# enterGreen(self, 'Red', 'Green')
+# ('Green',)
+# >>> foo.request('advance')
+# filterGreen(self, 'advance', ())
+# exitGreen(self, 'Green', 'Yellow')
+# enterYellow(self, 'Green', 'Yellow')
+# ('Yellow',)
+# >>> foo.request('advance')
+# filterYellow(self, 'advance', ())
+# exitYellow(self, 'Yellow', 'Red')
+# enterRed(self, 'Yellow', 'Red')
+# ('Red',)
+# >>> foo.request('advance')
+# filterRed(self, 'advance', ())
+# exitRed(self, 'Red', 'Green')
+# enterGreen(self, 'Red', 'Green')
+# ('Green',)
+# >>>
 
 ####
-#### Example of using ToonEyes:
+# Example of using ToonEyes:
 ##
-## >>> from ShowBaseGlobal import *
-## >>> import SampleFSM
-## >>> eyes = SampleFSM.ToonEyes()
-## swap in eyes open model
-## >>> eyes.request('blink')
-## swap in eyes closed model
-## ('Closed',)
-## >>> run()
-## swap in eyes open model
-## >>> eyes.request('Surprised')
-## swap in eyes surprised model
-## ('Surprised',)
-## >>> eyes.request('blink')
-## >>>
+# >>> from ShowBaseGlobal import *
+# >>> import SampleFSM
+# >>> eyes = SampleFSM.ToonEyes()
+# swap in eyes open model
+# >>> eyes.request('blink')
+# swap in eyes closed model
+# ('Closed',)
+# >>> run()
+# swap in eyes open model
+# >>> eyes.request('Surprised')
+# swap in eyes surprised model
+# ('Surprised',)
+# >>> eyes.request('blink')
+# >>>

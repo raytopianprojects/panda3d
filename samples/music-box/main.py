@@ -37,7 +37,7 @@ class MusicBox(DirectObject):
         self.accept('escape', sys.exit)
 
         # Fix the camera position
-        base.disableMouse()
+        base.disable_mouse()
 
         # Loading sounds is done in a similar way to loading other things
         # Loading the main music box song

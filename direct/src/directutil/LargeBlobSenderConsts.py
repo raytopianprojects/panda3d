@@ -1,10 +1,11 @@
 """LargeBlobSenderConsts module"""
 
-USE_DISK  = 0x01
+USE_DISK = 0x01
 
 ChunkSize = 100
 
 FilePattern = 'largeBlob.%s'
+
 
 def getLargeBlobPath():
     # this folder needs to be accessible by everyone that is going to level edit

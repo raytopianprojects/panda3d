@@ -4,6 +4,7 @@
 import time
 import math
 
+
 class Logger:
     def __init__(self, fileName="log"):
         """
@@ -24,8 +25,7 @@ class Logger:
         """
         Return whether or not we are printing time stamps with log entries
         """
-        return(self.__timeStamp)
-
+        return (self.__timeStamp)
 
     # logging control
 
@@ -43,7 +43,6 @@ class Logger:
         if (self.__timeStamp):
             self.__logFile.write(self.__getTimeStamp())
         self.__logFile.write(entryString + '\n')
-
 
     # logging functions
 
@@ -72,20 +71,18 @@ class Logger:
         dt = t - self.__startTime
         if (dt >= 86400):
             days = int(math.floor(dt/86400))
-            dt = dt%86400
+            dt = dt % 86400
         else:
             days = 0
         if (dt >= 3600):
             hours = int(math.floor(dt/3600))
-            dt = dt%3600
+            dt = dt % 3600
         else:
             hours = 0
         if (dt >= 60):
             minutes = int(math.floor(dt/60))
-            dt = dt%60
+            dt = dt % 60
         else:
             minutes = 0
         seconds = int(math.ceil(dt))
-        return("%02d:%02d:%02d:%02d: " % (days, hours, minutes, seconds))
-
-
+        return ("%02d:%02d:%02d:%02d: " % (days, hours, minutes, seconds))

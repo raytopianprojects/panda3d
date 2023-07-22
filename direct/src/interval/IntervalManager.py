@@ -9,6 +9,7 @@ from direct.directnotify.DirectNotifyGlobal import *
 from direct.showbase import EventManager
 import fnmatch
 
+
 class IntervalManager(CIntervalManager):
 
     # This is a Python-C++ hybrid class.  IntervalManager is a Python
@@ -16,7 +17,7 @@ class IntervalManager(CIntervalManager):
     # the Python extensions is to add support for Python-based
     # intervals (like MetaIntervals).
 
-    def __init__(self, globalPtr = 0):
+    def __init__(self, globalPtr=0):
         # Pass globalPtr == 1 to the constructor to trick it into
         # "constructing" a Python wrapper around the global
         # CIntervalManager object.
@@ -130,12 +131,12 @@ class IntervalManager(CIntervalManager):
         # queue to be serviced (which might not be till next frame).
         self.MyEventmanager.doEvents()
 
-
     def __storeInterval(self, interval, index):
         while index >= len(self.ivals):
             self.ivals.append(None)
         assert self.ivals[index] == None or self.ivals[index] == interval
         self.ivals[index] = interval
+
 
 #: The global IntervalManager object.
 ivalMgr = IntervalManager(1)

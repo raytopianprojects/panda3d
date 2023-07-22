@@ -11,14 +11,15 @@ if sys.version_info >= (3, 0):
 else:
     stringType = basestring
 
+
 class OnscreenGeom(DirectObject, NodePath):
-    def __init__(self, geom = None,
-                 pos = None,
-                 hpr = None,
-                 scale = None,
-                 color = None,
-                 parent = None,
-                 sort = 0):
+    def __init__(self, geom=None,
+                 pos=None,
+                 hpr=None,
+                 scale=None,
+                 color=None,
+                 parent=None,
+                 sort=0):
         """
         Make a geom node from string or a node path,
         put it into the 2d sg and set it up with all the indicated parameters.
@@ -51,24 +52,24 @@ class OnscreenGeom(DirectObject, NodePath):
             from direct.showbase import ShowBaseGlobal
             parent = ShowBaseGlobal.aspect2d
 
-        self.setGeom(geom, parent = parent, sort = sort, color = color)
+        self.setGeom(geom, parent=parent, sort=sort, color=color)
 
         # Adjust pose
         # Set pos
         if (isinstance(pos, tuple) or
-            isinstance(pos, list)):
+                isinstance(pos, list)):
             self.setPos(*pos)
         elif isinstance(pos, VBase3):
             self.setPos(pos)
         # Hpr
         if (isinstance(hpr, tuple) or
-            isinstance(hpr, list)):
+                isinstance(hpr, list)):
             self.setHpr(*hpr)
         elif isinstance(hpr, VBase3):
             self.setPos(hpr)
         # Scale
         if (isinstance(scale, tuple) or
-            isinstance(scale, list)):
+                isinstance(scale, list)):
             self.setScale(*scale)
         elif isinstance(scale, VBase3):
             self.setPos(scale)
@@ -77,10 +78,10 @@ class OnscreenGeom(DirectObject, NodePath):
             self.setScale(scale)
 
     def setGeom(self, geom,
-                parent = NodePath(),
-                transform = None,
-                sort = 0,
-                color = None):
+                parent=NodePath(),
+                transform=None,
+                sort=0,
+                color=None):
         # Get the original parent, transform, and sort, if any, so we can
         # preserve them across this call.
         if not self.isEmpty():

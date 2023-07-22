@@ -6,6 +6,7 @@ __all__ = ['SfxPlayer']
 import math
 from panda3d.core import *
 
+
 class SfxPlayer:
     """
     Play sound effects, potentially localized.
@@ -41,7 +42,7 @@ class SfxPlayer:
         """Return the curent cutoff distance."""
         return self.cutoffDistance
 
-    def getLocalizedVolume(self, node, listenerNode = None, cutoff = None):
+    def getLocalizedVolume(self, node, listenerNode=None, cutoff=None):
         """
         Get the volume that a sound should be played at if it is
         localized at this node. We compute this wrt the camera
@@ -61,16 +62,16 @@ class SfxPlayer:
             if SfxPlayer.UseInverseSquare:
                 sd = d*self.distanceScale
                 volume = min(1, 1 / (sd*sd or 1))
-                #print d, sd, volume
+                # print d, sd, volume
             else:
                 volume = 1 - (d / (cutoff or 1))
-                #print d, volume
+                # print d, volume
 
         return volume
 
     def playSfx(
-            self, sfx, looping = 0, interrupt = 1, volume = None,
-            time = 0.0, node=None, listenerNode = None, cutoff = None):
+            self, sfx, looping=0, interrupt=1, volume=None,
+            time=0.0, node=None, listenerNode=None, cutoff=None):
         if sfx:
             self.setFinalVolume(sfx, node, volume, listenerNode, cutoff)
 
@@ -81,13 +82,14 @@ class SfxPlayer:
                 sfx.setLoop(looping)
                 sfx.play()
 
-    def setFinalVolume(self, sfx, node, volume, listenerNode, cutoff = None):
+    def setFinalVolume(self, sfx, node, volume, listenerNode, cutoff=None):
         """Calculate the final volume based on all contributed factors."""
         # If we have either a node or a volume, we need to adjust the sfx
         # The volume passed in multiplies the distance base volume
         if node or (volume is not None):
             if node:
-                finalVolume = self.getLocalizedVolume(node, listenerNode, cutoff)
+                finalVolume = self.getLocalizedVolume(
+                    node, listenerNode, cutoff)
             else:
                 finalVolume = 1
             if volume is not None:

@@ -7,16 +7,18 @@ __all__ = ['DirectObject']
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from .MessengerGlobal import messenger
 
+
 class DirectObject:
     """
     This is the class that all Direct/SAL classes should inherit from
     """
+
     def __init__(self):
         pass
 
-    #def __del__(self):
+    # def __del__(self):
         # This next line is useful for debugging leaks
-        #print "Destructing: ", self.__class__.__name__
+        # print "Destructing: ", self.__class__.__name__
 
     # Wrapper functions to have a cleaner, more object oriented approach to
     # the messenger functionality.
@@ -42,7 +44,7 @@ class DirectObject:
     def isIgnoring(self, event):
         return messenger.isIgnoring(event, self)
 
-    #This function must be used if you want a managed task
+    # This function must be used if you want a managed task
     def addTask(self, *args, **kwargs):
         from direct.task.TaskManagerGlobal import taskMgr
         if not hasattr(self, "_taskList"):
@@ -98,13 +100,16 @@ class DirectObject:
         if len(events) or len(tasks):
             estr = ('listening to events: %s' % events if len(events) else '')
             andStr = (' and ' if len(events) and len(tasks) else '')
-            tstr = ('%srunning tasks: %s' % (andStr, tasks) if len(tasks) else '')
+            tstr = ('%srunning tasks: %s' %
+                    (andStr, tasks) if len(tasks) else '')
             notify = directNotify.newCategory('LeakDetect')
-            crash = getattr(getRepository(), '_crashOnProactiveLeakDetect', False)
+            crash = getattr(getRepository(),
+                            '_crashOnProactiveLeakDetect', False)
             func = (self.notify.error if crash else self.notify.warning)
-            func('destroyed %s instance is still %s%s' % (self.__class__.__name__, estr, tstr))
+            func('destroyed %s instance is still %s%s' %
+                 (self.__class__.__name__, estr, tstr))
 
-    #snake_case alias:
+    # snake_case alias:
     add_task = addTask
     do_method_later = doMethodLater
     detect_leaks = detectLeaks

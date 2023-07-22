@@ -34,7 +34,8 @@ class Job(DirectObject):
         self._priority = Job.Priorities.Normal
         self._finished = False
         if __debug__:
-            self._pstats = PStatCollector("App:Show code:jobManager:%s" % self._name)
+            self._pstats = PStatCollector(
+                "App:Show code:jobManager:%s" % self._name)
 
     def destroy(self):
         del self._name
@@ -57,17 +58,19 @@ class Job(DirectObject):
 
     def getPriority(self):
         return self._priority
+
     def setPriority(self, priority):
         self._priority = priority
 
     def printingBegin(self):
         self._printing = True
+
     def printingEnd(self):
         self._printing = False
 
     def resume(self):
         """Called every time JobManager is going to start running this job."""
-        #if self._printing:
+        # if self._printing:
         #    # we may be suspended/resumed multiple times per frame, that gets spammy
         #    # if we need to pick out the output of a job, put a prefix onto each line
         #    # of the output
@@ -78,7 +81,7 @@ class Job(DirectObject):
         while.
         """
 
-        #if self._printing:
+        # if self._printing:
         #    #print('JOB:%s:SUSPEND' % self._name)
         #    pass
         #    """
@@ -86,6 +89,7 @@ class Job(DirectObject):
     def _setFinished(self):
         self._finished = True
         self.finished()
+
     def isFinished(self):
         return self._finished
 
@@ -95,6 +99,7 @@ class Job(DirectObject):
 
     def getJobName(self):
         return self._name
+
     def _getJobId(self):
         return self._id
 
@@ -102,12 +107,15 @@ class Job(DirectObject):
         if self._generator is None:
             self._generator = self.run()
         return self._generator
+
     def _cleanupGenerator(self):
         if self._generator is not None:
             self._generator = None
 
-if __debug__: # __dev__ not yet available at this point
+
+if __debug__:  # __dev__ not yet available at this point
     from direct.showbase.Job import Job
+
     class TestJob(Job):
         def __init__(self):
             Job.__init__(self, 'TestJob')
@@ -120,7 +128,8 @@ if __debug__: # __dev__ not yet available at this point
             while True:
                 while self._accum < 100:
                     self._accum += 1
-                    print('counter = %s, accum = %s' % (self._counter, self._accum))
+                    print('counter = %s, accum = %s' %
+                          (self._counter, self._accum))
                     yield None
 
                 self._accum = 0

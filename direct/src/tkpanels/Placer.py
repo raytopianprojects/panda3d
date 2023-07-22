@@ -16,20 +16,21 @@ TODO:
 Task to monitor pose
 """
 
+
 class Placer(AppShell):
     # Override class variables here
     appname = 'Placer Panel'
-    frameWidth      = 625
-    frameHeight     = 215
+    frameWidth = 625
+    frameHeight = 215
     usecommandarea = 0
-    usestatusarea  = 0
+    usestatusarea = 0
 
-    def __init__(self, parent = None, **kw):
+    def __init__(self, parent=None, **kw):
         INITOPT = Pmw.INITOPT
         optiondefs = (
             ('title',       self.appname,       None),
             ('nodePath',    base.direct.camera,      None),
-            )
+        )
         self.defineoptions(kw, optiondefs)
 
         # Call superclass initialization function
@@ -88,103 +89,103 @@ class Placer(AppShell):
         # Add placer commands to menubar
         self.menuBar.addmenu('Placer', 'Placer Panel Operations')
         self.menuBar.addmenuitem('Placer', 'command',
-                            'Zero Node Path',
-                            label = 'Zero All',
-                            command = self.zeroAll)
+                                 'Zero Node Path',
+                                 label='Zero All',
+                                 command=self.zeroAll)
         self.menuBar.addmenuitem('Placer', 'command',
-                            'Reset Node Path',
-                            label = 'Reset All',
-                            command = self.resetAll)
+                                 'Reset Node Path',
+                                 label='Reset All',
+                                 command=self.resetAll)
         self.menuBar.addmenuitem('Placer', 'command',
-                            'Print Node Path Info',
-                            label = 'Print Info',
-                            command = self.printNodePathInfo)
+                                 'Print Node Path Info',
+                                 label='Print Info',
+                                 command=self.printNodePathInfo)
         self.menuBar.addmenuitem(
             'Placer', 'command',
             'Toggle widget visability',
-            label = 'Toggle Widget Vis',
-            command = base.direct.toggleWidgetVis)
+            label='Toggle Widget Vis',
+            command=base.direct.toggleWidgetVis)
         self.menuBar.addmenuitem(
             'Placer', 'command',
             'Toggle widget manipulation mode',
-            label = 'Toggle Widget Mode',
-            command = base.direct.manipulationControl.toggleObjectHandlesMode)
+            label='Toggle Widget Mode',
+            command=base.direct.manipulationControl.toggleObjectHandlesMode)
 
         # Get a handle to the menu frame
         menuFrame = self.menuFrame
         self.nodePathMenu = Pmw.ComboBox(
-            menuFrame, labelpos = W, label_text = 'Node Path:',
-            entry_width = 20,
-            selectioncommand = self.selectNodePathNamed,
-            scrolledlist_items = self.nodePathNames)
+            menuFrame, labelpos=W, label_text='Node Path:',
+            entry_width=20,
+            selectioncommand=self.selectNodePathNamed,
+            scrolledlist_items=self.nodePathNames)
         self.nodePathMenu.selectitem('selected')
         self.nodePathMenuEntry = (
             self.nodePathMenu.component('entryfield_entry'))
         self.nodePathMenuBG = (
             self.nodePathMenuEntry.configure('background')[3])
-        self.nodePathMenu.pack(side = 'left', fill = 'x', expand = 1)
+        self.nodePathMenu.pack(side='left', fill='x', expand=1)
         self.bind(self.nodePathMenu, 'Select node path to manipulate')
 
         modeMenu = Pmw.OptionMenu(menuFrame,
-                                  items = ('Relative To:',
-                                           'Orbit:'),
-                                  initialitem = 'Relative To:',
-                                  command = self.setMovementMode,
-                                  menubutton_width = 8)
-        modeMenu.pack(side = 'left', expand = 0)
+                                  items=('Relative To:',
+                                         'Orbit:'),
+                                  initialitem='Relative To:',
+                                  command=self.setMovementMode,
+                                  menubutton_width=8)
+        modeMenu.pack(side='left', expand=0)
         self.bind(modeMenu, 'Select manipulation mode')
 
         self.refNodePathMenu = Pmw.ComboBox(
-            menuFrame, entry_width = 16,
-            selectioncommand = self.selectRefNodePathNamed,
-            scrolledlist_items = self.refNodePathNames)
+            menuFrame, entry_width=16,
+            selectioncommand=self.selectRefNodePathNamed,
+            scrolledlist_items=self.refNodePathNames)
         self.refNodePathMenu.selectitem('parent')
         self.refNodePathMenuEntry = (
             self.refNodePathMenu.component('entryfield_entry'))
-        self.refNodePathMenu.pack(side = 'left', fill = 'x', expand = 1)
+        self.refNodePathMenu.pack(side='left', fill='x', expand=1)
         self.bind(self.refNodePathMenu, 'Select relative node path')
 
-        self.undoButton = Button(menuFrame, text = 'Undo',
-                                 command = base.direct.undo)
+        self.undoButton = Button(menuFrame, text='Undo',
+                                 command=base.direct.undo)
         if base.direct.undoList:
             self.undoButton['state'] = 'normal'
         else:
             self.undoButton['state'] = 'disabled'
-        self.undoButton.pack(side = 'left', expand = 0)
+        self.undoButton.pack(side='left', expand=0)
         self.bind(self.undoButton, 'Undo last operation')
 
-        self.redoButton = Button(menuFrame, text = 'Redo',
-                                 command = base.direct.redo)
+        self.redoButton = Button(menuFrame, text='Redo',
+                                 command=base.direct.redo)
         if base.direct.redoList:
             self.redoButton['state'] = 'normal'
         else:
             self.redoButton['state'] = 'disabled'
-        self.redoButton.pack(side = 'left', expand = 0)
+        self.redoButton.pack(side='left', expand=0)
         self.bind(self.redoButton, 'Redo last operation')
 
         # Create and pack the Pos Controls
         posGroup = Pmw.Group(interior,
-                             tag_pyclass = Menubutton,
-                             tag_text = 'Position',
+                             tag_pyclass=Menubutton,
+                             tag_text='Position',
                              tag_font=('MSSansSerif', 14),
-                             tag_activebackground = '#909090',
-                             ring_relief = RIDGE)
+                             tag_activebackground='#909090',
+                             ring_relief=RIDGE)
         posMenubutton = posGroup.component('tag')
         self.bind(posMenubutton, 'Position menu operations')
-        posMenu = Menu(posMenubutton, tearoff = 0)
-        posMenu.add_command(label = 'Set to zero', command = self.zeroPos)
-        posMenu.add_command(label = 'Reset initial',
-                            command = self.resetPos)
+        posMenu = Menu(posMenubutton, tearoff=0)
+        posMenu.add_command(label='Set to zero', command=self.zeroPos)
+        posMenu.add_command(label='Reset initial',
+                            command=self.resetPos)
         posMenubutton['menu'] = posMenu
-        posGroup.pack(side='left', fill = 'both', expand = 1)
+        posGroup.pack(side='left', fill='both', expand=1)
         posInterior = posGroup.interior()
 
         # Create the dials
         self.posX = self.createcomponent('posX', (), None,
                                          Floater.Floater, (posInterior,),
-                                         text = 'X', relief = FLAT,
-                                         value = 0.0,
-                                         label_foreground = 'Red')
+                                         text='X', relief=FLAT,
+                                         value=0.0,
+                                         label_foreground='Red')
         self.posX['commandData'] = ['x']
         self.posX['preCallback'] = self.xformStart
         self.posX['postCallback'] = self.xformStop
@@ -193,9 +194,9 @@ class Placer(AppShell):
 
         self.posY = self.createcomponent('posY', (), None,
                                          Floater.Floater, (posInterior,),
-                                         text = 'Y', relief = FLAT,
-                                         value = 0.0,
-                                         label_foreground = '#00A000')
+                                         text='Y', relief=FLAT,
+                                         value=0.0,
+                                         label_foreground='#00A000')
         self.posY['commandData'] = ['y']
         self.posY['preCallback'] = self.xformStart
         self.posY['postCallback'] = self.xformStop
@@ -204,9 +205,9 @@ class Placer(AppShell):
 
         self.posZ = self.createcomponent('posZ', (), None,
                                          Floater.Floater, (posInterior,),
-                                         text = 'Z', relief = FLAT,
-                                         value = 0.0,
-                                         label_foreground = 'Blue')
+                                         text='Z', relief=FLAT,
+                                         value=0.0,
+                                         label_foreground='Blue')
         self.posZ['commandData'] = ['z']
         self.posZ['preCallback'] = self.xformStart
         self.posZ['postCallback'] = self.xformStop
@@ -215,27 +216,27 @@ class Placer(AppShell):
 
         # Create and pack the Hpr Controls
         hprGroup = Pmw.Group(interior,
-                             tag_pyclass = Menubutton,
-                             tag_text = 'Orientation',
+                             tag_pyclass=Menubutton,
+                             tag_text='Orientation',
                              tag_font=('MSSansSerif', 14),
-                             tag_activebackground = '#909090',
-                             ring_relief = RIDGE)
+                             tag_activebackground='#909090',
+                             ring_relief=RIDGE)
         hprMenubutton = hprGroup.component('tag')
         self.bind(hprMenubutton, 'Orientation menu operations')
-        hprMenu = Menu(hprMenubutton, tearoff = 0)
-        hprMenu.add_command(label = 'Set to zero', command = self.zeroHpr)
-        hprMenu.add_command(label = 'Reset initial', command = self.resetHpr)
+        hprMenu = Menu(hprMenubutton, tearoff=0)
+        hprMenu.add_command(label='Set to zero', command=self.zeroHpr)
+        hprMenu.add_command(label='Reset initial', command=self.resetHpr)
         hprMenubutton['menu'] = hprMenu
-        hprGroup.pack(side='left', fill = 'both', expand = 1)
+        hprGroup.pack(side='left', fill='both', expand=1)
         hprInterior = hprGroup.interior()
 
         # Create the dials
         self.hprH = self.createcomponent('hprH', (), None,
                                          Dial.AngleDial, (hprInterior,),
-                                         style = 'mini',
-                                         text = 'H', value = 0.0,
-                                         relief = FLAT,
-                                         label_foreground = 'blue')
+                                         style='mini',
+                                         text='H', value=0.0,
+                                         relief=FLAT,
+                                         label_foreground='blue')
         self.hprH['commandData'] = ['h']
         self.hprH['preCallback'] = self.xformStart
         self.hprH['postCallback'] = self.xformStop
@@ -244,10 +245,10 @@ class Placer(AppShell):
 
         self.hprP = self.createcomponent('hprP', (), None,
                                          Dial.AngleDial, (hprInterior,),
-                                         style = 'mini',
-                                         text = 'P', value = 0.0,
-                                         relief = FLAT,
-                                         label_foreground = 'red')
+                                         style='mini',
+                                         text='P', value=0.0,
+                                         relief=FLAT,
+                                         label_foreground='red')
         self.hprP['commandData'] = ['p']
         self.hprP['preCallback'] = self.xformStart
         self.hprP['postCallback'] = self.xformStop
@@ -256,10 +257,10 @@ class Placer(AppShell):
 
         self.hprR = self.createcomponent('hprR', (), None,
                                          Dial.AngleDial, (hprInterior,),
-                                         style = 'mini',
-                                         text = 'R', value = 0.0,
-                                         relief = FLAT,
-                                         label_foreground = '#00A000')
+                                         style='mini',
+                                         text='R', value=0.0,
+                                         relief=FLAT,
+                                         label_foreground='#00A000')
         self.hprR['commandData'] = ['r']
         self.hprR['preCallback'] = self.xformStart
         self.hprR['postCallback'] = self.xformStop
@@ -272,40 +273,40 @@ class Placer(AppShell):
         self.scalingMode.set('Scale Uniform')
         # The scaling widgets
         scaleGroup = Pmw.Group(interior,
-                               tag_text = 'Scale Uniform',
-                               tag_pyclass = Menubutton,
+                               tag_text='Scale Uniform',
+                               tag_pyclass=Menubutton,
                                tag_font=('MSSansSerif', 14),
-                               tag_activebackground = '#909090',
-                               ring_relief = RIDGE)
+                               tag_activebackground='#909090',
+                               ring_relief=RIDGE)
         self.scaleMenubutton = scaleGroup.component('tag')
         self.bind(self.scaleMenubutton, 'Scale menu operations')
         self.scaleMenubutton['textvariable'] = self.scalingMode
 
         # Scaling menu
-        scaleMenu = Menu(self.scaleMenubutton, tearoff = 0)
-        scaleMenu.add_command(label = 'Set to unity',
-                              command = self.unitScale)
-        scaleMenu.add_command(label = 'Reset initial',
-                              command = self.resetScale)
-        scaleMenu.add_radiobutton(label = 'Scale Free',
-                                      variable = self.scalingMode)
-        scaleMenu.add_radiobutton(label = 'Scale Uniform',
-                                      variable = self.scalingMode)
-        scaleMenu.add_radiobutton(label = 'Scale Proportional',
-                                      variable = self.scalingMode)
+        scaleMenu = Menu(self.scaleMenubutton, tearoff=0)
+        scaleMenu.add_command(label='Set to unity',
+                              command=self.unitScale)
+        scaleMenu.add_command(label='Reset initial',
+                              command=self.resetScale)
+        scaleMenu.add_radiobutton(label='Scale Free',
+                                  variable=self.scalingMode)
+        scaleMenu.add_radiobutton(label='Scale Uniform',
+                                  variable=self.scalingMode)
+        scaleMenu.add_radiobutton(label='Scale Proportional',
+                                  variable=self.scalingMode)
         self.scaleMenubutton['menu'] = scaleMenu
         # Pack group widgets
-        scaleGroup.pack(side='left', fill = 'both', expand = 1)
+        scaleGroup.pack(side='left', fill='both', expand=1)
         scaleInterior = scaleGroup.interior()
 
         # Create the dials
         self.scaleX = self.createcomponent('scaleX', (), None,
                                            Floater.Floater, (scaleInterior,),
-                                           text = 'X Scale',
-                                           relief = FLAT,
-                                           min = 0.0001, value = 1.0,
-                                           resetValue = 1.0,
-                                           label_foreground = 'Red')
+                                           text='X Scale',
+                                           relief=FLAT,
+                                           min=0.0001, value=1.0,
+                                           resetValue=1.0,
+                                           label_foreground='Red')
         self.scaleX['commandData'] = ['sx']
         self.scaleX['callbackData'] = ['sx']
         self.scaleX['preCallback'] = self.xformStart
@@ -314,11 +315,11 @@ class Placer(AppShell):
 
         self.scaleY = self.createcomponent('scaleY', (), None,
                                            Floater.Floater, (scaleInterior,),
-                                           text = 'Y Scale',
-                                           relief = FLAT,
-                                           min = 0.0001, value = 1.0,
-                                           resetValue = 1.0,
-                                           label_foreground = '#00A000')
+                                           text='Y Scale',
+                                           relief=FLAT,
+                                           min=0.0001, value=1.0,
+                                           resetValue=1.0,
+                                           label_foreground='#00A000')
         self.scaleY['commandData'] = ['sy']
         self.scaleY['callbackData'] = ['sy']
         self.scaleY['preCallback'] = self.xformStart
@@ -327,11 +328,11 @@ class Placer(AppShell):
 
         self.scaleZ = self.createcomponent('scaleZ', (), None,
                                            Floater.Floater, (scaleInterior,),
-                                           text = 'Z Scale',
-                                           relief = FLAT,
-                                           min = 0.0001, value = 1.0,
-                                           resetValue = 1.0,
-                                           label_foreground = 'Blue')
+                                           text='Z Scale',
+                                           relief=FLAT,
+                                           min=0.0001, value=1.0,
+                                           resetValue=1.0,
+                                           label_foreground='Blue')
         self.scaleZ['commandData'] = ['sz']
         self.scaleZ['callbackData'] = ['sz']
         self.scaleZ['preCallback'] = self.xformStart
@@ -356,8 +357,8 @@ class Placer(AppShell):
         self.scaleY['command'] = self.xform
         self.scaleZ['command'] = self.xform
 
-
     ### WIDGET OPERATIONS ###
+
     def setMovementMode(self, movementMode):
         # Set prefix
         namePrefix = ''
@@ -384,7 +385,7 @@ class Placer(AppShell):
             scale = self['nodePath'].getScale()
             if ((scale[0] != scale[1]) or
                 (scale[0] != scale[2]) or
-                (scale[1] != scale[2])):
+                    (scale[1] != scale[2])):
                 self.scalingMode.set('Scale Free')
 
     def selectNodePathNamed(self, name):
@@ -425,10 +426,10 @@ class Placer(AppShell):
         self['nodePath'] = nodePath
         if self['nodePath']:
             self.nodePathMenuEntry.configure(
-                background = self.nodePathMenuBG)
+                background=self.nodePathMenuBG)
             # Check to see if node path and ref node path are the same
             if ((self.refCS != None) and
-                (self.refCS == self['nodePath'])):
+                    (self.refCS == self['nodePath'])):
                 # Yes they are, use temp CS as ref
                 # This calls updatePlacer
                 self.setReferenceNodePath(self.tempCS)
@@ -443,7 +444,7 @@ class Placer(AppShell):
             self.setScalingMode()
         else:
             # Flash entry
-            self.nodePathMenuEntry.configure(background = 'Pink')
+            self.nodePathMenuEntry.configure(background='Pink')
 
     def selectRefNodePathNamed(self, name):
         nodePath = None
@@ -484,12 +485,12 @@ class Placer(AppShell):
         self.refCS = nodePath
         if self.refCS:
             self.refNodePathMenuEntry.configure(
-                background = self.nodePathMenuBG)
+                background=self.nodePathMenuBG)
             # Update placer to reflect new state
             self.updatePlacer()
         else:
             # Flash entry
-            self.refNodePathMenuEntry.configure(background = 'Pink')
+            self.refNodePathMenuEntry.configure(background='Pink')
 
     def addNodePath(self, nodePath):
         self.addNodePathToDict(nodePath, self.nodePathNames,
@@ -615,7 +616,7 @@ class Placer(AppShell):
     def xformOrbit(self, value, axis):
         nodePath = self['nodePath']
         if ((nodePath != None) and (self.refCS != None) and
-            (self.orbitFromCS != None) and (self.orbitToCS != None)):
+                (self.orbitFromCS != None) and (self.orbitToCS != None)):
             if axis == 'x':
                 self.posOffset.setX(value)
             elif axis == 'y':
@@ -729,35 +730,35 @@ class Placer(AppShell):
             self['nodePath'].setScale(self.initScale)
             self.xformStop(None)
 
-    def pushUndo(self, fResetRedo = 1):
+    def pushUndo(self, fResetRedo=1):
         base.direct.pushUndo([self['nodePath']])
 
-    def undoHook(self, nodePathList = []):
+    def undoHook(self, nodePathList=[]):
         # Reflect new changes
         self.updatePlacer()
 
     def pushUndoHook(self):
         # Make sure button is reactivated
-        self.undoButton.configure(state = 'normal')
+        self.undoButton.configure(state='normal')
 
     def undoListEmptyHook(self):
         # Make sure button is deactivated
-        self.undoButton.configure(state = 'disabled')
+        self.undoButton.configure(state='disabled')
 
     def pushRedo(self):
         base.direct.pushRedo([self['nodePath']])
 
-    def redoHook(self, nodePathList = []):
+    def redoHook(self, nodePathList=[]):
         # Reflect new changes
         self.updatePlacer()
 
     def pushRedoHook(self):
         # Make sure button is reactivated
-        self.redoButton.configure(state = 'normal')
+        self.redoButton.configure(state='normal')
 
     def redoListEmptyHook(self):
         # Make sure button is deactivated
-        self.redoButton.configure(state = 'disabled')
+        self.redoButton.configure(state='disabled')
 
     def printNodePathInfo(self):
         np = self['nodePath']
@@ -784,10 +785,12 @@ class Placer(AppShell):
         self.orbitFromCS.removeNode()
         self.orbitToCS.removeNode()
 
+
 def place(nodePath):
-    return Placer(nodePath = nodePath)
+    return Placer(nodePath=nodePath)
 
 ######################################################################
+
 
 # Create demo in root window for testing.
 if __name__ == '__main__':

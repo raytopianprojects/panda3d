@@ -1,5 +1,6 @@
 from direct.directnotify.DirectNotifyGlobal import *
 
+
 class PhasedObject:
     """
     This class is governs the loading and unloading of successive
@@ -31,13 +32,13 @@ class PhasedObject:
     """
     notify = directNotify.newCategory("PhasedObject")
 
-    def __init__(self, aliasMap = {}):
+    def __init__(self, aliasMap={}):
         self.phase = -1
         self.phaseAliasMap = {}
         self.aliasPhaseMap = {}
         self.__phasing = False
 
-        for alias,phase in list(aliasMap.items()):
+        for alias, phase in list(aliasMap.items()):
             self.setAlias(phase, alias)
 
     def __repr__(self):
@@ -57,8 +58,8 @@ class PhasedObject:
 
         The mapping must be one-to-one.
         """
-        assert isinstance(phase,int) and phase >= 0
-        assert isinstance(alias,str)
+        assert isinstance(phase, int) and phase >= 0
+        assert isinstance(alias, str)
 
         self.phaseAliasMap[phase] = alias
         self.aliasPhaseMap[alias] = phase
@@ -95,8 +96,8 @@ class PhasedObject:
         assert not self.__phasing, 'Already phasing. Cannot setPhase() while phasing in progress.'
         self.__phasing = True
 
-        phase = self.aliasPhaseMap.get(aPhase,aPhase)
-        assert isinstance(phase,int), 'Phase alias \'%s\' not found' % aPhase
+        phase = self.aliasPhaseMap.get(aPhase, aPhase)
+        assert isinstance(phase, int), 'Phase alias \'%s\' not found' % aPhase
         assert phase >= -1, 'Invalid phase number \'%s\'' % phase
 
         if phase > self.phase:
@@ -117,19 +118,20 @@ class PhasedObject:
             self.setPhase(-1)
 
     def __loadPhase(self, phase):
-        aPhase = self.phaseAliasMap.get(phase,phase)
+        aPhase = self.phaseAliasMap.get(phase, phase)
         getattr(self, 'loadPhase%s' % aPhase,
-                lambda: self.__phaseNotFound('load',aPhase))()
+                lambda: self.__phaseNotFound('load', aPhase))()
         self.phase = phase
 
     def __unloadPhase(self, phase):
-        aPhase = self.phaseAliasMap.get(phase,phase)
+        aPhase = self.phaseAliasMap.get(phase, phase)
         getattr(self, 'unloadPhase%s' % aPhase,
-                lambda: self.__phaseNotFound('unload',aPhase))()
+                lambda: self.__phaseNotFound('unload', aPhase))()
         self.phase = (phase - 1)
 
     def __phaseNotFound(self, mode, aPhase):
-        assert self.notify.debug('%s%s() not found!\n' % (mode,aPhase))
+        assert self.notify.debug('%s%s() not found!\n' % (mode, aPhase))
+
 
 if __debug__:
     class AnfaPhasedObject(PhasedObject):
@@ -163,8 +165,10 @@ if __debug__:
                      then    unloadPhase('Far')
                      then    unloadPhase('Away')
         """
+
         def __init__(self):
-            PhasedObject.__init__(self, {'At':3, 'Near':2, 'Far':1, 'Away':0})
+            PhasedObject.__init__(
+                self, {'At': 3, 'Near': 2, 'Far': 1, 'Away': 0})
             self.setPhase('Away')
 
         def loadPhaseAway(self):
@@ -190,4 +194,3 @@ if __debug__:
 
         def unloadPhaseAt(self):
             print('unloading At')
-
