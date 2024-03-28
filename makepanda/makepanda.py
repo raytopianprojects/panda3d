@@ -23,10 +23,11 @@ except:
     exit(1)
 
 from makepandacore import *
-from distutils.util import get_platform
 import time
 import os
 import sys
+
+from sysconfig import get_platform
 
 ########################################################################
 ##
@@ -421,6 +422,12 @@ if VERSION is None:
     else:
         # Take the value from the setup.cfg file.
         VERSION = GetMetadataValue('version')
+        match = re.match(r'^\d+\.\d+(\.\d+)+', VERSION)
+        if not match:
+            exit("Invalid version %s in setup.cfg, three digits are required" % (VERSION))
+        if WHLVERSION is None:
+            WHLVERSION = VERSION
+        VERSION = match.group()
 
 if WHLVERSION is None:
     WHLVERSION = VERSION
@@ -3038,11 +3045,18 @@ END
 #endif"""
 
 def CreatePandaVersionFiles():
-    version1=int(VERSION.split(".")[0])
-    version2=int(VERSION.split(".")[1])
-    version3=int(VERSION.split(".")[2])
-    nversion=version1*1000000+version2*1000+version3
-    if (DISTRIBUTOR != "cmu"):
+    parts = VERSION.split(".", 2)
+    version1 = int(parts[0])
+    version2 = int(parts[1])
+    version3 = 0
+    if len(parts) > 2:
+        for c in parts[2]:
+            if c.isdigit():
+                version3 = version3 * 10 + ord(c) - 48
+            else:
+                break
+    nversion = version1 * 1000000 + version2 * 1000 + version3
+    if DISTRIBUTOR != "cmu":
         # Subtract 1 if we are not an official version.
         nversion -= 1
 
