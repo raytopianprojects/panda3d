@@ -3152,7 +3152,9 @@ del_files = ['core.py', 'core.pyc', 'core.pyo',
              '_core.pyd', '_core.so',
              'direct.py', 'direct.pyc', 'direct.pyo',
              '_direct.pyd', '_direct.so',
-             'dtoolconfig.pyd', 'dtoolconfig.so']
+             'dtoolconfig.pyd', 'dtoolconfig.so',
+             'net.pyd', 'net.so',
+             'net.py', 'net.pyc', 'net.pyo']
 
 for basename in del_files:
     path = os.path.join(GetOutputDir(), 'panda3d', basename)
@@ -3283,7 +3285,7 @@ build_apps = direct.dist.commands:build_apps
 bdist_apps = direct.dist.commands:bdist_apps
 
 [setuptools.finalize_distribution_options]
-build_apps = direct.dist.commands:finalize_distribution_options
+build_apps = direct.dist._dist_hooks:finalize_distribution_options
 """
 
 if not PkgSkip("DIRECT"):
